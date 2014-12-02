@@ -1,9 +1,13 @@
 {
   "name": "django_react",
   "version": "0.0.1",
-  "description": "",
+  "description": "Django/React Integration",
   "author": "Mark Finger <markfinger@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:markfinger/django-react.git"
+  },
   "dependencies": {
     "jsx-loader": "^0.12.2",
     "node-jsx": "^0.12.4",
