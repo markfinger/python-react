@@ -1,0 +1,6 @@
+include CHANGELOG.md
+include LICENSE.txt
+include README.md
+include django_react/bundle.js
+include django_react/package.json
+include django_react/render.js

@@ -1,11 +1,12 @@
 import os
 import sys
 import subprocess
-from distutils.core import setup
+from setuptools import setup
 from distutils.spawn import find_executable
 
-VERSION = '0.0.1'
+VERSION = '0.1.0'
 
+# Ensure that we are in the same directory as setup.py
 path, script = os.path.split(sys.argv[0])
 os.chdir(os.path.abspath(path))
 
@@ -17,7 +18,7 @@ def npm_install(operate_in, return_to):
     cd into `return_to`
     """
 
-    # Ensure npm is available
+    # Ensure that npm is available
     path_to_npm = find_executable('npm')
     if not path_to_npm:
         raise Exception('Missing dependency: npm cannot be found')
@@ -41,8 +42,8 @@ def npm_install(operate_in, return_to):
 
     if std_err:
         for line in std_err.splitlines():
-            if line.startswith("npm WARN"):
-                print line
+            if line.startswith('npm WARN'):
+                print(line)
             else:
                 raise Exception(line)
 
@@ -56,6 +57,8 @@ def npm_install(operate_in, return_to):
 setup(
     name='django-react',
     version=VERSION,
+    packages=['django_react'],
+    install_requires=['django'],
     description='Django React',
     long_description=open('README.md', 'rb').read().decode('utf-8'),
     author='Mark Finger',
