@@ -4,6 +4,7 @@
   "description": "Django/React Integration",
   "author": "Mark Finger <markfinger@gmail.com>",
   "license": "MIT",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git@github.com:markfinger/django-react.git"
