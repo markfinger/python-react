@@ -1,14 +1,13 @@
 import os
 import subprocess
 import tempfile
-import hashlib
 from django_node.environment import ensure_node_version_gte, ensure_npm_version_gte
 from django_node.utils import npm_install
 from .settings import (
-    PATH_TO_NODE, RENDERER, BUNDLER, STATIC_ROOT, NODE_VERSION_REQUIRED, NPM_VERSION_REQUIRED, CHECK_DEPENDENCIES,
+    PATH_TO_NODE, RENDERER, BUNDLER, NODE_VERSION_REQUIRED, NPM_VERSION_REQUIRED, CHECK_DEPENDENCIES,
     CHECK_PACKAGES
 )
-from .exceptions import ReactComponentRenderToStringException, ReactComponentBundleException
+from .exceptions import RenderException, BundleException
 
 
 # Ensure that the external dependencies are met
@@ -21,15 +20,15 @@ if CHECK_PACKAGES:
     npm_install(os.path.dirname(__file__))
 
 
-def bundle(component):
+def bundle(entry, library):
     with tempfile.NamedTemporaryFile() as output_file:
 
         cmd_to_run = (
             PATH_TO_NODE,
             BUNDLER,
-            '--entry', component.get_path_to_source(),
+            '--entry', entry,
             '--output', output_file.name,
-            '--library', component.get_component_variable(),
+            '--library', library,
         )
 
         # Call the bundler
@@ -39,52 +38,22 @@ def bundle(component):
         # Ensure that an exception is thrown if the bundler throws an error
         stderr = popen.stderr.read()
         if stderr:
-            raise ReactComponentBundleException(stderr)
+            raise BundleException(stderr)
 
         output_file.seek(0)
 
-        bundled_component = output_file.read()
-
-        md5 = hashlib.md5()
-        md5.update(bundled_component)
-
-        # TODO: move this to ReactComponent.get_filename_from_source(bundled_source)
-        filename = '{component_name}-{hash}.js'.format(
-            component_name=component.get_component_name(),
-            hash=md5.hexdigest()
-        )
-
-        # TODO Move `bundled` into settings
-        path_to_file = os.path.join('bundled', filename)
-        abs_path_to_file = os.path.join(STATIC_ROOT, path_to_file)
-
-        dir_to_file = os.path.dirname(abs_path_to_file)
-        if not os.path.exists(dir_to_file):
-            os.makedirs(dir_to_file)
-
-        with open(abs_path_to_file, 'w+') as bundle_file:
-            bundle_file.write(bundled_component)
-
-        return abs_path_to_file
+        return output_file.read()
 
 
-def render(component, to_static_markup=None):
-    path_to_component = component.get_path_to_source()
+def render(path_to_source, serialised_props, to_static_markup=None):
     render_to = 'static' if to_static_markup else 'string'
 
     cmd_to_run = (
         PATH_TO_NODE,
         RENDERER,
-        '--path-to-component', path_to_component,
+        '--path-to-source', path_to_source,
         '--render-to', render_to,
     )
-
-    # TODO
-    # exported_as = component.get_exported_as()
-    # if exported_as is not None:
-    #     cmd_to_run += ('--exported-as', exported_as)
-
-    serialised_props = component.get_serialised_props()
 
     with tempfile.NamedTemporaryFile() as props_file, tempfile.NamedTemporaryFile() as output_file:
         props_file.write(serialised_props)
@@ -98,7 +67,7 @@ def render(component, to_static_markup=None):
         # Ensure that an exception is thrown if the renderer throws an error
         stderr = popen.stderr.read()
         if stderr:
-            raise ReactComponentRenderToStringException(stderr)
+            raise RenderException(stderr)
 
         output_file.seek(0)
 

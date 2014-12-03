@@ -1,10 +1,10 @@
-class ReactComponentSourceFileNotFound(Exception):
+class SourceFileNotFound(Exception):
     pass
 
 
-class ReactComponentRenderToStringException(Exception):
+class RenderException(Exception):
     pass
 
 
-class ReactComponentBundleException(Exception):
+class BundleException(Exception):
     pass

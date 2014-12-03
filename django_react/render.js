@@ -1,22 +1,21 @@
 var fs = require('fs');
-var path = require('path');
 var argv = require('yargs').argv;
 var React = require('react');
 var nodeJSX = require('node-jsx');
 
-var pathToComponent = argv.pathToComponent;
-if (!pathToComponent) {
-	throw new Error('No path to the component specified, ex: `--path-to-component /path/to/some/component.js`');
+var pathToSource = argv.pathToSource;
+if (!pathToSource) {
+	throw new Error('No path to the a source file provided, ex: `--path-to-source /path/to/some/file.js`');
 }
 
-if (!fs.existsSync(pathToComponent)) {
-    throw new Error('Cannot find file "' + pathToComponent + '"')
+if (!fs.existsSync(pathToSource)) {
+    throw new Error('Cannot find source file "' + pathToSource + '"')
 }
 
 // Install support for requiring JSX files
 nodeJSX.install();
 
-var component = require(pathToComponent);
+var component = require(pathToSource);
 
 var RENDER_TO_STATIC = 'static';
 var RENDER_TO_STRING = 'string';
@@ -47,5 +46,5 @@ if (renderTo === RENDER_TO_STATIC) {
 	output = React.renderToString(element);
 }
 
-// Push the output to stdout
+// Push the rendered content to stdout
 console.log(output);
