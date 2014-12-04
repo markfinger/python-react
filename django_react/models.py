@@ -3,7 +3,7 @@ import hashlib
 import json
 from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
-from .exceptions import SourceFileNotFound
+from .exceptions import SourceFileNotFoundException, SerialisationException
 from .settings import STATIC_URL, STATIC_ROOT
 from .utils import render, bundle
 
@@ -107,7 +107,7 @@ class ReactComponent(object):
         source = self.get_source()
         path_to_source = finders.find(source)
         if not os.path.exists(path_to_source):
-            raise SourceFileNotFound(path_to_source)
+            raise SourceFileNotFoundException(path_to_source)
         return path_to_source
 
     def get_props(self):
@@ -142,7 +142,13 @@ class ReactComponent(object):
 
     def get_serialised_props(self):
         if not self.serialised_props:
-            self.serialised_props = json.dumps(self.get_props())
+            # Django will silently ignore json's exceptions, so
+            # we need to intercept them and raise our own class
+            # of exception
+            try:
+                self.serialised_props = json.dumps(self.get_props())
+            except (TypeError, ValueError), e:
+                raise SerialisationException(*e.args)
         return self.serialised_props
 
     def get_serialised_props_hash(self):

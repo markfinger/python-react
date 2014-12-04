@@ -1,4 +1,8 @@
-class SourceFileNotFound(Exception):
+class SourceFileNotFoundException(Exception):
+    pass
+
+
+class SerialisationException(Exception):
     pass
 
 
