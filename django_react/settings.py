@@ -34,11 +34,6 @@ RENDERER = setting_overrides.get(
     os.path.abspath(os.path.join(__file__, '../render.js'))
 )
 
-BUNDLER = setting_overrides.get(
-    'BUNDLER',
-    os.path.abspath(os.path.join(__file__, '../bundle.js'))
-)
-
 STATIC_ROOT = setting_overrides.get(
     'STATIC_ROOT',
     settings.STATIC_ROOT,

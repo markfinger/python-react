@@ -1,14 +1,6 @@
-class SourceFileNotFoundException(Exception):
+class PropSerialisationError(Exception):
     pass
 
 
-class SerialisationException(Exception):
-    pass
-
-
-class RenderException(Exception):
-    pass
-
-
-class BundleException(Exception):
+class ComponentRenderingError(Exception):
     pass
