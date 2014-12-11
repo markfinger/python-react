@@ -1,52 +1,67 @@
+import os
 import hashlib
 import json
 from django.utils.safestring import mark_safe
 from django_webpack.models import WebpackBundle
-from .exceptions import PropSerialisationError
-from .utils import render
+import exceptions
+import react
 
 
 class ReactComponent(WebpackBundle):
     props = None
     serialised_props = None
+    loaders = (
+        {'loader': 'jsx', 'test': '.jsx$'},
+    )
+    paths_to_loaders = (os.path.abspath(os.path.join(os.path.dirname(__file__), 'node_modules')),)
+    react_variable = 'window.React'
+    externals = {
+        # Rather than bundling React, we rely on a browser global
+        'react': react_variable,
+        'react/addons': react_variable
+    }
 
     def __init__(self, **kwargs):
         self.props = kwargs
 
-    def render(self):
-        return self.render_container(
-            content=self._render()
+    def render_to_string(self):
+        rendered = react.render_to_string(
+            path_to_source=self.get_path_to_source(),
+            serialised_props=self.get_serialised_props(),
         )
+        return self.render_container(content=rendered)
 
-    def render_static(self):
-        return self.render_container(
-            content=self._render(to_static_markup=True)
+    def render_to_static_markup(self):
+        rendered = react.render_to_static_markup(
+            path_to_source=self.get_path_to_source(),
+            serialised_props=self.get_serialised_props(),
         )
+        return self.render_container(content=rendered)
 
     def render_js(self):
-        rendered_js = '\n'.join((
+        rendered = '\n'.join((
             self.render_props(),
-            self.render_source(),
-            self.render_init()
+            self.render_bundle(),
+            self.render_init(),
         ))
-        return mark_safe(rendered_js)
+        return mark_safe(rendered)
 
     def render_container(self, content=None):
         if content is None:
             content = ''
-        rendered_container = '<div id="{container_id}" class="{container_class_name}">{content}</div>'.format(
+        rendered = '<div id="{container_id}" class="{container_class_name}">{content}</div>'.format(
             container_id=self.get_container_id(),
             container_class_name=self.get_container_class_name(),
             content=content,
         )
-        return mark_safe(rendered_container)
+        return mark_safe(rendered)
 
     def render_props(self):
-        rendered_props = '<script>{props_variable} = {serialised_props};</script>'.format(
+        rendered = '<script>{props_variable} = {serialised_props};</script>'.format(
             props_variable=self.get_props_variable(),
             serialised_props=self.get_serialised_props(),
         )
-        return mark_safe(rendered_props)
+        return mark_safe(rendered)
 
     def render_init(self):
         props_check = ''
@@ -57,9 +72,9 @@ class ReactComponent(WebpackBundle):
                 }}
             '''.format(
                 props_variable=self.get_props_variable(),
-                exported_variable=self.get_component_variable(),
+                exported_variable=self.get_library(),
             )
-        rendered_init = '''
+        rendered = '''
             <script>
                 if (!window.{exported_variable}) {{
                     throw new Error('Cannot find component `{exported_variable}`');
@@ -76,19 +91,12 @@ class ReactComponent(WebpackBundle):
             </script>
         '''.format(
             react_variable=self.get_react_variable(),
-            exported_variable=self.get_component_variable(),
+            exported_variable=self.get_library(),
             props_variable=self.get_props_variable(),
             container_id=self.get_container_id(),
             props_check=props_check,
         )
-        return mark_safe(rendered_init)
-
-    def _render(self, to_static_markup=None):
-        return render(
-            path_to_source=self.get_path_to_source(),
-            serialised_props=self.get_serialised_props(),
-            to_static_markup=to_static_markup,
-        )
+        return mark_safe(rendered)
 
     def get_props(self):
         return self.props
@@ -101,14 +109,13 @@ class ReactComponent(WebpackBundle):
     def get_component_name(self):
         return self.__class__.__name__
 
-    def get_component_variable(self):
+    def get_library(self):
+        if self.library:
+            return self.library
         return self.get_component_name()
 
-    def get_bundle_variable(self):
-        return self.get_component_variable()
-
     def get_react_variable(self):
-        return 'React'
+        return self.react_variable
 
     def get_component_id(self):
         return unicode(id(self))
@@ -125,13 +132,12 @@ class ReactComponent(WebpackBundle):
 
     def get_serialised_props(self):
         if not self.serialised_props:
-            # Django will silently ignore json's exceptions, so
-            # we need to intercept them and raise our own class
-            # of exception
+            # Django will silently ignore json's exceptions, so we need to
+            # intercept them and raise our own class of exception
             try:
                 self.serialised_props = json.dumps(self.get_props())
-            except (TypeError, ValueError), e:
-                raise PropSerialisationError(*e.args)
+            except (TypeError, AttributeError) as e:
+                raise exceptions.PropSerialisationError(e.__class__.__name__, *e.args)
         return self.serialised_props
 
     def get_serialised_props_hash(self):

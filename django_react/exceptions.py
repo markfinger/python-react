@@ -2,5 +2,5 @@ class PropSerialisationError(Exception):
     pass
 
 
-class ComponentRenderingError(Exception):
+class RenderingError(Exception):
     pass

@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = '0.3.0'
+VERSION = '0.4.0'
 
 setup(
     name='django-react',
@@ -10,11 +10,13 @@ setup(
         'django_react': [
             '*.js',
             '*.json',
+            'tests/*.py',
         ]
     },
     install_requires=[
         'django',
-        'django-node >= 0.1.0',
+        'django-node >= 0.2.0',
+        'django-webpack >= 0.0.2',
     ],
     description='Django React',
     long_description=\

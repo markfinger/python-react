@@ -10,6 +10,7 @@
     "url": "git@github.com:markfinger/django-react.git"
   },
   "dependencies": {
+    "jsx-loader": "^0.12.2",
     "node-jsx": "^0.12.4",
     "react": "^0.12.1",
     "yargs": "^1.3.3"
