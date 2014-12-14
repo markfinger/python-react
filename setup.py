@@ -8,20 +8,22 @@ setup(
     packages=['django_react'],
     package_data={
         'django_react': [
-            '*.js',
-            '*.json',
+            'render.js',
+            'package.json',
             'tests/*.py',
+            'tests/test_components/*.jsx',
+            'tests/test_components/*.js',
         ]
     },
     install_requires=[
         'django',
-        'django-node >= 0.2.0',
-        'django-webpack >= 0.0.2',
+        'django-node >= 2.0.1',
+        'django-webpack >= 1.0.1',
     ],
     description='Django React',
     long_description=\
 '''
-Provides an interface for Django to render and bundle React components.
+Render and bundle React components from a Django application.
 
 Documentation at https://github.com/markfinger/django-react
 ''',

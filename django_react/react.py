@@ -13,20 +13,28 @@ npm.ensure_version_gte(settings.NPM_VERSION_REQUIRED)
 npm.install(os.path.dirname(__file__))
 
 
-def _render(path_to_source, serialised_props, to_static_markup=None):
-    with tempfile.NamedTemporaryFile() as serialised_props_file:
-        serialised_props_file.write(serialised_props)
-        serialised_props_file.flush()
+def render(path_to_source, serialized_props=None, to_static_markup=None):
+    if serialized_props is None:
+        serialized_props = '{}'
+
+    if to_static_markup is None:
+        render_to = 'string'
+    else:
+        render_to = 'static'
+
+    with tempfile.NamedTemporaryFile() as serialized_props_file:
+        serialized_props_file.write(serialized_props)
+        serialized_props_file.flush()
 
         arguments = (
             settings.PATH_TO_RENDERER,
             '--path-to-source', path_to_source,
-            '--render-to', 'static' if to_static_markup else 'string',
-            '--serialised-props', serialised_props_file.name,
+            '--render-to', render_to,
+            '--serialized-props', serialized_props_file.name,
         )
 
-        # Django will silently ignore some types of exceptions, so we need to
-        # intercept them and raise our own class of exception
+        # While rendering templates Django will silently ignore some types of exceptions,
+        # so we need to intercept them and raise our own class of exception
         try:
             stderr, stdout = node.run(*arguments)
         except (TypeError, AttributeError) as e:
@@ -36,11 +44,3 @@ def _render(path_to_source, serialised_props, to_static_markup=None):
             raise exceptions.RenderingError(stderr)
 
         return stdout
-
-
-def render_to_string(path_to_source, serialised_props):
-    return _render(path_to_source, serialised_props)
-
-
-def render_to_static_markup(path_to_source, serialised_props):
-    return _render(path_to_source, serialised_props, to_static_markup=True)

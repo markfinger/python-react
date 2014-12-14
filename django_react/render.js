@@ -28,14 +28,14 @@ if (renderTo !== RENDER_TO_STATIC && renderTo !== RENDER_TO_STRING) {
 	throw new Error('Unknown render to option "' + renderTo + '", only "--render-to ' + RENDER_TO_STATIC + '" and "--render-to ' + RENDER_TO_STRING + '" are accepted');
 }
 
-var serialisedProps = argv.serialisedProps;
-if (!serialisedProps) {
-	throw new Error('No path to props file provided');
+var serializedProps = argv.serializedProps;
+if (!serializedProps) {
+	throw new Error('No path to serialized props file provided');
 }
 
-serialisedProps = fs.readFileSync(serialisedProps);
+serializedProps = fs.readFileSync(serializedProps);
 
-var props = JSON.parse(serialisedProps);
+var props = JSON.parse(serializedProps);
 
 var element = React.createElement(component, props);
 

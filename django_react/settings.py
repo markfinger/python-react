@@ -27,3 +27,8 @@ STATIC_URL = setting_overrides.get(
     'STATIC_URL',
     settings.STATIC_URL,
 )
+
+REACT_EXTERNAL = setting_overrides.get(
+    'REACT_EXTERNAL',
+    'window.React',
+)

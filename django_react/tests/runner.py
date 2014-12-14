@@ -1,17 +1,15 @@
+import os
 import sys
+
+import django
 from django.conf import settings
+from django.test.utils import get_runner
 
-settings.configure(
-    DEBUG=True,
-    DATABASES={
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-        }
-    },
-)
-
-from django.test.runner import DiscoverRunner
-test_runner = DiscoverRunner()
-failures = test_runner.run_tests(['django_react'])
-if failures:
-    sys.exit(failures)
+if __name__ == '__main__':
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'django_react.tests.test_settings'
+    django.setup()
+    TestRunner = get_runner(settings)
+    test_runner = TestRunner()
+    failures = test_runner.run_tests(['django_react'])
+    sys.exit(bool(failures))
