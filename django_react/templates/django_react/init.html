@@ -1,19 +1,19 @@
 <script>
-	if (!{{ REACT_EXTERNAL  }}) {
+	if (typeof {{ REACT_EXTERNAL  }} === 'undefined') {
 		throw new Error('Cannot find React variable, tried `{{ REACT_EXTERNAL }}`');
 	}
-	if (!window.{{ variable }}) {
+	if (typeof {{ variable }} === 'undefined') {
 		throw new Error('Cannot find component variable `{{ variable }}`');
 	}
-	if (!window.{{ props_variable }}) {
+	if (typeof {{ props_variable }} === 'undefined') {
 		throw new Error('Cannot find props variable `{{ props_variable }}` for component `{{ variable }}`');
 	}
-	(function(React, component, props, container_id) {
-		var react_element = React.createElement(component, props);
-		var mount_container = document.getElementById(container_id);
-		if (!mount_container) {
+	(function(React, component, props, containerId) {
+		var element = React.createElement(component, props);
+		var container = document.getElementById(containerId);
+		if (!container) {
 			throw new Error('Cannot find the container element `#{{ container_id }}` for component `{{ variable }}`');
 		}
-		React.render(react_element, mount_container);
-	})({{ REACT_EXTERNAL  }}, {{ variable }}, window.{{ props_variable }}, '{{ container_id }}');
+		React.render(element, container);
+	})({{ REACT_EXTERNAL  }}, {{ variable }}, {{ props_variable }}, '{{ container_id }}');
 </script>
