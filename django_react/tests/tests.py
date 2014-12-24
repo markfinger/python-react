@@ -70,7 +70,7 @@ class TestDjangoReact(unittest.TestCase):
         rendered = component.render_source()
         self.assertEqual(
             rendered,
-            '<script src="/static/test_components/HelloWorld-9bcca9325027fdc7c693.js"></script>'
+            '<script src="/static/test_components/HelloWorld-b3bd3a6ebd56228b6267.js"></script>'
         )
 
     def test_can_override_a_components_source_url_generation(self):
