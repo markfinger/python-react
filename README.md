@@ -13,14 +13,18 @@ Documentation
 Basic usage
 -----------
 
-Create your component and pass it some props.
+Define your component
 
 ```python
 from django_react.models import ReactComponent
 
 class MyComponent(ReactComponent):
     source = 'path/to/file.jsx'
+```
 
+Create an instance of your component and pass it some props
+
+```python
 my_component = MyComponent(
     some_prop='foo',
     some_other_prop=[1, 2, 3]
