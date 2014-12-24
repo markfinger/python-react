@@ -36,7 +36,7 @@ def render(path_to_source, serialized_props=None, to_static_markup=None):
         # While rendering templates Django will silently ignore some types of exceptions,
         # so we need to intercept them and raise our own class of exception
         try:
-            stderr, stdout = node.run(*arguments)
+            stderr, stdout = node.run(*arguments, production=settings.DEBUG)
         except (TypeError, AttributeError) as e:
             raise exceptions.RenderingError(e.__class__.__name__, *e.args)
 

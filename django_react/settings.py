@@ -32,3 +32,8 @@ REACT_EXTERNAL = setting_overrides.get(
     'REACT_EXTERNAL',
     'window.React',
 )
+
+DEBUG = setting_overrides.get(
+    'DEBUG',
+    settings.DEBUG,
+)
