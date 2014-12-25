@@ -2,7 +2,7 @@ class ReactComponentCalledDirectly(Exception):
     pass
 
 
-class ReactComponentMissingSourceAttribute(Exception):
+class ReactComponentMissingSource(Exception):
     pass
 
 

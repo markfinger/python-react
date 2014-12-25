@@ -5,7 +5,7 @@ from django.conf import settings
 from django_webpack.exceptions import BundlingError
 from django_react import ReactComponent, ReactBundle
 from django_react.exceptions import (
-    RenderingError, PropSerializationError, ReactComponentCalledDirectly, ReactComponentMissingSourceAttribute,
+    RenderingError, PropSerializationError, ReactComponentCalledDirectly, ReactComponentMissingSource,
 )
 
 
@@ -36,7 +36,7 @@ class TestDjangoReact(unittest.TestCase):
     def test_react_component_requires_source_attribute(self):
         class ComponentMissingSource(ReactComponent):
             pass
-        self.assertRaises(ReactComponentMissingSourceAttribute, ComponentMissingSource)
+        self.assertRaises(ReactComponentMissingSource, ComponentMissingSource)
 
         class ComponentWithSourceAttribute(ReactComponent):
             source = 'some/file.js'

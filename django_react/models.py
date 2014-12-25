@@ -33,8 +33,9 @@ class ReactComponent(object):
     def __init__(self, **kwargs):
         if self.__class__ is ReactComponent:
             raise exceptions.ReactComponentCalledDirectly('Components must inherit from ReactComponent')
-        if not self.source:
-            raise exceptions.ReactComponentMissingSourceAttribute(self)
+        # Sanity check
+        if self.get_source() is None:
+            raise exceptions.ReactComponentMissingSource(self)
         self.props = kwargs
 
     def render_to_string(self):
