@@ -3,7 +3,7 @@ import unittest
 import shutil
 from django.conf import settings
 from django_webpack.exceptions import BundlingError
-from django_react.models import ReactComponent
+from django_react import ReactComponent, ReactBundle
 from django_react.exceptions import (
     RenderingError, PropSerializationError, ReactComponentCalledDirectly, ReactComponentMissingSourceAttribute,
 )
@@ -68,9 +68,11 @@ class TestDjangoReact(unittest.TestCase):
     def test_can_render_a_react_source_element(self):
         component = HelloWorld()
         rendered = component.render_source()
-        self.assertEqual(
-            rendered,
-            '<script src="/static/test_components/HelloWorld-b3bd3a6ebd56228b6267.js"></script>'
+        self.assertTrue(
+            rendered.startswith('<script src="/static/test_components/HelloWorld-')
+        )
+        self.assertTrue(
+            rendered.endswith('.js"></script>')
         )
 
     def test_can_override_a_components_source_url_generation(self):
@@ -98,3 +100,6 @@ class TestDjangoReact(unittest.TestCase):
     def test_unserializable_props_raise_an_exception(self):
         component = HelloWorld(text=id)
         self.assertRaises(PropSerializationError, component.get_serialized_props)
+
+    def test_components_have_a_react_bundle(self):
+        self.assertEqual(ReactComponent.bundle, ReactBundle)

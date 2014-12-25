@@ -16,7 +16,7 @@ Basic usage
 Define your component
 
 ```python
-from django_react.models import ReactComponent
+from django_react import ReactComponent
 
 class MyComponent(ReactComponent):
     source = 'path/to/file.jsx'
