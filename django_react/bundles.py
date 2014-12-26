@@ -1,5 +1,5 @@
 import os
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 from .settings import REACT_EXTERNAL
 
 
