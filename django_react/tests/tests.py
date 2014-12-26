@@ -2,8 +2,9 @@ import os
 import unittest
 import shutil
 from django.conf import settings
+from django.utils.safestring import mark_safe
 from django_webpack.exceptions import BundlingError
-from django_react import ReactComponent, ReactBundle
+from django_react import ReactComponent, ReactBundle, render_component
 from django_react.exceptions import (
     RenderingError, PropSerializationError, ReactComponentCalledDirectly, ReactComponentMissingSource,
 )
@@ -45,17 +46,26 @@ class TestDjangoReact(unittest.TestCase):
     def test_can_render_a_react_component_in_jsx(self):
         component = HelloWorld()
         rendered = component.render_to_static_markup()
-        self.assertEqual(rendered, component.render_container(content='<span>Hello </span>'))
+        expected = component.render_container(
+            content=mark_safe('<span>Hello </span>')
+        )
+        self.assertEqual(rendered, expected)
 
     def test_can_render_a_react_component_in_js(self):
         component = HelloWorldJS()
         rendered = component.render_to_static_markup()
-        self.assertEqual(rendered, component.render_container(content='<span>Hello </span>'))
+        expected = component.render_container(
+            content=mark_safe('<span>Hello </span>')
+        )
+        self.assertEqual(rendered, expected)
 
     def test_can_render_a_react_component_with_props(self):
         component = HelloWorld(text='world!')
         rendered = component.render_to_static_markup()
-        self.assertEqual(rendered, component.render_container(content='<span>Hello world!</span>'))
+        expected = component.render_container(
+            content=mark_safe('<span>Hello world!</span>')
+        )
+        self.assertEqual(rendered, expected)
 
     def test_can_render_a_react_component_container(self):
         component = HelloWorld()
@@ -103,3 +113,12 @@ class TestDjangoReact(unittest.TestCase):
 
     def test_components_have_a_react_bundle(self):
         self.assertEqual(ReactComponent.bundle, ReactBundle)
+
+    def test_render_component_has_similar_output_to_react_component_render_methods(self):
+        component = HelloWorld()
+        rendered = render_component(
+            path_to_source=component.get_path_to_source(),
+            to_static_markup=True
+        )
+        expected = component.render_to_static_markup(wrap=False)
+        self.assertEqual(rendered, expected)
