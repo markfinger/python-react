@@ -8,6 +8,16 @@ Documentation
 
 - [Basic usage](#basic-usage)
 - [Installation](#installation)
+- [ReactComponent](#reactcomponent)
+  - [render_to_string()](#reactcomponentrender_to_string)
+  - [render_to_static_markup()](#reactcomponentrender_to_static_markup)
+  - [render_js()](#reactcomponentrender_js)
+  - [render_container()](#reactcomponentrender_container)
+  - [render_props()](#reactcomponentrender_props)
+  - [render_source()](#reactcomponentrender_source)
+  - [render_init()](#reactcomponentrender_init)
+- [ReactBundle](#reactbundle)
+- [render_component()](#render_component)
 - [Running the tests](#running-the-tests)
 
 Basic usage
@@ -50,12 +60,6 @@ The rendered JavaScript will automatically include:
 The user will see the rendered component immediately and React will automatically
 start to add interactivity as the page loads the JavaScript.
 
-Dependencies
-------------
-
-- Node.js >= 0.10.0
-- NPM >= 1.2.0
-
 Installation
 ------------
 
@@ -71,10 +75,6 @@ INSTALLED_APPS = (
     'django_react',
 )
 ```
-
-Note: You may experience a short, once-off pause when you first attempt to boot Django.
-The pause is caused by NPM installing the JavaScript libraries which Django React
-requires to operate.
 
 ReactComponent
 --------------
@@ -201,7 +201,7 @@ class MyComponent(ReactComponent):
 ```
 
 render_component()
---------------
+------------------
 
 Render a component to its initial HTML. You can use this method to generate HTML
 on the server and send the markup down on the initial request for faster page loads
