@@ -1,6 +1,19 @@
 Changelog
 =========
 
+### 0.7.0 (2/1/2015)
+
+- Changed `django_react.exceptions.ReactComponentMissingSourceAttribute` to `django_react.exceptions.ReactComponentMissingSource`
+- `django_react.react.render` is now `django_react.render_component`
+- Updated the django-webpack dependency to 2.0.0
+- `django_react.models.ReactBundle` is now `django_react.ReactBundle`
+- `django_react.models.ReactComponent` is now `django_react.ReactComponent`
+- The Python<->JS bridge used to render components now relies on a `--serialized-props-file` argument, formerly it was `--serialized-props`.
+
+### 0.6.0 (24/12/2014)
+
+- The NODE_ENV environment setting is now controlled by the `DJANGO_REACT['DEBUG']` setting. Activating it will provides some improvements to the rendering performance.
+
 ### 0.5.0 (14/12/2014)
 
 - Renamed `django_react.exceptions.PropSerialisationError` to `django_react.exceptions.PropSerializationError`.
