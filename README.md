@@ -238,7 +238,7 @@ serialized_props = json.dumps({
     'bar': [1, 2, 3],
 })
 
-# Render the components initial HTML
+# Render the component it its initial HTML
 html = render_component(path_to_source, serialized_props)
 ```
 
