@@ -9,6 +9,7 @@ Changelog
 - `django_react.models.ReactBundle` is now `django_react.ReactBundle`
 - `django_react.models.ReactComponent` is now `django_react.ReactComponent`
 - The Python<->JS bridge used to render components now relies on a `--serialized-props-file` argument, formerly it was `--serialized-props`.
+- Switched the JSX loader to a fork which improves the debug information provided during error handling
 
 ### 0.6.0 (24/12/2014)
 
