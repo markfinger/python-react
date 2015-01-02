@@ -193,7 +193,7 @@ ReactBundle
 
 A `django_webpack.WebpackBundle` which is configured to support loading of JSX files.
 
-By default, `ReactBundles` are configured to omit React from the generated bundle
+By default, a `ReactBundle` is configured to omit React from the generated bundle
 and instead rely on a global variable, `React`. By omitting React from the bundle,
 multiple components can be included in a single page without duplicating React's code.
 
@@ -238,6 +238,7 @@ serialized_props = json.dumps({
     'bar': [1, 2, 3],
 })
 
+# Render the components initial HTML
 html = render_component(path_to_source, serialized_props)
 ```
 
