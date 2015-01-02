@@ -41,14 +41,16 @@ my_component = MyComponent(
 )
 ```
 
-In your template you can now render the component and inject your
-component's source.
+Render the component to its initial HTML
 
 ```html
 {{ my_component.render_to_string }}
+```
 
+Render JavaScript to mount your component
+
+```html
 <script src="path/to/react.js"></script>
-
 {{ my_component.render_js }}
 ```
 
@@ -57,8 +59,9 @@ The rendered JavaScript will automatically include:
 - Your source, which will have been JSX transformed and bundled with Webpack
 - Initialization code that immediately mounts your component with React
 
-The user will see the rendered component immediately and React will automatically
-start to add interactivity as the page loads the JavaScript.
+Rendering the component to its initial markup ensures that your user will see
+your content immediately and React will mount the component as soon as the 
+page has loaded the JavaScript.
 
 Installation
 ------------
@@ -80,6 +83,26 @@ ReactComponent
 --------------
 
 Integrates server-side rendering of React components with Webpack's bundling.
+
+```python
+from django_react import ReactComponent
+
+# Define your component
+class MyComponent(ReactComponent):
+    source = 'path/to/file.jsx'
+    
+# Create an instance of your component with some props
+component = MyComponent(
+  foo=1,
+  bar=[1,2,3]
+)
+
+# Render the component to its initial HTML
+markup = component.render_to_string()
+
+# Render JS to mount the component with React
+js = component.render_js()
+```
 
 ### ReactComponent.render_to_string()
 
