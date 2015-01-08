@@ -7,6 +7,7 @@ from django_webpack.exceptions import BundlingError
 from django_react import ReactComponent, ReactBundle, render_component
 from django_react.exceptions import (
     RenderingError, PropSerializationError, ReactComponentCalledDirectly, ReactComponentMissingSource,
+    SourceFileNotFound,
 )
 
 
@@ -35,13 +36,18 @@ class TestDjangoReact(unittest.TestCase):
         self.assertRaises(ReactComponentCalledDirectly, ReactComponent)
 
     def test_react_component_requires_source_attribute(self):
-        class ComponentMissingSource(ReactComponent):
+        class ComponentMissingSourceAttribute(ReactComponent):
             pass
-        self.assertRaises(ReactComponentMissingSource, ComponentMissingSource)
+        self.assertRaises(ReactComponentMissingSource, ComponentMissingSourceAttribute)
 
-        class ComponentWithSourceAttribute(ReactComponent):
-            source = 'some/file.js'
-        ComponentWithSourceAttribute()
+        class ComponentWithNonExistentSource(ReactComponent):
+            source = 'some/missing/file.js'
+        self.assertRaises(ReactComponentMissingSource, ComponentWithNonExistentSource)
+
+        class ComponentWithNonExistentPathToSource(ReactComponent):
+            path_to_source = '/some/missing/file.js'
+        component = ComponentWithNonExistentPathToSource()
+        self.assertRaises(SourceFileNotFound, component.render_to_static_markup)
 
     def test_can_render_a_react_component_in_jsx(self):
         component = HelloWorld()
@@ -87,7 +93,7 @@ class TestDjangoReact(unittest.TestCase):
 
     def test_can_override_a_components_source_url_generation(self):
         class TestComponent(HelloWorld):
-            def get_source_url(self):
+            def get_url_to_source(self):
                 return 'some/fake/file.js'
         component = TestComponent()
         rendered = component.render_source()
@@ -122,3 +128,16 @@ class TestDjangoReact(unittest.TestCase):
         )
         expected = component.render_to_static_markup(wrap=False)
         self.assertEqual(rendered, expected)
+
+    def test_path_to_source_can_be_specified(self):
+        class ComponentWithPathToSource(ReactComponent):
+            path_to_source = os.path.join(
+                os.path.dirname(__file__),
+                'test_components/HelloWorld.jsx'
+            )
+        component = ComponentWithPathToSource()
+        self.assertEqual(component.path_to_source, component.get_path_to_source())
+        self.assertEqual(
+            component.render_to_static_markup(wrap=False),
+            HelloWorld().render_to_static_markup(wrap=False)
+        )

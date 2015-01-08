@@ -1,4 +1,3 @@
-import os
 import hashlib
 import json
 from django.template.loader import render_to_string
@@ -6,8 +5,7 @@ from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
 from django_react.settings import REACT_EXTERNAL
 from .exceptions import (
-    ReactComponentCalledDirectly, ReactComponentMissingSource, SourceFileNotFound, PropSerializationError,
-    ComponentBundlingError,
+    ReactComponentCalledDirectly, ReactComponentMissingSource, PropSerializationError, ComponentBundlingError,
 )
 from .render import render_component
 from .bundles import ReactBundle
@@ -15,12 +13,13 @@ from .bundles import ReactBundle
 
 class ReactComponent(object):
     source = None
+    path_to_source = None
+    url_to_source = None
     props = None
+    serialized_props = None
     variable = None
     props_variable = None
-    serialized_props = None
     bundle = ReactBundle
-    source_url = None
 
     def __init__(self, **kwargs):
         # As we use the subclass's name to generate a number of client-side
@@ -28,7 +27,7 @@ class ReactComponent(object):
         if self.__class__ is ReactComponent:
             raise ReactComponentCalledDirectly('Components must inherit from ReactComponent')
         # Sanity check
-        if self.get_source() is None:
+        if self.get_path_to_source() is None:
             raise ReactComponentMissingSource(self)
         # All kwargs are passed to the component as props, this replicates
         # the API used in React+JSX
@@ -164,7 +163,7 @@ class ReactComponent(object):
         ```
         """
         return render_to_string('django_react/source.html', self.get_render_context(
-            source_url=self.get_source_url()
+            source_url=self.get_url_to_source()
         ))
 
     def render_init(self):
@@ -197,29 +196,13 @@ class ReactComponent(object):
         return self.source
 
     def get_path_to_source(self):
-        source = self.get_source()
-        path_to_source = finders.find(source)
-        if not path_to_source or not os.path.exists(path_to_source):
-            raise SourceFileNotFound(path_to_source)
-        return path_to_source
+        if self.path_to_source is None:
+            source = self.get_source()
+            self.path_to_source = finders.find(source)
+        return self.path_to_source
 
     def get_props(self):
         return self.props
-
-    def get_variable(self):
-        if self.variable is None:
-            self.variable = self.__class__.__name__
-        return self.variable
-
-    def get_container_id(self):
-        return 'reactComponentContainer-{id}'.format(
-            id=unicode(id(self)),
-        )
-
-    def get_container_class_name(self):
-        return 'reactComponentContainer reactComponentContainer--{variable}'.format(
-            variable=self.get_variable(),
-        )
 
     def get_serialized_props(self):
         if self.serialized_props is None:
@@ -242,8 +225,8 @@ class ReactComponent(object):
             )
         return self.props_variable
 
-    def get_source_url(self):
-        if self.source_url is None:
+    def get_url_to_source(self):
+        if self.url_to_source is None:
             bundle = self.bundle(
                 entry=self.get_source(),
                 library=self.get_variable(),
@@ -251,7 +234,23 @@ class ReactComponent(object):
             # While rendering templates Django will silently ignore some types of exceptions,
             # so we need to intercept them and raise our own class of exception
             try:
-                self.source_url = bundle.get_url()
+                url_to_source = bundle.get_url()
             except (TypeError, AttributeError) as e:
                 raise ComponentBundlingError(e.__class__.__name__, *e.args)
-        return self.source_url
+            self.url_to_source = url_to_source
+        return self.url_to_source
+
+    def get_variable(self):
+        if self.variable is None:
+            self.variable = self.__class__.__name__
+        return self.variable
+
+    def get_container_id(self):
+        return 'reactComponentContainer-{id}'.format(
+            id=unicode(id(self)),
+        )
+
+    def get_container_class_name(self):
+        return 'reactComponentContainer reactComponentContainer--{variable}'.format(
+            variable=self.get_variable(),
+        )

@@ -2,7 +2,7 @@ import os
 import tempfile
 from django_node import npm, node
 from .settings import PATH_TO_RENDERER, NPM_VERSION_REQUIRED, NODE_VERSION_REQUIRED, DEBUG
-from .exceptions import RenderingError
+from .exceptions import RenderingError, SourceFileNotFound
 
 
 # Ensure that the external dependencies are met
@@ -14,6 +14,9 @@ npm.install(os.path.dirname(__file__))
 
 
 def render_component(path_to_source, serialized_props=None, to_static_markup=None):
+    if not path_to_source or not os.path.exists(path_to_source):
+        raise SourceFileNotFound(path_to_source)
+
     if serialized_props is None:
         serialized_props = '{}'
 
