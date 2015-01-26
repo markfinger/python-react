@@ -1,6 +1,14 @@
 Changelog
 =========
 
+### 0.8.0 (26/1/2015)
+
+- Boosting render performance by using a dedicated render server.
+- Added a new setting, DJANGO_REACT['RENDERER'], which is a string denoting an import path to a 
+ callable object which returns a on object with a `render` method. By default it points to the new
+ render server, 'django_react.render_server.ReactRenderServer'. The legacy renderer is useable by 
+ setting DJANGO_REACT['RENDERER'] = 'django_react.renderer.ReactRenderer'.
+
 ### 0.7.0 (2/1/2015)
 
 - Changed `django_react.exceptions.ReactComponentMissingSourceAttribute` to `django_react.exceptions.ReactComponentMissingSource`
