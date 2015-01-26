@@ -20,6 +20,7 @@ setup(
         'django',
         'django-node == 2.2.1',
         'django-webpack == 2.0.2',
+        'requests >= 2.5.1',
     ],
     description='Render and bundle React components from a Django application',
     long_description='Documentation at https://github.com/markfinger/django-react',
