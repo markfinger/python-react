@@ -26,7 +26,7 @@ class ReactComponent(object):
         # variables, we disallow directly calling the ReactComponent class
         if self.__class__ is ReactComponent:
             raise ReactComponentCalledDirectly('Components must inherit from ReactComponent')
-        # Sanity check
+        # Ensure that a source file is defined in either `source` or `path_to_source`
         if self.get_path_to_source() is None:
             raise ReactComponentMissingSource(self)
         # All kwargs are passed to the component as props, this replicates
