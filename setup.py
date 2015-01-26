@@ -8,12 +8,10 @@ setup(
     packages=['django_react'],
     package_data={
         'django_react': [
-            'render.js',
+            'render_server.js',
+            'renderer.js',
             'package.json',
             'templates/django_react/*.html',
-            'tests/*.py',
-            'tests/test_components/*.jsx',
-            'tests/test_components/*.js',
         ]
     },
     install_requires=[
