@@ -248,5 +248,6 @@ Running the tests
 ```bash
 mkvirtualenv django-react
 pip install -r requirements.txt
-python django_react/tests/runner.py
+python django_react/tests/functional/run_tests.py
+python django_react/tests/performance/run_tests.py
 ```

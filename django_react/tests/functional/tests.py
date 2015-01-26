@@ -9,22 +9,25 @@ from django_react.exceptions import (
     RenderingError, PropSerializationError, ReactComponentCalledDirectly, ReactComponentMissingSource,
     SourceFileNotFound,
 )
+from django_react.settings import RENDERER
+
+print('Running tests with DJANGO_REACT[\'RENDERER\'] = \'{renderer}\''.format(renderer=RENDERER))
 
 
 class HelloWorld(ReactComponent):
-    source = 'test_components/HelloWorld.jsx'
+    source = 'components/HelloWorld.jsx'
 
 
 class HelloWorldJS(ReactComponent):
-    source = 'test_components/HelloWorld.js'
+    source = 'components/HelloWorld.js'
 
 
 class ErrorThrowingComponent(ReactComponent):
-    source = 'test_components/ErrorThrowingComponent.jsx'
+    source = 'components/ErrorThrowingComponent.jsx'
 
 
 class SyntaxErrorComponent(ReactComponent):
-    source = 'test_components/SyntaxErrorComponent.jsx'
+    source = 'components/SyntaxErrorComponent.jsx'
 
 
 class TestDjangoReact(unittest.TestCase):
@@ -85,7 +88,7 @@ class TestDjangoReact(unittest.TestCase):
         component = HelloWorld()
         rendered = component.render_source()
         self.assertTrue(
-            rendered.startswith('<script src="/static/test_components/HelloWorld-')
+            rendered.startswith('<script src="/static/components/HelloWorld-')
         )
         self.assertTrue(
             rendered.endswith('.js"></script>')
@@ -133,7 +136,7 @@ class TestDjangoReact(unittest.TestCase):
         class ComponentWithPathToSource(ReactComponent):
             path_to_source = os.path.join(
                 os.path.dirname(__file__),
-                'test_components/HelloWorld.jsx'
+                'components/HelloWorld.jsx'
             )
         component = ComponentWithPathToSource()
         self.assertEqual(component.path_to_source, component.get_path_to_source())
