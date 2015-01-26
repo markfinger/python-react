@@ -10,4 +10,6 @@ if __name__ == '__main__':
 
     from django_react.tests.performance.perf_tests import run_perf_test
 
+    print('Running perf test with a renderer which boots node on every render request...')
+
     run_perf_test()
