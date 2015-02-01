@@ -135,7 +135,13 @@ class ReactRenderServer(object):
         response = requests.get(render_url, params=params)
 
         if response.status_code != 200:
-            raise RenderingError(response.text)
+            error_message = response.text
+            # Convert the error message from HTML to plain text
+            error_message = error_message.replace('<br>', '\n')
+            error_message = error_message.replace('&nbsp;', ' ')
+            # Remove multiple spaces
+            error_message = ' '.join(error_message.split())
+            raise RenderingError(error_message)
 
         return response.text
 
