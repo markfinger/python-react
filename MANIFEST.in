@@ -2,9 +2,3 @@ include CHANGELOG.md
 include LICENSE.txt
 include README.md
 include requirements.txt
-include django_react/package.json
-include django_react/render.js
-recursive-include django_react/templates *.html
-recursive-include django_react/tests *.py
-recursive-include django_react/tests *.jsx
-recursive-include django_react/tests *.js
