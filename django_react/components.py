@@ -3,6 +3,7 @@ import json
 from django.template.loader import render_to_string
 from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
+from django.utils import six
 from django_react.settings import REACT_EXTERNAL
 from .exceptions import (
     ReactComponentCalledDirectly, ReactComponentMissingSource, PropSerializationError, ComponentBundlingError,
@@ -247,7 +248,7 @@ class ReactComponent(object):
 
     def get_container_id(self):
         return 'reactComponentContainer-{id}'.format(
-            id=unicode(id(self)),
+            id=six.text_type(id(self)),
         )
 
     def get_container_class_name(self):

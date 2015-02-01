@@ -16,8 +16,8 @@ setup(
     },
     install_requires=[
         'django',
-        'django-node == 2.2.1',
-        'django-webpack == 2.0.2',
+        'django-node==2.3.3',
+        'django-webpack==2.1.2',
         'requests >= 2.5.1',
     ],
     description='Render and bundle React components from a Django application',

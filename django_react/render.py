@@ -1,6 +1,7 @@
 import os
 import tempfile
 import importlib
+from django.utils import six
 from django_node import npm, node
 from .settings import NPM_VERSION_REQUIRED, NODE_VERSION_REQUIRED, RENDERER
 from .exceptions import SourceFileNotFound, RendererImportError
@@ -36,7 +37,7 @@ def render_component(path_to_source, serialized_props=None, to_static_markup=Non
 
     if serialized_props:
         with tempfile.NamedTemporaryFile() as serialized_props_file:
-            serialized_props_file.write(serialized_props)
+            serialized_props_file.write(six.b(serialized_props))
             serialized_props_file.flush()
             path_to_serialized_props = serialized_props_file.name
 

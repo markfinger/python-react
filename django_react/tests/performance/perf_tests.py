@@ -7,7 +7,7 @@ path_to_component = os.path.abspath(os.path.join(os.path.dirname(__file__), 'com
 
 
 def median(l):
-    half = len(l) / 2
+    half = int(len(l) / 2)
     l.sort()
     if len(l) % 2 == 0:
         return (l[half-1] + l[half]) / 2.0
@@ -23,7 +23,7 @@ def run_perf_test():
 
     iteration_count = 25
 
-    for i in xrange(iteration_count):
+    for i in range(iteration_count):
         start = time.time()
         render_component(path_to_component)
         end = time.time()

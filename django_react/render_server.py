@@ -56,7 +56,8 @@ class ReactRenderServer(object):
         except (TypeError, AttributeError) as e:
             raise RenderServerStartError(e.__class__.__name__, *e.args)
 
-        self.startup_output = self.popen.stdout.readline()
+        startup_output = self.popen.stdout.readline()
+        self.startup_output = startup_output.decode()
 
         if self.startup_output.strip() != 'Started django-react render server':
             self.shutdown()
@@ -67,7 +68,8 @@ class ReactRenderServer(object):
                 )
             )
 
-        self.server_details_json = self.popen.stdout.readline()
+        server_details_json = self.popen.stdout.readline()
+        self.server_details_json = server_details_json.decode()
         self.server_details = json.loads(self.server_details_json)
 
         # If the server is defining its own address or port, we
