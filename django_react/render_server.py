@@ -1,9 +1,9 @@
 import atexit
 import json
-import requests
-from django_node.settings import PATH_TO_NODE
 import subprocess
+import requests
 from requests.exceptions import ConnectionError
+from django_node.settings import PATH_TO_NODE
 from .exceptions import RenderingError, RenderServerStartError
 from .settings import (
     RENDER_SERVER_ADDRESS, RENDER_SERVER_PROTOCOL, RENDER_SERVER_PORT, PATH_TO_RENDER_SERVER_SOURCE,
