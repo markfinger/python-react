@@ -7,6 +7,7 @@ if __name__ == '__main__':
     path_to_file = os.path.abspath(os.path.dirname(__file__))
 
     test_files = (
+        'run_perf_tests_with_render_endpoint.py',
         'run_perf_tests_with_warm_render_server.py',
         'run_perf_tests_with_render_server.py',
         'run_perf_tests_with_renderer.py',
