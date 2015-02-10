@@ -56,11 +56,11 @@ class ReactComponent(object):
             path_to_source=self.get_path_to_source(),
             serialized_props=self.get_serialized_props(),
         )
-        if wrap is False:
-            return rendered
-        return self.render_container(
-            content=mark_safe(rendered)
-        )
+        if wrap is None:
+            return self.render_container(
+                content=mark_safe(rendered)
+            )
+        return rendered
 
     def render_to_static_markup(self, wrap=None):
         """
@@ -73,18 +73,16 @@ class ReactComponent(object):
         {{ component.render_to_static_markup }}
         ```
         """
-        if wrap is None:
-            wrap = True
         rendered = render_component(
             path_to_source=self.get_path_to_source(),
             serialized_props=self.get_serialized_props(),
             to_static_markup=True,
         )
-        if wrap is False:
-            return rendered
-        return self.render_container(
-            content=mark_safe(rendered)
-        )
+        if wrap is None:
+            return self.render_container(
+                content=mark_safe(rendered)
+            )
+        return rendered
 
     def render_js(self):
         """
