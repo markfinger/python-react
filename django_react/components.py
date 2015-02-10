@@ -1,3 +1,4 @@
+import sys
 import hashlib
 import json
 from django.template.loader import render_to_string
@@ -212,7 +213,7 @@ class ReactComponent(object):
             try:
                 self.serialized_props = json.dumps(self.get_props())
             except (TypeError, AttributeError) as e:
-                raise PropSerializationError(e.__class__.__name__, *e.args)
+                six.reraise(PropSerializationError, PropSerializationError(*e.args), sys.exc_info()[2])
         return self.serialized_props
 
     def get_props_variable(self):
@@ -237,7 +238,7 @@ class ReactComponent(object):
             try:
                 url_to_source = bundle.get_url()
             except (TypeError, AttributeError) as e:
-                raise ComponentBundlingError(e.__class__.__name__, *e.args)
+                six.reraise(ComponentBundlingError, ComponentBundlingError(*e.args), sys.exc_info()[2])
             self.url_to_source = url_to_source
         return self.url_to_source
 
