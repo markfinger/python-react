@@ -10,10 +10,12 @@ if __name__ == '__main__':
         'performance/run_tests.py',
     )
 
+    print('')
     for test_file in test_files:
         popen = subprocess.Popen(
             (path_to_python, os.path.join(path_to_file, test_file),)
         )
         popen.wait()
+        print('')
 
     sys.exit()

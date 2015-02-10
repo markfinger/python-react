@@ -1,41 +1,32 @@
-from django_node import node
-from .settings import PATH_TO_RENDERER_SOURCE, DEBUG
+import sys
+import os
+from django_node import npm
+from django_node.exceptions import NodeServerError
+from django_node.server import server
+from django.utils import six
 from .exceptions import RenderingError
 
+# Ensure that the required packages have been installed
+npm.install(os.path.dirname(__file__))
 
-class ReactRenderer(object):
-    """
-    Temporarily spins up a new Node instance to render the component.
+render_endpoint = server.add_endpoint(
+    endpoint='/django-react/render',
+    path_to_source=os.path.join(os.path.dirname(__file__), 'renderer.js')
+)
 
-    django_react.server.ReactRenderServer is recommended for general use,
-    as it is overwhelmingly faster than this renderer.
 
-    The primary use-case for ReactRenderer is situations in which you may
-    wish to avoid a persistent process on your network or a persistent
-    JavaScript environment rendering your components.
-    """
+def render(path_to_source, render_to, path_to_serialized_props=None):
+    params = {
+        'path-to-source': path_to_source,
+        'render-to': render_to,
+    }
 
-    @staticmethod
-    def render(path_to_source, render_to, path_to_serialized_props=None):
-        arguments = (
-            PATH_TO_RENDERER_SOURCE,
-            '--path-to-source', path_to_source,
-            '--render-to', render_to,
-        )
+    if path_to_serialized_props is not None:
+        params['path-to-serialized-props'] = path_to_serialized_props
 
-        if path_to_serialized_props is not None:
-            arguments += (
-                '--path-to-serialized-props', path_to_serialized_props
-            )
+    try:
+        response = render_endpoint.get(params=params)
+    except NodeServerError as e:
+        six.reraise(RenderingError, RenderingError(*e.args), sys.exc_info()[2])
 
-        # While rendering templates Django will silently ignore some types of exceptions,
-        # so we need to intercept them and raise our own class of exception
-        try:
-            stderr, stdout = node.run(*arguments, production=DEBUG)
-        except (TypeError, AttributeError) as e:
-            raise RenderingError(e.__class__.__name__, *e.args)
-
-        if stderr:
-            raise RenderingError(stderr)
-
-        return stdout
+    return response.text

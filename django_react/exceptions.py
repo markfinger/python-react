@@ -20,11 +20,3 @@ class RenderingError(Exception):
 
 class ComponentBundlingError(Exception):
     pass
-
-
-class RendererImportError(Exception):
-    pass
-
-
-class RenderServerStartError(Exception):
-    pass

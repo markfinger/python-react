@@ -1,24 +1,13 @@
 if __name__ == '__main__':
     import os
     import sys
-    import subprocess
+    import django
 
-    path_to_python = sys.executable
-    path_to_file = os.path.abspath(os.path.dirname(__file__))
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'django_react.tests.performance.settings'
 
-    test_files = (
-        'run_perf_tests_with_render_endpoint.py',
-        'run_perf_tests_with_warm_render_server.py',
-        'run_perf_tests_with_render_server.py',
-        'run_perf_tests_with_renderer.py',
-    )
+    django.setup()
 
-    for test_file in test_files:
-        print('')
-        popen = subprocess.Popen(
-            (path_to_python, os.path.join(path_to_file, test_file),)
-        )
-        popen.wait()
-        print('')
+    from django_react.tests.performance.perf_tests import run_perf_test
 
-    sys.exit()
+    run_perf_test()

@@ -1,22 +1,17 @@
 if __name__ == '__main__':
     import os
     import sys
-    import subprocess
-    path_to_python = sys.executable
-    path_to_file = os.path.abspath(os.path.dirname(__file__))
 
-    test_files = (
-        'run_tests_with_render_endpoint.py',
-        'run_tests_with_render_server.py',
-        'run_tests_with_renderer.py',
-    )
+    import django
+    from django.conf import settings
+    from django.test.utils import get_runner
 
-    for test_file in test_files:
-        print('')
-        popen = subprocess.Popen(
-            (path_to_python, os.path.join(path_to_file, test_file),)
-        )
-        popen.wait()
-        print('')
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'django_react.tests.functional.settings'
+    django.setup()
 
-    sys.exit()
+    TestRunner = get_runner(settings)
+    test_runner = TestRunner()
+    failures = test_runner.run_tests(['django_react'])
+
+    sys.exit(bool(failures))

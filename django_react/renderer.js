@@ -1,46 +1,54 @@
 var fs = require('fs');
-var argv = require('yargs').argv;
 var React = require('react');
 var nodeJSX = require('node-jsx');
 
-var pathToSource = argv.pathToSource;
-if (!pathToSource) {
-	throw new Error('No path to the source file was provided, ex: `--path-to-source /path/to/some/file.js`');
-}
-
-if (!fs.existsSync(pathToSource)) {
-	throw new Error('Cannot find the source file "' + pathToSource + '"')
-}
-
-// Install support for requiring JSX files
+// Support requiring of JSX files
 nodeJSX.install();
 
-var component = require(pathToSource);
-
+// `render-to` param options
 var RENDER_TO_STATIC = 'static';
 var RENDER_TO_STRING = 'string';
 
-var renderTo = argv.renderTo;
-if (!renderTo) {
-	throw new Error('No render-to option was provided, ex: `--render-to ' + RENDER_TO_STATIC + '` or `--render-to ' + RENDER_TO_STRING + '`');
-}
-if (renderTo !== RENDER_TO_STATIC && renderTo !== RENDER_TO_STRING) {
-	throw new Error('Unknown render-to option "' + renderTo + '", only "--render-to ' + RENDER_TO_STATIC + '" and "--render-to ' + RENDER_TO_STRING + '" are accepted');
-}
+var render = function(req, res) {
+	var pathToSource = req.query['path-to-source'];
+	if (!pathToSource) {
+		throw new Error('No path-to-source option was provided, ex: `?path-to-source=/path/to/file`');
+	}
+	pathToSource = decodeURIComponent(pathToSource);
+	if (!fs.existsSync(pathToSource)) {
+		throw new Error('The file specified by path-to-source, "' + pathToSource + '", cannot be found.');
+	}
+	var component = require(pathToSource);
 
-var props = null;
-if (argv.pathToSerializedProps) {
-	var serializedProps = fs.readFileSync(argv.pathToSerializedProps);
-	props = JSON.parse(serializedProps);
-}
+	var props = undefined;
+	var pathToSerializedProps = req.query['path-to-serialized-props'];
+	if (pathToSerializedProps) {
+		pathToSerializedProps = decodeURIComponent(pathToSerializedProps);
+		if (!fs.existsSync(pathToSerializedProps)) {
+			throw new Error('The file specified by path-to-serialized-props, "' + pathToSerializedProps + '", cannot be found.');
+		}
+		var serializedProps = fs.readFileSync(pathToSerializedProps);
+		props = JSON.parse(serializedProps);
+	}
 
-var element = React.createElement(component, props);
+	var element = React.createElement(component, props);
 
-var output;
-if (renderTo === RENDER_TO_STATIC) {
-	output = React.renderToStaticMarkup(element);
-} else if (renderTo === RENDER_TO_STRING) {
-	output = React.renderToString(element);
-}
+	var renderTo = req.query['render-to'];
+	if (!renderTo) {
+		throw new Error('No render-to option was provided, ex: `?render-to=' + RENDER_TO_STATIC + '` or `?render-to=' + RENDER_TO_STRING + '`');
+	}
+	renderTo = decodeURIComponent(renderTo);
 
-process.stdout.write(output);
+	var output;
+	if (renderTo === RENDER_TO_STATIC) {
+		output = React.renderToStaticMarkup(element);
+	} else if (renderTo === RENDER_TO_STRING) {
+		output = React.renderToString(element);
+	} else {
+		throw new Error('Unknown render-to option "' + renderTo + '", only "?render-to=' + RENDER_TO_STATIC + '" and "?render-to=' + RENDER_TO_STRING + '" are accepted');
+	}
+
+	res.send(output);
+};
+
+module.exports = render;
