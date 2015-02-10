@@ -3,6 +3,7 @@ import hashlib
 import json
 from django.template.loader import render_to_string
 from django.contrib.staticfiles import finders
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
 from django.utils import six
 from .exceptions import (
@@ -22,6 +23,7 @@ class ReactComponent(object):
     variable = None
     props_variable = None
     bundle = ReactBundle
+    json_encoder_class = DjangoJSONEncoder
 
     def __init__(self, **kwargs):
         # As we use the subclass's name to generate a number of client-side
@@ -209,7 +211,7 @@ class ReactComponent(object):
             # While rendering templates Django will silently ignore some types of exceptions,
             # so we need to intercept them and raise our own class of exception
             try:
-                self.serialized_props = json.dumps(self.get_props())
+                self.serialized_props = json.dumps(self.get_props(), cls=self.json_encoder_class)
             except (TypeError, AttributeError) as e:
                 six.reraise(PropSerializationError, PropSerializationError(*e.args), sys.exc_info()[2])
         return self.serialized_props
