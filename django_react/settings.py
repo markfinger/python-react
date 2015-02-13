@@ -19,5 +19,5 @@ REACT_EXTERNAL = setting_overrides.get(
 
 RENDERER = setting_overrides.get(
     'RENDERER',
-    'django_react.renderer.render',
+    'django_react.render_service.render_service',
 )
