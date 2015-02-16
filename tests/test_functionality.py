@@ -11,8 +11,6 @@ from django_react.exceptions import (
 )
 from django_react.settings import RENDERER
 
-print('Running functional tests with DJANGO_REACT[\'RENDERER\'] = \'{renderer}\''.format(renderer=RENDERER))
-
 
 class HelloWorld(ReactComponent):
     source = 'components/HelloWorld.jsx'

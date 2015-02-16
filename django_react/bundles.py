@@ -14,6 +14,7 @@ class ReactBundle(WebpackBundle):
     # Rather than bundling React, we rely on a browser global. This improves
     # the speed of generating bundles and allows for multiple components to be
     # injected into the page without duplicating React's source code.
+    # TODO: remove this. See #11
     externals = {
         'react': REACT_EXTERNAL,
         'react/addons': REACT_EXTERNAL,
