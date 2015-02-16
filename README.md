@@ -1,6 +1,8 @@
 Django React
 ============
 
+[![Build Status](https://travis-ci.org/markfinger/django-react.svg?branch=master)](https://travis-ci.org/markfinger/django-react)
+
 Render and bundle React components from a Django application.
 
 Documentation
