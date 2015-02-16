@@ -2,12 +2,16 @@ import os
 import sys
 
 import django
-from django.conf import settings
-from django.test.utils import get_runner
+
 
 if __name__ == '__main__':
     os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
-    django.setup()
+    if hasattr(django, 'setup'):  # Only compatible with Django >= 1.7
+        django.setup()
+
+    # For Django 1.6, need to import after setting DJANGO_SETTINGS_MODULE.
+    from django.conf import settings
+    from django.test.utils import get_runner
 
     from django_node import npm
     npm.install(os.path.join(os.path.dirname(__file__), 'tests'))
