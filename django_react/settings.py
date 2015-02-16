@@ -21,3 +21,8 @@ RENDERER = setting_overrides.get(
     'RENDERER',
     'django_react.renderer.render',
 )
+
+INVALIDATE_CACHE = setting_overrides.get(
+    'INVALIDATE_CACHE',
+    False
+)

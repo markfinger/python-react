@@ -5,6 +5,7 @@ from django_node.exceptions import NodeServerError
 from django_node.server import server
 from django.utils import six
 from .exceptions import RenderingError
+from .settings import INVALIDATE_CACHE
 
 RENDER_SERVICE_DIR = os.path.dirname(__file__)
 PATH_TO_RENDER_SERVICE_SOURCE = os.path.join(RENDER_SERVICE_DIR, 'renderer.js')
@@ -24,6 +25,9 @@ def render(path_to_source, render_to, path_to_serialized_props=None):
 
     if path_to_serialized_props is not None:
         params['path-to-serialized-props'] = path_to_serialized_props
+
+    if INVALIDATE_CACHE:
+        params['invalidate-cache'] = 'true'
 
     try:
         response = service(**params)
