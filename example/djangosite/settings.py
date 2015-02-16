@@ -50,9 +50,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'djangosite.urls'
 
-WSGI_APPLICATION = 'djangosite.wsgi.application'
-
-
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
