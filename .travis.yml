@@ -1,0 +1,28 @@
+language: python
+
+python:
+  - "2.7"
+  - "3.4"
+
+env:
+  - DJANGO_VERSION=1.6.10
+  - DJANGO_VERSION=1.7.4
+  - DJANGO_VERSION=1.8a1
+
+matrix:
+  exclude:
+    - python: "3.4"
+      env: DJANGO_VERSION=1.6.10
+
+install:
+
+  # Standard installation.
+  - "npm install -g npm"
+  - "pip install Django==$DJANGO_VERSION"
+  - "pip install -r requirements.txt"
+  - "pip install ."
+
+  # Used by django-node but not yet specified in its setup.py
+  - "pip install requests"
+
+script: python runtests.py
