@@ -16,7 +16,11 @@ var render = function(req, res) {
 	}
 	pathToSource = decodeURIComponent(pathToSource);
 	if (!fs.existsSync(pathToSource)) {
-		throw new Error('The file specified by path-to-source, "' + pathToSource + '", cannot be found.');
+          throw new Error('The file specified by path-to-source, "' + pathToSource + '", cannot be found.');
+        }
+	var invalidateCache = req.query['invalidate-cache'] === 'true';
+	if (invalidateCache) {
+		delete require.cache[pathToSource];
 	}
 	var component = require(pathToSource);
 
