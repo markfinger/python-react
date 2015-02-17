@@ -36,6 +36,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_node',
+    'django_react',
+    'example',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -78,3 +82,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+BUNDLE_ROOT = os.path.join(STATIC_ROOT, 'bundles')
+
+DJANGO_WEBPACK = {
+    'STATIC_ROOT': BUNDLE_ROOT,
+}
+
+STATICFILES_DIRS = (
+    BUNDLE_ROOT,
+)

@@ -5,7 +5,6 @@ from django.template.loader import render_to_string
 from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
 from django.utils import six
-from django_react.settings import REACT_EXTERNAL
 from .exceptions import (
     ReactComponentCalledDirectly, ReactComponentMissingSource, PropSerializationError, ComponentBundlingError,
 )
@@ -177,7 +176,6 @@ class ReactComponent(object):
         ```
         """
         return render_to_string('django_react/init.html', self.get_render_context(
-            REACT_EXTERNAL=REACT_EXTERNAL,
             variable=self.get_variable(),
             props_variable=self.get_props_variable(),
             container_id=self.get_container_id(),
