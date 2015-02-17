@@ -1,9 +1,7 @@
 var fs = require('fs');
 var React = require('react');
-var nodeJSX = require('node-jsx');
 
-// Support requiring of JSX files
-nodeJSX.install();
+require('babel/register');
 
 // `render-to` param options
 var RENDER_TO_STATIC = 'static';
