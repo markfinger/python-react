@@ -3,10 +3,8 @@ var fs = require('fs');
 var argv = require('yargs').argv;
 var express = require('express');
 var React = require('react');
-var nodeJSX = require('node-jsx');
 
-// Support requiring of JSX files
-nodeJSX.install();
+require('babel/register');
 
 var address = argv.address;
 if (address === undefined) {

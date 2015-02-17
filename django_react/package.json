@@ -11,9 +11,10 @@
   },
   "dependencies": {
     "express": "^4.11.1",
-    "jsx-loader": "git://github.com/markfinger/jsx-loader#427aa8e17c5e54b101bd205a453058f7de6f9f41",
-    "node-jsx": "^0.12.4",
     "react": "^0.12.2",
-    "yargs": "^1.3.3"
+    "yargs": "^1.3.3",
+    "babel": "~4.1.1",
+    "babel-core": "~4.1.1",
+    "babel-loader": "~4.0.0"
   }
 }

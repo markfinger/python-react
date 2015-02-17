@@ -1,7 +1,8 @@
 var fs = require('fs');
 var argv = require('yargs').argv;
 var React = require('react');
-var nodeJSX = require('node-jsx');
+
+require('babel/register');
 
 var pathToSource = argv.pathToSource;
 if (!pathToSource) {
@@ -11,9 +12,6 @@ if (!pathToSource) {
 if (!fs.existsSync(pathToSource)) {
 	throw new Error('Cannot find the source file "' + pathToSource + '"')
 }
-
-// Install support for requiring JSX files
-nodeJSX.install();
 
 var component = require(pathToSource);
 
