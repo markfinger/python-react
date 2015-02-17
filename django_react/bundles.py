@@ -6,7 +6,7 @@ from .settings import REACT_EXTERNAL
 class ReactBundle(WebpackBundle):
     # Use the JSX loader for files ending in a 'jsx' extension.
     loaders = (
-        {'loader': 'jsx', 'test': '.jsx$'},
+        {'loader': 'babel', 'test': '.jsx$'},
     )
     # Ensure that Webpack's loader resolver will look in Django React's
     # node_modules directory to find the JSX loader
