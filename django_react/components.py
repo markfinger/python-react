@@ -216,7 +216,7 @@ class ReactComponent(object):
         if self.props_variable is None:
             serialized_props = self.get_serialized_props()
             md5 = hashlib.md5()
-            md5.update(serialized_props)
+            md5.update(serialized_props.encode('utf8'))
             self.props_variable = '__propsFor{variable}_{hash}__'.format(
                 variable=self.get_variable(),
                 hash=md5.hexdigest(),
