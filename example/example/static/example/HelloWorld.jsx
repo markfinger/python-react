@@ -49,6 +49,36 @@ var HelloWorld = React.createClass({
          */
         return <span>Hello, {this.props.name}!</span>;
 
+    },
+
+    componentDidMount: function() {
+
+        /**
+         * Until django-react is refactored to allow for more flexiblity,
+         * you can use `componentDidMount` in your bridge component
+         * to kick off client-side lifecycle management for the component.
+         *
+         * In this example, we are going to wait 5 seconds,
+         * then change our `name` prop to be uppercase,
+         * and finally force an update.
+         *
+         * This will occur on the client side, but not the server,
+         * so the visual effect will be "Hello, World!"
+         * followed by "Hello, WORLD!", given that `name == 'World'`.
+         */
+
+        /**
+         * NOTE: This is a contrived example, and you should NOT use
+         * setTimeout, props, or forceUpdate in this fashion.
+         * This was just a simple way to demonstrate
+         * server-side vs client-side component lifecycle.
+         */
+
+        setTimeout(function () {
+            this.props.name = this.props.name.toUpperCase();
+            this.forceUpdate();
+        }.bind(this), 5000);
+
     }
 
 });
