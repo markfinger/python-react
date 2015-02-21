@@ -103,6 +103,38 @@ class TestDjangoReact(unittest.TestCase):
             '<script src="some/fake/file.js"></script>'
         )
 
+    def test_can_render_component_props(self):
+        component = HelloWorld(text='world!')
+        rendered = component.render_props()
+        self.assertTrue(
+            rendered.startswith('<script>')
+        )
+        self.assertIn(
+            'window.__propsForHelloWorld_',
+            rendered
+        )
+        self.assertIn(
+            '__ = {"text": "world!"};',
+            rendered
+        )
+        self.assertTrue(
+            rendered.endswith('</script>')
+        )
+
+    def test_component_init_defaults_to_using_window_dot_react(self):
+        component = HelloWorld(text='world!')
+        rendered = component.render_init()
+        self.assertTrue(
+            rendered.startswith('<script>')
+        )
+        self.assertIn(
+            'if (typeof window.React === \'undefined\') {',
+            rendered
+        )
+        self.assertTrue(
+            rendered.endswith('</script>')
+        )
+
     def test_component_js_rendering_errors_raise_an_exception(self):
         component = ErrorThrowingComponent()
         self.assertRaises(RenderingError, component.render_to_static_markup)

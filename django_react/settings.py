@@ -11,3 +11,8 @@ INVALIDATE_CACHE = setting_overrides.get(
     'INVALIDATE_CACHE',
     False
 )
+
+REACT_EXTERNAL = setting_overrides.get(
+    'REACT_EXTERNAL',
+    'window.React',
+)
