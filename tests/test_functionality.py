@@ -1,8 +1,11 @@
+import datetime
+import json
 import os
 import unittest
 import shutil
 from django.conf import settings
 from django.utils.safestring import mark_safe
+from django.utils import timezone
 from django_webpack.exceptions import BundlingError
 from django_react import ReactComponent, ReactBundle, render_component
 from django_react.exceptions import (
@@ -119,6 +122,25 @@ class TestDjangoReact(unittest.TestCase):
         )
         self.assertTrue(
             rendered.endswith('</script>')
+        )
+
+    def test_can_serialize_datetime_values_in_props(self):
+        component = HelloWorld(
+            text='world!',
+            datetime=datetime.datetime(2015, 1, 2, 3, 4, 5, tzinfo=timezone.utc),
+            date=datetime.date(2015, 1, 2),
+            time=datetime.time(3, 4, 5),
+        )
+        serialized = component.get_serialized_props()
+        deserialized = json.loads(serialized)
+        self.assertEqual(
+            deserialized,
+            {
+                'text': 'world!',
+                'datetime': '2015-01-02T03:04:05Z',
+                'date': '2015-01-02',
+                'time': '03:04:05',
+            }
         )
 
     def test_component_init_defaults_to_using_window_dot_react(self):
