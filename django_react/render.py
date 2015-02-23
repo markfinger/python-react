@@ -3,7 +3,7 @@ import tempfile
 import importlib
 from django.utils import six
 from django_node import npm, node
-from .settings import NPM_VERSION_REQUIRED, NODE_VERSION_REQUIRED, RENDERER
+from .settings import NPM_VERSION_REQUIRED, NODE_VERSION_REQUIRED, RENDERER, NPM_INSTALL_ON_INIT
 from .exceptions import SourceFileNotFound, RendererImportError
 
 
@@ -11,8 +11,9 @@ from .exceptions import SourceFileNotFound, RendererImportError
 node.ensure_version_gte(NODE_VERSION_REQUIRED)
 npm.ensure_version_gte(NPM_VERSION_REQUIRED)
 
-# Ensure that the required packages have been installed
-npm.install(os.path.dirname(__file__))
+if NPM_INSTALL_ON_INIT:
+    # Ensure that the required packages have been installed
+    npm.install(os.path.dirname(__file__))
 
 # Import the renderer defined in django_react.settings
 renderer_module_import_path = '.'.join(RENDERER.split('.')[:-1])

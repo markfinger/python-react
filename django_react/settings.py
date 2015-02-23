@@ -92,3 +92,8 @@ PATH_TO_RENDERER_SOURCE = setting_overrides.get(
     'PATH_TO_RENDERER_SOURCE',
     os.path.abspath(os.path.join(os.path.dirname(__file__), 'renderer.js'))
 )
+
+NPM_INSTALL_ON_INIT = setting_overrides.get(
+    'NPM_INSTALL_ON_INIT',
+    True,
+)
