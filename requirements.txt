@@ -1,3 +1,2 @@
 django
-django-node==3.0.0
-django-webpack==2.1.2
+-e git+ssh://git@github.com/markfinger/django-node.git#egg=django-node
