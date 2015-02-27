@@ -16,3 +16,8 @@ REACT_EXTERNAL = setting_overrides.get(
     'REACT_EXTERNAL',
     'window.React',
 )
+
+NPM_INSTALL_ON_INIT = setting_overrides.get(
+    'NPM_INSTALL_ON_INIT',
+    True,
+)

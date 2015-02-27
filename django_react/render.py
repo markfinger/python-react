@@ -1,12 +1,18 @@
 import os
 import tempfile
 from django.utils import six
+from django_node import npm
 from django_node.utils import dynamic_import
-from .settings import RENDERER
+from .settings import NPM_INSTALL_ON_INIT, RENDERER
+from .settings import
 from .exceptions import SourceFileNotFound
 
 # Allow the renderer to be defined in settings
 renderer = dynamic_import(RENDERER)
+
+if NPM_INSTALL_ON_INIT:
+    # Ensure that the required packages have been installed
+    npm.install(os.path.dirname(__file__))
 
 
 def render_component(path_to_source, serialized_props=None, to_static_markup=None):
@@ -26,4 +32,4 @@ def render_component(path_to_source, serialized_props=None, to_static_markup=Non
 
             return renderer(path_to_source, render_to, path_to_serialized_props)
 
-    return renderer(path_to_source, render_to)
+    return renderer.render(path_to_source, render_to)
