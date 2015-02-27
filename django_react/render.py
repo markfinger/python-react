@@ -4,7 +4,6 @@ from django.utils import six
 from django_node import npm
 from django_node.utils import dynamic_import
 from .settings import NPM_INSTALL_ON_INIT, RENDERER
-from .settings import
 from .exceptions import SourceFileNotFound
 
 # Allow the renderer to be defined in settings
