@@ -38,8 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'django_node',
-    'django_react',
-    'example',
+    'example_app',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -83,14 +82,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-BUNDLE_ROOT = os.path.join(STATIC_ROOT, 'bundles')
-
-DJANGO_WEBPACK = {
-    'STATIC_ROOT': BUNDLE_ROOT,
+DJANGO_NODE = {
+    'SERVICES': (
+        'django_react.services',
+    )
 }
-
-STATICFILES_DIRS = (
-    BUNDLE_ROOT,
-)

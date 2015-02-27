@@ -2,7 +2,6 @@ import os
 import time
 import unittest
 from django_react import render_component
-from django_react.settings import RENDERER
 
 path_to_component = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components', 'HelloWorld.jsx'))
 
@@ -19,7 +18,7 @@ def median(l):
 class TestDjangoReactPerformance(unittest.TestCase):
     def test_performance(self):
         print('\n' + ('-' * 80))
-        print('DJANGO_REACT[\'RENDERER\'] = \'{renderer}\' performance test'.format(renderer=RENDERER))
+        print('django-react performance test')
         print('-' * 80)
 
         render_component_times = []
@@ -28,7 +27,7 @@ class TestDjangoReactPerformance(unittest.TestCase):
 
         for i in range(iteration_count):
             start = time.time()
-            render_component(path_to_component)
+            render_component(path_to_component, '{"text": "world"}')
             end = time.time()
             render_component_times.append(end - start)
 

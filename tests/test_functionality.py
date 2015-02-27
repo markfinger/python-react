@@ -2,136 +2,83 @@ import datetime
 import json
 import os
 import unittest
-import shutil
-from django.conf import settings
-from django.utils.safestring import mark_safe
 from django.utils import timezone
-from django_webpack.exceptions import BundlingError
-from django_react import ReactComponent, ReactBundle, render_component
-from django_react.exceptions import (
-    RenderingError, PropSerializationError, ReactComponentCalledDirectly, ReactComponentMissingSource,
-    SourceFileNotFound,
-)
-from django_react.settings import RENDERER
+from django_react import render_component, ReactComponent
+from django_react.exceptions import RenderingError, PropSerializationError, SourceFileNotFound
 
-
-class HelloWorld(ReactComponent):
-    source = 'components/HelloWorld.jsx'
-
-
-class HelloWorldJS(ReactComponent):
-    source = 'components/HelloWorld.js'
-
-
-class ErrorThrowingComponent(ReactComponent):
-    source = 'components/ErrorThrowingComponent.jsx'
-
-
-class SyntaxErrorComponent(ReactComponent):
-    source = 'components/SyntaxErrorComponent.jsx'
+COMPONENT_ROOT = os.path.join(os.path.dirname(__file__), 'components')
+HELLO_WORLD_COMPONENT_JS = os.path.join(COMPONENT_ROOT, 'HelloWorld.js')
+HELLO_WORLD_COMPONENT_JSX = os.path.join(COMPONENT_ROOT, 'HelloWorld.jsx')
+HELLO_WORLD_WRAPPER_COMPONENT = os.path.join(COMPONENT_ROOT, 'HelloWorldWrapper.jsx')
+ERROR_THROWING_COMPONENT = os.path.join(COMPONENT_ROOT, 'ErrorThrowingComponent.jsx')
+SYNTAX_ERROR_COMPONENT = os.path.join(COMPONENT_ROOT, 'SyntaxErrorComponent.jsx')
+STATIC_FILE_FINDER_COMPONENT = 'test_app/StaticFileFinderComponent.jsx'
 
 
 class TestDjangoReact(unittest.TestCase):
-    def tearDown(self):
-        if os.path.exists(settings.STATIC_ROOT):
-            shutil.rmtree(settings.STATIC_ROOT)
+    def test_can_render_a_component_in_js(self):
+        rendered = render_component(HELLO_WORLD_COMPONENT_JSX, to_static_markup=True)
+        self.assertEqual(rendered, '<span>Hello </span>')
 
-    def test_react_component_cannot_be_called_directly(self):
-        self.assertRaises(ReactComponentCalledDirectly, ReactComponent)
+    def test_can_render_a_component_in_jsx(self):
+        rendered = render_component(HELLO_WORLD_COMPONENT_JSX, to_static_markup=True)
+        self.assertEqual(rendered, '<span>Hello </span>')
 
-    def test_react_component_requires_source_attribute(self):
-        class ComponentMissingSourceAttribute(ReactComponent):
-            pass
-        self.assertRaises(ReactComponentMissingSource, ComponentMissingSourceAttribute)
+    def test_can_render_a_component_with_props(self):
+        rendered = render_component(
+            HELLO_WORLD_COMPONENT_JSX,
+            json.dumps({'text': 'world!'}),
+            to_static_markup=True
+        )
+        self.assertEqual(rendered, '<span>Hello world!</span>')
 
-        class ComponentWithNonExistentSource(ReactComponent):
-            source = 'some/missing/file.js'
-        self.assertRaises(ReactComponentMissingSource, ComponentWithNonExistentSource)
+    def test_can_render_a_component_requiring_another_component(self):
+        rendered = render_component(
+            HELLO_WORLD_WRAPPER_COMPONENT,
+            json.dumps({
+                'text': 'world!',
+                'numbers': [1, 2, 3, 4, 5],
+            }),
+            to_static_markup=True
+        )
+        self.assertEqual(rendered, '<div><span>Hello world!</span><span>10, 20, 30, 40, 50</span></div>')
 
-        class ComponentWithNonExistentPathToSource(ReactComponent):
-            path_to_source = '/some/missing/file.js'
-        component = ComponentWithNonExistentPathToSource()
-        self.assertRaises(SourceFileNotFound, component.render_to_static_markup)
-
-    def test_can_render_a_react_component_in_jsx(self):
-        component = HelloWorld()
+    def test_can_render_a_component_to_a_string_with_props(self):
+        rendered = render_component(
+            HELLO_WORLD_COMPONENT_JSX,
+            json.dumps({'text': 'world!'}),
+        )
+        self.assertNotEqual(rendered, '<span>Hello world!</span>')
+        self.assertIn('Hello ', rendered)
+        self.assertIn('world!', rendered)
+        
+    def test_can_render_a_react_component(self):
+        component = ReactComponent(
+            HELLO_WORLD_COMPONENT_JSX,
+            text='world!'
+        )
         rendered = component.render_to_static_markup()
-        expected = component.render_container(
-            content=mark_safe('<span>Hello </span>')
-        )
-        self.assertEqual(rendered, expected)
+        self.assertEqual(rendered, '<span>Hello world!</span>')
 
-    def test_can_render_a_react_component_in_js(self):
-        component = HelloWorldJS()
-        rendered = component.render_to_static_markup()
-        expected = component.render_container(
-            content=mark_safe('<span>Hello </span>')
+    def test_can_get_a_components_serialized_props(self):
+        component = ReactComponent(
+            HELLO_WORLD_COMPONENT_JSX,
+            text='world!'
         )
-        self.assertEqual(rendered, expected)
-
-    def test_can_render_a_react_component_with_props(self):
-        component = HelloWorld(text='world!')
-        rendered = component.render_to_static_markup()
-        expected = component.render_container(
-            content=mark_safe('<span>Hello world!</span>')
-        )
-        self.assertEqual(rendered, expected)
-
-    def test_can_render_a_react_component_container(self):
-        component = HelloWorld()
-        rendered = component.render_container()
-        self.assertEqual(rendered, '<div id="{0}" class="{1}"></div>'.format(
-            component.get_container_id(),
-            component.get_container_class_name(),
-        ))
-
-    def test_can_render_a_react_source_element(self):
-        component = HelloWorld()
-        rendered = component.render_source()
-        self.assertTrue(
-            rendered.startswith('<script src="/static/components/HelloWorld-')
-        )
-        self.assertTrue(
-            rendered.endswith('.js"></script>')
-        )
-
-    def test_can_override_a_components_source_url_generation(self):
-        class TestComponent(HelloWorld):
-            def get_url_to_source(self):
-                return 'some/fake/file.js'
-        component = TestComponent()
-        rendered = component.render_source()
-        self.assertEqual(
-            rendered,
-            '<script src="some/fake/file.js"></script>'
-        )
-
-    def test_can_render_component_props(self):
-        component = HelloWorld(text='world!')
-        rendered = component.render_props()
-        self.assertTrue(
-            rendered.startswith('<script>')
-        )
-        self.assertIn(
-            'window.__propsForHelloWorld_',
-            rendered
-        )
-        self.assertIn(
-            '__ = {"text": "world!"};',
-            rendered
-        )
-        self.assertTrue(
-            rendered.endswith('</script>')
-        )
+        self.assertEqual(component.props, {'text': 'world!'})
+        self.assertEqual(component.get_serialized_props(), '{"text": "world!"}')
 
     def test_can_serialize_datetime_values_in_props(self):
-        component = HelloWorld(
+        component = ReactComponent(
+            HELLO_WORLD_COMPONENT_JSX,
             text='world!',
             datetime=datetime.datetime(2015, 1, 2, 3, 4, 5, tzinfo=timezone.utc),
             date=datetime.date(2015, 1, 2),
             time=datetime.time(3, 4, 5),
         )
+
         serialized = component.get_serialized_props()
+
         deserialized = json.loads(serialized)
         self.assertEqual(
             deserialized,
@@ -143,56 +90,34 @@ class TestDjangoReact(unittest.TestCase):
             }
         )
 
-    def test_component_init_defaults_to_using_window_dot_react(self):
-        component = HelloWorld(text='world!')
-        rendered = component.render_init()
-        self.assertTrue(
-            rendered.startswith('<script>')
-        )
-        self.assertIn(
-            'if (typeof window.React === \'undefined\') {',
-            rendered
-        )
-        self.assertTrue(
-            rendered.endswith('</script>')
-        )
-
     def test_component_js_rendering_errors_raise_an_exception(self):
-        component = ErrorThrowingComponent()
-        self.assertRaises(RenderingError, component.render_to_static_markup)
+        self.assertRaises(RenderingError, render_component, ERROR_THROWING_COMPONENT)
+        self.assertRaises(RenderingError, render_component, ERROR_THROWING_COMPONENT, to_static_markup=True)
+
+        component = ReactComponent(ERROR_THROWING_COMPONENT)
         self.assertRaises(RenderingError, component.render_to_string)
+        self.assertRaises(RenderingError, component.render_to_static_markup)
 
     def test_components_with_syntax_errors_raise_exceptions(self):
-        component = SyntaxErrorComponent()
+        self.assertRaises(RenderingError, render_component, SYNTAX_ERROR_COMPONENT)
+        self.assertRaises(RenderingError, render_component, SYNTAX_ERROR_COMPONENT, to_static_markup=True)
+
+        component = ReactComponent(SYNTAX_ERROR_COMPONENT)
         self.assertRaises(RenderingError, component.render_to_static_markup)
         self.assertRaises(RenderingError, component.render_to_string)
-        self.assertRaises(BundlingError, component.render_source)
 
     def test_unserializable_props_raise_an_exception(self):
-        component = HelloWorld(text=id)
+        component = ReactComponent(HELLO_WORLD_COMPONENT_JSX, text=lambda: None,)
         self.assertRaises(PropSerializationError, component.get_serialized_props)
 
-    def test_components_have_a_react_bundle(self):
-        self.assertEqual(ReactComponent.bundle, ReactBundle)
+        component = ReactComponent(HELLO_WORLD_COMPONENT_JSX, text=self)
+        self.assertRaises(PropSerializationError, component.get_serialized_props)
 
-    def test_render_component_has_similar_output_to_react_component_render_methods(self):
-        component = HelloWorld()
-        rendered = render_component(
-            path_to_source=component.get_path_to_source(),
-            to_static_markup=True
-        )
-        expected = component.render_to_static_markup(wrap=False)
-        self.assertEqual(rendered, expected)
+    def test_relative_paths_are_resolved_via_the_static_file_finder(self):
+        rendered = render_component(STATIC_FILE_FINDER_COMPONENT, to_static_markup=True)
+        self.assertEqual(rendered, '<span>You found me.</span>')
 
-    def test_path_to_source_can_be_specified(self):
-        class ComponentWithPathToSource(ReactComponent):
-            path_to_source = os.path.join(
-                os.path.dirname(__file__),
-                'components/HelloWorld.jsx'
-            )
-        component = ComponentWithPathToSource()
-        self.assertEqual(component.path_to_source, component.get_path_to_source())
-        self.assertEqual(
-            component.render_to_static_markup(wrap=False),
-            HelloWorld().render_to_static_markup(wrap=False)
-        )
+    def test_missing_paths_throw_an_exception(self):
+        self.assertRaises(SourceFileNotFound, render_component, '/path/to/nothing.jsx')
+        # Ensure that relative paths are handled as well
+        self.assertRaises(SourceFileNotFound, render_component, 'path/to/nothing.jsx')

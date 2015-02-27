@@ -1,11 +1,8 @@
 {
   "private": true,
   "dependencies": {
-    "express": "^4.11.1",
     "react": "^0.12.2",
-    "yargs": "^1.3.3",
     "babel": "~4.1.1",
-    "babel-core": "~4.1.1",
-    "babel-loader": "~4.0.0"
+    "babel-core": "~4.1.1"
   }
 }

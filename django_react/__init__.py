@@ -1,3 +1,2 @@
-from .components import ReactComponent
-from .bundles import ReactBundle
+from .component import ReactComponent
 from .render import render_component

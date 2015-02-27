@@ -1,2 +1,3 @@
 django
-django-react
+-e git+ssh://git@github.com/markfinger/django-node.git#egg=django-node
+-e git+ssh://git@github.com/markfinger/django-react.git#egg=django-react
