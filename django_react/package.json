@@ -1,8 +1,11 @@
 {
   "private": true,
   "dependencies": {
-    "react": "^0.12.2",
     "babel": "~4.1.1",
-    "babel-core": "~4.1.1"
+    "babel-core": "~4.1.1",
+    "react": "^0.12.2",
+    "temp": "^0.8.1",
+    "webpack": "^1.6.0",
+    "webpack-dev-middleware": "^1.0.11"
   }
 }
