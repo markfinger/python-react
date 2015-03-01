@@ -3,7 +3,9 @@ Django React
 
 [![Build Status](https://travis-ci.org/markfinger/django-react.svg?branch=master)](https://travis-ci.org/markfinger/django-react)
 
-Render and bundle React components from a Django application.
+Render React components from a Django application.
+
+**Please note** that the documentation below is for the latest stable release from PyPI. Master branch is under active development and currently provides a significantly different API and workflow.
 
 Documentation
 -------------
