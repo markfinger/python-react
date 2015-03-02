@@ -48,6 +48,6 @@ def render_component(path_to_source, serialized_props=None, to_static_markup=Non
         render_to = 'STRING'
 
     # TODO: cache
-    cache_key = get_cache_key(path_to_source, render_to, serialized_props)
+    # cache_key = get_cache_key(path_to_source, render_to, serialized_props)
 
     return render_service.render(path_to_source, render_to, serialized_props)

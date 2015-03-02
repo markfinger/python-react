@@ -2,26 +2,20 @@ var fs = require('fs');
 var path = require('path');
 var React = require('react');
 var webpack = require('webpack');
-//var webpackDevMiddleware = require('webpack-dev-middleware');
-var temp = require('temp');
+var tmp = require('tmp');
+var WebpackWatcher = require('./webpack-watcher');
 
 // `render_to` param options
 var RENDER_TO_STATIC = 'STATIC';
 var RENDER_TO_STRING = 'STRING';
 
-var errorResponse = function(response, error) {
-	console.error(new Error(error));
-	response.status(500).send(error);
-};
-
 // TODO: try loading a JSX/ES6 file rather than assuming babel has not already been installed
 var isJSXSupported = false;
-var ensureJSXSupport = function() {
-	// TODO: is there a way to restrict the register to .jsx?
-	if (!isJSXSupported) {
-		require('babel/register');
-		isJSXSupported = true;
-	}
+var _watchedComponents = {};
+
+var errorResponse = function(response, err) {
+	console.error(new Error(err));
+	response.status(500).send(err);
 };
 
 var renderComponent = function(component, props, renderTo, response) {
@@ -33,79 +27,103 @@ var renderComponent = function(component, props, renderTo, response) {
 	}
 };
 
-var getBundleOutput = function() {
-	return temp.path({suffix: '.js'});
+var ensureJSXSupport = function() {
+	// TODO: is there a way to restrict babel by white-listing jsx files?
+	if (!isJSXSupported) {
+		require('babel/register');
+		isJSXSupported = true;
+	}
 };
 
-var generateBundleConfig = function(pathToSource, pathToOutput) {
-	return {
-		context: path.dirname(pathToSource),
-		entry: './' + path.basename(pathToSource),
-		output: {
-			path: path.dirname(pathToOutput),
-			filename: path.basename(pathToOutput),
-			libraryTarget: 'commonjs2'
-		},
-		target: 'node',
-		module: {
-			loaders: [
-				{test: /\.jsx$/, exclude: /node_modules/, loader: 'babel'}
-			]
-		},
-		resolve: {
-			root: path.join(__dirname, '..', 'node_modules')
-		}
-	};
+var getWatchedComponent = function(pathToSource) {
+	if (_watchedComponents[pathToSource] === undefined) {
+		_watchedComponents[pathToSource] = {
+			bundleConfig: null,
+			watcherFileName: null,
+			watcher: null,
+			component: null
+		};
+	}
+	return _watchedComponents[pathToSource];
 };
 
-var bundleRequire = function(pathToSource, response, callback) {
-	// Circumvents the require module cache by bundling a module
-	// then reading it in and passing it to `callback`
+var getWatcherFileName = function(pathToSource) {
+	var watchedComponent = getWatchedComponent(pathToSource);
+	if (!watchedComponent.watcherFileName) {
+		watchedComponent.watcherFileName = tmp.tmpNameSync();
+	}
+	return watchedComponent.watcherFileName;
+};
 
-	//webpackDevMiddleware
+var getBundleConfig = function(pathToSource) {
+	var watchedComponent = getWatchedComponent(pathToSource);
+	if (!watchedComponent.bundleConfig) {
+		var watcherFileName = getWatcherFileName(pathToSource);
+		watchedComponent.bundleConfig = {
+			context: path.dirname(pathToSource),
+			entry: './' + path.basename(pathToSource),
+			output: {
+				path: path.dirname(watcherFileName),
+				filename: path.basename(watcherFileName),
+				libraryTarget: 'commonjs2'
+			},
+			target: 'node',
+			module: {
+				loaders: [
+					{test: /\.jsx$/, exclude: /node_modules/, loader: 'babel'}
+				]
+			},
+			resolve: {
+				root: path.join(__dirname, '..', 'node_modules')
+			}
+		};
+	}
+	return watchedComponent.bundleConfig;
+};
 
-	var pathToOutput = getBundleOutput();
-	var config = generateBundleConfig(pathToSource, pathToOutput);
-
-	webpack(config, function(error, stats) {
-		if (error) {
-			return errorResponse(response, error);
-		}
-
-		if (stats.hasErrors()) {
-			return errorResponse(response, stats.toJson().errors);
-		}
-
-		if (stats.hasWarnings()) {
-			console.warn(stats.toJson().warnings);
-		}
-
-		if (pathToOutput in require.cache) {
-			delete require.cache[pathToOutput];
-		}
-
-		var requireFailed = false;
-		try {
-			var requiredModule = require(pathToOutput);
-		} catch(e) {
-			requireFailed = true;
-			var message = (
-				'Failed to `require` the bundle generated from ' +
-				pathToSource + '. Error: ' + e.message
-			);
-			errorResponse(response, message);
-		}
-
-		// Remove the generated bundle
-		fs.unlink(pathToOutput, function(error) {
-			if (error) {
-				console.error(error);
+var getWatcher = function(pathToSource) {
+	var watchedComponent = getWatchedComponent(pathToSource);
+	if (!watchedComponent.watcher) {
+		var compiler = webpack(getBundleConfig(pathToSource));
+		watchedComponent.watcher = new WebpackWatcher(compiler, {
+			onInvalid: function() {
+				console.log('onInvalid called');
+				watchedComponent.component = null;
+			},
+			onDone: function() {
+				console.log('onDone called');
+				watchedComponent.component = null;
+			},
+			onError: function(error) {
+				console.log('onError called');
 			}
 		});
+	}
+	return watchedComponent.watcher;
+};
 
-		if (!requireFailed) {
-			callback(requiredModule)
+var watchComponent = function(pathToSource, callback) {
+	var watchedComponent = getWatchedComponent(pathToSource);
+
+	// The component has already been generated
+	if (watchedComponent.component) {
+		return callback(watchedComponent.component);
+	}
+
+	// Wait until the component has been generated
+	var watcher = getWatcher(pathToSource);
+	watcher.onReady(function() {
+		var watcherFileName = getWatcherFileName(pathToSource);
+		var tempFile = tmp.fileSync();
+		var content = watcher.readFileSync(watcherFileName);
+		fs.writeFileSync(tempFile.name, content);
+		try {
+			var component = require(tempFile.name);
+		} catch(err) {
+			callback(err);
+			return
 		}
+		callback(null, component);
 	});
 };
 
@@ -138,15 +156,21 @@ var service = function(request, response) {
 		);
 	}
 
-	var cacheComponentSource = request.query.cache_component_source === 'True';
+	var watchComponentSource = request.query.watch_component_source === 'True';
 
-	if (cacheComponentSource) {
-		ensureJSXSupport();
-		renderComponent(require(pathToSource), props, renderTo, response);
-	} else {
-		bundleRequire(pathToSource, response, function(component) {
+	if (watchComponentSource) {
+		// Initialise a watcher and render the component once
+		// the component bundle has been generated
+		watchComponent(pathToSource, function(err, component) {
+			if (err) {
+				return errorResponse(response, err);
+			}
 			renderComponent(component, props, renderTo, response);
 		});
+	} else {
+		ensureJSXSupport();
+		var component = require(pathToSource);
+		renderComponent(component, props, renderTo, response);
 	}
 };
 

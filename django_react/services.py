@@ -5,7 +5,7 @@ from django_node.base_service import BaseService
 from django_node.exceptions import NodeServiceError
 from django_node.utils import resolve_dependencies
 from .exceptions import RenderingError
-from .settings import CACHE_COMPONENT_SOURCE
+from .settings import WATCH_COMPONENT_SOURCE
 
 
 # Ensure that the required packages have been installed
@@ -23,7 +23,7 @@ class RenderService(BaseService):
                 path_to_source=path_to_source,
                 render_to=render_to,
                 serialized_props=serialized_props,
-                cache_component_source=CACHE_COMPONENT_SOURCE,
+                watch_component_source=WATCH_COMPONENT_SOURCE,
             )
         except NodeServiceError as e:
             six.reraise(RenderingError, RenderingError(*e.args), sys.exc_info()[2])

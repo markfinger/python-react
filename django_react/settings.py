@@ -7,9 +7,9 @@ CACHE_RENDERED_HTML = setting_overrides.get(
     not settings.DEBUG,
 )
 
-CACHE_COMPONENT_SOURCE = setting_overrides.get(
-    'CACHE_COMPONENT_SOURCE',
-    not settings.DEBUG,
+WATCH_COMPONENT_SOURCE = setting_overrides.get(
+    'WATCH_COMPONENT_SOURCE',
+    settings.DEBUG,
 )
 
 NPM_INSTALL_ON_INIT = setting_overrides.get(
