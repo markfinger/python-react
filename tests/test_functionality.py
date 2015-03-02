@@ -27,7 +27,7 @@ class TestDjangoReact(unittest.TestCase):
     def test_can_render_a_component_with_props(self):
         rendered = render_component(
             HELLO_WORLD_COMPONENT_JSX,
-            json.dumps({'text': 'world!'}),
+            json.dumps({'name': 'world!'}),
             to_static_markup=True
         )
         self.assertEqual(rendered, '<span>Hello world!</span>')
@@ -36,7 +36,7 @@ class TestDjangoReact(unittest.TestCase):
         rendered = render_component(
             HELLO_WORLD_WRAPPER_COMPONENT,
             json.dumps({
-                'text': 'world!',
+                'name': 'world!',
                 'numbers': [1, 2, 3, 4, 5],
             }),
             to_static_markup=True
@@ -46,7 +46,7 @@ class TestDjangoReact(unittest.TestCase):
     def test_can_render_a_component_to_a_string_with_props(self):
         rendered = render_component(
             HELLO_WORLD_COMPONENT_JSX,
-            json.dumps({'text': 'world!'}),
+            json.dumps({'name': 'world!'}),
         )
         self.assertNotEqual(rendered, '<span>Hello world!</span>')
         self.assertIn('Hello ', rendered)
@@ -55,7 +55,7 @@ class TestDjangoReact(unittest.TestCase):
     def test_can_render_a_react_component(self):
         component = ReactComponent(
             HELLO_WORLD_COMPONENT_JSX,
-            text='world!'
+            name='world!'
         )
         rendered = component.render_to_static_markup()
         self.assertEqual(rendered, '<span>Hello world!</span>')
@@ -63,15 +63,15 @@ class TestDjangoReact(unittest.TestCase):
     def test_can_get_a_components_serialized_props(self):
         component = ReactComponent(
             HELLO_WORLD_COMPONENT_JSX,
-            text='world!'
+            name='world!'
         )
-        self.assertEqual(component.props, {'text': 'world!'})
-        self.assertEqual(component.get_serialized_props(), '{"text": "world!"}')
+        self.assertEqual(component.props, {'name': 'world!'})
+        self.assertEqual(component.get_serialized_props(), '{"name": "world!"}')
 
     def test_can_serialize_datetime_values_in_props(self):
         component = ReactComponent(
             HELLO_WORLD_COMPONENT_JSX,
-            text='world!',
+            name='world!',
             datetime=datetime.datetime(2015, 1, 2, 3, 4, 5, tzinfo=timezone.utc),
             date=datetime.date(2015, 1, 2),
             time=datetime.time(3, 4, 5),
@@ -83,7 +83,7 @@ class TestDjangoReact(unittest.TestCase):
         self.assertEqual(
             deserialized,
             {
-                'text': 'world!',
+                'name': 'world!',
                 'datetime': '2015-01-02T03:04:05Z',
                 'date': '2015-01-02',
                 'time': '03:04:05',
@@ -107,10 +107,10 @@ class TestDjangoReact(unittest.TestCase):
         self.assertRaises(RenderingError, component.render_to_string)
 
     def test_unserializable_props_raise_an_exception(self):
-        component = ReactComponent(HELLO_WORLD_COMPONENT_JSX, text=lambda: None,)
+        component = ReactComponent(HELLO_WORLD_COMPONENT_JSX, name=lambda: None,)
         self.assertRaises(PropSerializationError, component.get_serialized_props)
 
-        component = ReactComponent(HELLO_WORLD_COMPONENT_JSX, text=self)
+        component = ReactComponent(HELLO_WORLD_COMPONENT_JSX, name=self)
         self.assertRaises(PropSerializationError, component.get_serialized_props)
 
     def test_relative_paths_are_resolved_via_the_static_file_finder(self):

@@ -8,7 +8,7 @@ var HelloWorldWrapper = React.createClass({
 		}).join(', ');
 		return (
 			<div>
-				<HelloWorld text={this.props.text} />
+				<HelloWorld name={this.props.name} />
 				<span>{numbers}</span>
 			</div>
 		);
