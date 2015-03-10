@@ -1,7 +1,7 @@
 import os
 import time
 import unittest
-from django_react import render_component
+from django_react.render import render_component
 
 path_to_component = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components', 'PerfTestComponent.jsx'))
 

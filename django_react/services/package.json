@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "dependencies": {
+    "babel": "^4.7.5",
+    "babel-core": "^4.7.5",
+    "babel-loader": "^4.1.0",
+    "react": "^0.12.2",
+    "tmp": "0.0.25",
+    "webpack": "^1.7.2",
+    "webpack-watcher": "git://github.com/markfinger/webpack-watcher#1dbdad4d4ea809bb9bb035c18bdb8b8acd2c868e"
+  }
+}

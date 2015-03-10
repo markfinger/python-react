@@ -3,7 +3,7 @@ import json
 import os
 import unittest
 from django.utils import timezone
-from django_react import render_component, ReactComponent
+from django_react.render import render_component, ReactComponent
 from django_react.exceptions import RenderingError, PropSerializationError, SourceFileNotFound
 
 COMPONENT_ROOT = os.path.join(os.path.dirname(__file__), 'components')

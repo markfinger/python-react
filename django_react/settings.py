@@ -11,8 +11,3 @@ WATCH_COMPONENT_SOURCE = setting_overrides.get(
     'WATCH_COMPONENT_SOURCE',
     settings.DEBUG,
 )
-
-NPM_INSTALL_ON_INIT = setting_overrides.get(
-    'NPM_INSTALL_ON_INIT',
-    True,
-)

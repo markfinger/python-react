@@ -15,14 +15,8 @@ matrix:
       env: DJANGO_VERSION=1.6.10
 
 install:
-
-  # Standard installation.
   - "npm install -g npm"
   - "pip install Django==$DJANGO_VERSION"
   - "pip install -r requirements.txt"
-  - "pip install ."
-
-  # Used by django-node but not yet specified in its setup.py
-  - "pip install requests"
 
 script: python runtests.py

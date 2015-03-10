@@ -3,14 +3,15 @@ var path = require('path');
 var React = require('react');
 var webpack = require('webpack');
 var tmp = require('tmp');
-var WebpackWatcher = require('./webpack-watcher');
+var WebpackWatcher = require('webpack-watcher');
 
-// `render_to` param options
-var RENDER_TO_STATIC = 'STATIC';
-var RENDER_TO_STRING = 'STRING';
+// Ensure that jsx files can be loaded
+require('babel/register')({
+	extensions: ['.jsx']
+});
 
-// TODO: try loading a JSX/ES6 file rather than assuming babel has not already been installed
-var isJSXSupported = false;
+var pathToNodeModules = path.join(__dirname, 'node_modules');
+
 var _watchedComponents = {};
 
 var errorResponse = function(response, err) {
@@ -18,21 +19,22 @@ var errorResponse = function(response, err) {
 	response.status(500).send(err);
 };
 
-var renderComponent = function(component, props, renderTo, response) {
+var renderComponent = function(component, props, toStaticMarkup, response) {
 	var element = React.createElement(component, props);
-	if (renderTo === RENDER_TO_STATIC) {
-		response.send(React.renderToStaticMarkup(element));
+	var output;
+	var renderElement;
+	if (toStaticMarkup) {
+		renderElement = React.renderToStaticMarkup.bind(React);
 	} else {
-		response.send(React.renderToString(element));
+		renderElement = React.renderToString.bind(React);
 	}
-};
-
-var ensureJSXSupport = function() {
-	// TODO: is there a way to restrict babel by white-listing jsx files?
-	if (!isJSXSupported) {
-		require('babel/register');
-		isJSXSupported = true;
+	try {
+		output = renderElement(element);
+	} catch(err) {
+		errorResponse(response, err);
+		return;
 	}
+	response.send(output);
 };
 
 var getWatchedComponent = function(pathToSource) {
@@ -70,12 +72,10 @@ var getBundleConfig = function(pathToSource) {
 			target: 'node',
 			module: {
 				loaders: [
-					{test: /\.jsx$/, exclude: /node_modules/, loader: 'babel'}
+					{test: /\.jsx$/, exclude: /node_modules/, loader: 'babel-loader'}
 				]
 			},
-			resolve: {
-				root: path.join(__dirname, '..', 'node_modules')
-			}
+			resolveLoader: {root: pathToNodeModules}
 		};
 	}
 	return watchedComponent.bundleConfig;
@@ -84,18 +84,23 @@ var getBundleConfig = function(pathToSource) {
 var getWatcher = function(pathToSource) {
 	var watchedComponent = getWatchedComponent(pathToSource);
 	if (!watchedComponent.watcher) {
-		var compiler = webpack(getBundleConfig(pathToSource));
+		var compiler = webpack(getBundleConfig(pathToSource), function(err) {
+			if (err) {
+				console.error(new Error(err));
+			}
+		});
+
+		var invalidateComponent = function() {
+			watchedComponent.component = null;
+		};
+
 		watchedComponent.watcher = new WebpackWatcher(compiler, {
-			onInvalid: function() {
-				console.log('onInvalid called');
-				watchedComponent.component = null;
-			},
-			onDone: function() {
-				console.log('onDone called');
-				watchedComponent.component = null;
-			},
-			onError: function(error) {
-				console.log('onError called');
+			onInvalid: invalidateComponent,
+			onDone: invalidateComponent,
+			onError: function(err) {
+				if (err) {
+					console.error(new Error(err));
+				}
 			}
 		});
 	}
@@ -112,29 +117,37 @@ var watchComponent = function(pathToSource, callback) {
 
 	// Wait until the component has been generated
 	var watcher = getWatcher(pathToSource);
-	watcher.onReady(function() {
+	watcher.onReady(function(stats) {
+		if (stats.compilation.errors && stats.compilation.errors.length) {
+			callback(stats.compilation.errors[0].message);
+			return;
+		}
 		var watcherFileName = getWatcherFileName(pathToSource);
+		//try {
+			var content = watcher.readFileSync(watcherFileName);
+		//} catch(e) {
+		//	debugger
+		//}
 		var tempFile = tmp.fileSync();
-		var content = watcher.readFileSync(watcherFileName);
 		fs.writeFileSync(tempFile.name, content);
 		try {
 			var component = require(tempFile.name);
 		} catch(err) {
 			callback(err);
-			return
+			return;
 		}
 		callback(null, component);
 	});
 };
 
-var service = function(request, response) {
-	var pathToSource = request.query.path_to_source;
+var service = function(data, response) {
+	var pathToSource = data.path_to_source;
 	if (!pathToSource) {
 		return errorResponse(response, 'No path_to_source option was provided');
 	}
 
 	var props;
-	var serializedProps = request.query.serialized_props;
+	var serializedProps = data.serialized_props;
 	if (serializedProps) {
 		try {
 			props = JSON.parse(serializedProps);
@@ -143,21 +156,8 @@ var service = function(request, response) {
 		}
 	}
 
-	var renderTo = request.query.render_to;
-	if (!renderTo) {
-		return errorResponse(
-			response,
-			'No render-to option was provided, must be "' + RENDER_TO_STATIC + '" or "' + RENDER_TO_STRING + '"'
-		);
-	} else if (renderTo !== RENDER_TO_STATIC && renderTo !== RENDER_TO_STRING) {
-		return errorResponse(
-			response,
-			'Unknown render_to option "' + renderTo + '", must be "' + RENDER_TO_STATIC + '" or "' + RENDER_TO_STRING + '"'
-		);
-	}
-
-	var watchComponentSource = request.query.watch_component_source === 'True';
-
+	var toStaticMarkup = data.to_static_markup;
+	var watchComponentSource = data.watch_component_source;
 	if (watchComponentSource) {
 		// Initialise a watcher and render the component once
 		// the component bundle has been generated
@@ -165,12 +165,11 @@ var service = function(request, response) {
 			if (err) {
 				return errorResponse(response, err);
 			}
-			renderComponent(component, props, renderTo, response);
+			renderComponent(component, props, toStaticMarkup, response);
 		});
 	} else {
-		ensureJSXSupport();
 		var component = require(pathToSource);
-		renderComponent(component, props, renderTo, response);
+		renderComponent(component, props, toStaticMarkup, response);
 	}
 };
 
