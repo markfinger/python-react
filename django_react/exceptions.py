@@ -1,10 +1,6 @@
-class SourceFileNotFound(Exception):
+class ComponentSourceFileNotFound(Exception):
     pass
 
 
-class PropSerializationError(Exception):
-    pass
-
-
-class RenderingError(Exception):
+class ComponentRenderingError(Exception):
     pass

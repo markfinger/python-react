@@ -54,6 +54,4 @@ docs/_build/
 target/
 
 node_modules
-db.sqlite3
 example/static
-example/media
