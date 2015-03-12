@@ -11,18 +11,18 @@ service = RenderService()
 
 
 class RenderedComponent(object):
-    def __init__(self, markup, path_to_source, props, serialized_props, watch_component_source):
-        self.markup = markup
+    def __init__(self, output, path_to_source, props, serialized_props, watch_source):
+        self.output = output
         self.path_to_source = path_to_source
         self.props = props
         self.serialized_props = serialized_props
-        self.watch_component_source = watch_component_source
+        self.watch_source = watch_source
 
     def __str__(self):
-        return mark_safe(self.markup)
+        return mark_safe(self.output)
 
     def __unicode__(self):
-        return mark_safe(self.markup)
+        return mark_safe(self.output)
 
     def render_props(self):
         if self.serialized_props:
@@ -51,6 +51,6 @@ def render_component(path_to_source, props=None, to_static_markup=None, watch_so
     else:
         serialized_props = None
 
-    markup = service.render(path_to_source, serialized_props, to_static_markup, watch_source)
+    output = service.render(path_to_source, serialized_props, to_static_markup, watch_source)
 
-    return RenderedComponent(markup, path_to_source, props, serialized_props, watch_source)
+    return RenderedComponent(output, path_to_source, props, serialized_props, watch_source)

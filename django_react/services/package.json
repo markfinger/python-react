@@ -5,9 +5,9 @@
     "babel-core": "^4.7.5",
     "babel-loader": "^4.1.0",
     "lodash": "^3.5.0",
-    "react": "^0.13.0",
+    "resolve": "^1.1.5",
     "tmp": "0.0.25",
     "webpack": "^1.7.2",
-    "webpack-watcher": "git://github.com/markfinger/webpack-watcher#1dbdad4d4ea809bb9bb035c18bdb8b8acd2c868e"
+    "webpack-watcher": "git://github.com/markfinger/webpack-watcher#b95b031434e4cdb52f2640d56be28b95429bc9ce"
   }
 }

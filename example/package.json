@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "dependencies": {
+    "babel-core": "^4.6.5",
+    "babel-loader": "^4.0.0",
+    "jquery": "^2.1.3",
+    "react": "^0.13.0",
+    "showdown": "^0.4.0",
+    "webpack": "^1.6.0"
+  }
+}

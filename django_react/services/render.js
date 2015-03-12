@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-var React = require('react');
+var resolve = require('resolve');
 var webpack = require('webpack');
 var tmp = require('tmp');
 var WebpackWatcher = require('webpack-watcher');
@@ -17,10 +17,15 @@ var components = [];
 var Component = function Component(pathToSource, watchSource) {
 	this.pathToSource = pathToSource;
 	this.watchSource = watchSource;
+	this.pathToReact = resolve.sync('react', {
+		basedir: path.dirname(pathToSource)
+	});
 	this.component = null;
-
 	if (this.watchSource) {
-		this.watcherOutputFileName = tmp.tmpNameSync();
+		// The in-memory file that the watcher is outputting the component to
+		this.pathToWatcherFileInMemory = tmp.tmpNameSync();
+		// The file name that we write the component to when requiring it
+		this.pathToWatcherFileInFS = this.pathToWatcherFileInMemory;
 		this.watcherCompilerConfig = this.getWatcherCompilerConfig();
 		this.watcher = this.startWatcher();
 		this.pending = [];
@@ -32,8 +37,8 @@ Component.prototype.getWatcherCompilerConfig = function getWatcherCompilerConfig
 		context: path.dirname(this.pathToSource),
 		entry: './' + path.basename(this.pathToSource),
 		output: {
-			path: path.dirname(this.watcherOutputFileName),
-			filename: path.basename(this.watcherOutputFileName),
+			path: path.dirname(this.pathToWatcherFileInMemory),
+			filename: path.basename(this.pathToWatcherFileInMemory),
 			libraryTarget: 'commonjs2'
 		},
 		target: 'node',
@@ -49,16 +54,24 @@ Component.prototype.getWatcherCompilerConfig = function getWatcherCompilerConfig
 		},
 		resolveLoader: {
 			root: pathToNodeModules
-		}
+		},
+		devtool: 'eval'
 	};
 };
 
 Component.prototype.invalidateComponent = function invalidateComponent() {
-	this.component = null;
-	this.factory = null;
+	if (this.component) {
+		console.log('Invalidated watched component');
+		this.component = null;
+		// Ensure that the bundled component is written to a new file
+		// so that we can circumvent node's module cache
+		this.pathToWatcherFileInFS = tmp.tmpNameSync();
+	}
 };
 
 Component.prototype.startWatcher = function startWatcher() {
+	console.log('Starting component watcher');
+
 	var compiler = webpack(this.watcherCompilerConfig, function(err) {
 		if (err) {
 			console.error(new Error(err));
@@ -66,9 +79,16 @@ Component.prototype.startWatcher = function startWatcher() {
 	});
 
 	return new WebpackWatcher(compiler, {
-		onInvalid: this.invalidateComponent.bind(this),
-		onDone: this.invalidateComponent.bind(this),
+		onInvalid: function() {
+			console.log('Component watcher triggered onInvalid');
+			this.invalidateComponent();
+		}.bind(this),
+		onDone: function() {
+			console.log('Component watcher triggered onDone');
+			this.invalidateComponent();
+		}.bind(this),
 		onError: function(err) {
+			console.log('Component watcher triggered onError');
 			if (err) {
 				console.error(new Error(err));
 				this.invalidateComponent();
@@ -79,6 +99,7 @@ Component.prototype.startWatcher = function startWatcher() {
 
 Component.prototype.callPending = function callPending(err) {
 	// Complete the pending requests
+	console.log('Sending pending requests for watched component');
 	var pending = this.pending;
 	this.pending = [];
 	pending.forEach(function(pending) {
@@ -88,25 +109,41 @@ Component.prototype.callPending = function callPending(err) {
 
 Component.prototype.onWatchedComponentBuilt = function onWatchedComponentBuilt(callback) {
 	// The component has already been built
+	console.log('Watched component already built');
 	if (this.component) {
 		return callback(null);
 	}
 
+	console.log('Added pending callback for watched component');
 	this.pending.push(callback);
 
 	if (this.pending.length === 1) {
+		console.log('Waiting for watcher to build component');
 		this.watcher.onReady(function(stats) {
+			console.log('Finished waiting for watcher to build component');
+
 			if (stats.compilation.errors && stats.compilation.errors.length) {
 				return callback(stats.compilation.errors[0].message);
 			}
 
-			var content = this.watcher.readFileSync(this.watcherOutputFileName);
-			fs.writeFileSync(this.watcherOutputFileName, content);
+			console.log('Reading watched component from memory');
+
+			var content = this.watcher.readFileSync(this.pathToWatcherFileInMemory);
+
+			console.log('Writing watched component to file system');
 
 			try {
-				this.component = require(this.watcherOutputFileName);
+				fs.writeFileSync(this.pathToWatcherFileInFS, content);
 			} catch(err) {
-				this.callPending(err);
+				return this.callPending(err);
+			}
+
+			console.log('Requiring watched component');
+
+			try {
+				this.component = require(this.pathToWatcherFileInFS);
+			} catch(err) {
+				return this.callPending(err);
 			}
 
 			this.callPending(null);
@@ -114,33 +151,31 @@ Component.prototype.onWatchedComponentBuilt = function onWatchedComponentBuilt(c
 	}
 };
 
-Component.prototype.renderComponent = function renderComponent(options, callback) {
-	if (!this.factory) {
-		try {
-			this.factory = React.createFactory(this.component);
-		} catch(err) {
-			return callback(err)
-		}
+Component.prototype.renderWithResolvedReact = function(options) {
+	var React = require(this.pathToReact);
+	var element = React.createElement(this.component, options.props);
+	if (options.toStaticMarkup) {
+		console.log('Rendering component to static markup');
+		return React.renderToStaticMarkup(element);
 	}
+	console.log('Rendering component to a string');
+	return React.renderToString(element);
+};
 
-	var element = this.factory(options.props);
-
-	var markup;
+Component.prototype.renderComponent = function renderComponent(options, callback) {
+	console.log('Rendering component');
 	try {
-		if (options.toStaticMarkup) {
-			markup = React.renderToStaticMarkup(element);
-		} else {
-			markup = React.renderToString(element);
-		}
+		var markup = this.renderWithResolvedReact(options);
 	} catch(err) {
 		return callback(err);
 	}
-
+	console.log('Rendered component');
 	callback(null, markup);
 };
 
 Component.prototype.render = function render(options, callback) {
 	if (options.watchSource) {
+		console.log('watching component');
 		// Render the component once the watched component has been built
 		return this.onWatchedComponentBuilt(function(err) {
 			if (err) {
@@ -163,8 +198,8 @@ var onError = function onError(response, err) {
 	if (!(err instanceof Error)) {
 		err = new Error(err);
 	}
-	console.error(err);
-	response.status(500).send(err.name + ': ' + err.message);
+	console.error(err.stack);
+	response.status(500).send(err.stack);
 };
 
 var service = function service(data, response) {
@@ -194,7 +229,12 @@ var service = function service(data, response) {
 	});
 
 	if (!component) {
-		component = new Component(options.pathToSource, options.watchSource);
+		console.log('Creating new Component instance', options.pathToSource, options.watchSource);
+		try {
+			component = new Component(options.pathToSource, options.watchSource);
+		} catch(err) {
+			return onError(response, err)
+		}
 		components.push(component);
 	}
 
