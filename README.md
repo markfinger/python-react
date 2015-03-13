@@ -88,16 +88,16 @@ to output the component's HTML.
 
 Arguments:
 
-- `path_to_source` - a path to a JS or JSX file which exports the component. If the 
+- `path_to_source` — a path to a JS or JSX file which exports the component. If the 
   path is relative, django's static file finders will be used to find the file.
-- `props` *optional* - a dictonary that will be serialised to JSON and passed in 
+- `props` *optional* — a dictonary that will be serialised to JSON and passed in 
   to the component as props during the renderering process.
-- `to_static_markup` *optional* - a boolean indicating that React's `render_to_static_markup`
+- `to_static_markup` *optional* — a boolean indicating that React's `render_to_static_markup`
   method should be used for the rendering. Set this to True if you are rendering the component
   to static HTML and React will not be used on the client-side.
-- `watch_source` *optional* - a boolean indicating that the renderer should watch your source
+- `watch_source` *optional* — a boolean indicating that the renderer should watch your source
   files and rebuild the component everytime it changes. Defaults to `True`, in development.
-- `json_encoder` *optional* - a class which is used to encode the JSON which is sent to the 
+- `json_encoder` *optional* — a class which is used to encode the JSON which is sent to the 
   renderer. Defaults to `django.core.serializers.json.DjangoJSONEncoder`.
 
 
