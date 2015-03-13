@@ -80,11 +80,11 @@ Renders a component to its initial HTML. You can use this method to generate HTM
 on the server and send the markup down on the initial request for faster page loads
 and to allow search engines to crawl your pages for SEO purposes.
 
-**Note**: components are loaded with [http://babeljs.io](Babel) which enables you 
-to use JSX + ES6/7 in your components.
-
 Returns a `RenderedComponent` instance, which can be passed directly into templates 
 to output the component's HTML.
+
+**Note**: components are loaded with [Babel](http://babeljs.io) which enables you 
+to use JSX + ES6/7 in your components.
 
 Arguments:
 
