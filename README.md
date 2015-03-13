@@ -80,12 +80,15 @@ Renders a component to its initial HTML. You can use this method to generate HTM
 on the server and send the markup down on the initial request for faster page loads
 and to allow search engines to crawl your pages for SEO purposes.
 
+**Note**: components are loaded with [http://babeljs.io](Babel) which enables you 
+to use JSX + ES6/7 in your components.
+
 Returns a `RenderedComponent` instance, which can be passed directly into templates 
 to output the component's HTML.
 
 Arguments:
 
-- `path_to_source` - an path to a JS or JSX file which exports the component. If the 
+- `path_to_source` - a path to a JS or JSX file which exports the component. If the 
   path is relative, django's static file finders will be used to find the file.
 - `props` *optional* - a dictonary that will be serialised to JSON and passed in 
   to the component as props during the renderering process.
