@@ -5,7 +5,7 @@ Django React
 
 Render React components from a Django application.
 
-```
+```python
 from django_react.render import render_component
 
 props = {
@@ -29,7 +29,7 @@ Documentation
 Installation
 ------------
 
-**Note** that django-react is currently under active development and the latest
+**Note**: django-react is currently under active development and the latest
 stable version from PyPI is functional but far, far slower. In practice, you 
 are recommended to use a recent version from master branch. django-react depends 
 on django-node, which is in a similar position of active development, so you
@@ -66,7 +66,7 @@ Start the node server which hosts the renderer.
 ./manage.py start_node_server
 ```
 
-**Note** You *can* omit the step of starting the server manually, 
+**Note**: you *can* omit the step of starting the server manually, 
 as the python process will start it as a subprocess if it is not 
 already running. In general though, you are strongly recommended 
 to run it as an external process as the performance will be greatly
@@ -85,16 +85,16 @@ to output the component's HTML.
 
 Arguments:
 
-- `path_to_source`: an path to a JS or JSX file which exports the component. If the 
+- `path_to_source` - an path to a JS or JSX file which exports the component. If the 
   path is relative, django's static file finders will be used to find the file.
-- `props`: *optional* a dictonary that will be serialised to JSON and passed in 
+- `props` *optional* - a dictonary that will be serialised to JSON and passed in 
   to the component as props during the renderering process.
-- `to_static_markup`: *optional* a boolean indicating that React's `render_to_static_markup`
+- `to_static_markup` *optional* - a boolean indicating that React's `render_to_static_markup`
   method should be used for the rendering. Set this to True if you are rendering the component
   to static HTML and React will not be used on the client-side.
-- `watch_source`: *optional* a boolean indicating that the renderer should watch your source
+- `watch_source` *optional* - a boolean indicating that the renderer should watch your source
   files and rebuild the component everytime it changes. Defaults to `True`, in development.
-- `json_encoder`: *optional* a class which is used to encode the JSON which is sent to the 
+- `json_encoder` *optional* - a class which is used to encode the JSON which is sent to the 
   renderer. Defaults to `django.core.serializers.json.DjangoJSONEncoder`.
 
 
