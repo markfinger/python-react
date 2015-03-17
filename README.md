@@ -9,7 +9,7 @@ Render React components from a Django application.
 from django_react.render import render_component
 
 props = {
-    'foo: 'bar',
+    'foo': 'bar',
     'woz': [1,2,3],
 }
 
@@ -57,7 +57,7 @@ DJANGO_NODE = {
     'SERVICES': (
         'django_react.services',
     ),
-)
+}
 ```
 
 Start the node server which hosts the renderer.
