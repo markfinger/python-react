@@ -5,7 +5,7 @@ VERSION = '0.9.0'
 setup(
     name='django-react',
     version=VERSION,
-    packages=['django_react'],
+    packages=['django_react', 'django_react.services'],
     package_data={
         'django_react': [
             'package.json',
