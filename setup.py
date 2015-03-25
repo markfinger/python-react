@@ -9,8 +9,7 @@ setup(
     package_data={
         'django_react': [
             'package.json',
-            'render_server.js',
-            'renderer.js',
+            'services/render.js',
             'templates/django_react/*.html',
         ]
     },
