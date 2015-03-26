@@ -18,7 +18,7 @@ var app = express();
 app.use(bodyParser.json());
 app.use(morgan('combined'));
 
-var components = {};
+var cache = {};
 
 var Component = function Component(pathToSource) {
   this.pathToSource = pathToSource;
@@ -51,12 +51,12 @@ app.post('/render', function service(request, response) {
     return response.status(400).send('path_to_source required');
   }
 
-  if (!(pathToSource in components)) {
+  if (!(pathToSource in cache)) {
     console.log('Loading new component', pathToSource);
     component = new Component(pathToSource);
-    components[pathToSource] = component;
+    cache[pathToSource] = component;
   }
-  component = components[pathToSource];
+  component = cache[pathToSource];
 
   component.render(props, toStaticMarkup, function(output) {
     response.send(output);
