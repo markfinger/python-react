@@ -3,8 +3,10 @@ import requests
 from django.contrib.staticfiles import finders
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
+from django.conf import settings
 from .exceptions import ComponentSourceFileNotFound, ComponentRenderingError
-from .settings import SERVICE_URL
+
+SERVICE_URL = getattr(settings, 'REACT_SERVICE_URL', 'http://localhost:63578/render')
 
 
 class RenderedComponent(object):
@@ -22,12 +24,12 @@ class RenderedComponent(object):
     def render_props(self):
         if self.props:
             return mark_safe(DjangoJSONEncoder().encode(self.props))
-        return ''
+        return '{}'
 
 
 def render_component(path_to_source, props=None, to_static_markup=False):
     if not os.path.isabs(path_to_source):
-        path_to_source = finders.find(path_to_source)
+        path_to_source = finders.find(path_to_source) or path_to_source
 
     if not os.path.exists(path_to_source):
         raise ComponentSourceFileNotFound(path_to_source)
