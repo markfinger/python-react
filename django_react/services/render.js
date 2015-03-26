@@ -21,11 +21,11 @@ app.use(morgan('combined'));
 var components = {};
 
 var Component = function Component(pathToSource) {
-	this.pathToSource = pathToSource;
-	this.pathToReact = resolve.sync('react', {
-		basedir: path.dirname(pathToSource)
-	});
-	this.component = require(this.pathToSource);
+  this.pathToSource = pathToSource;
+  this.pathToReact = resolve.sync('react', {
+    basedir: path.dirname(pathToSource)
+  });
+  this.component = require(this.pathToSource);
   // Detect bad JS file
   if (!this.component || !('displayName' in this.component)) {
     throw new Error('Not a React component: ' + this.pathToSource);
@@ -47,20 +47,20 @@ app.post('/render', function service(request, response) {
   var pathToSource = request.body.path_to_source;
   var props = request.body.props;
 
-	if (!pathToSource) {
+  if (!pathToSource) {
     return response.status(400).send('path_to_source required');
-	}
+  }
 
-	if (!(pathToSource in components)) {
-		console.log('Loading new component', pathToSource);
-		component = new Component(pathToSource);
-		components[pathToSource] = component;
-	}
+  if (!(pathToSource in components)) {
+    console.log('Loading new component', pathToSource);
+    component = new Component(pathToSource);
+    components[pathToSource] = component;
+  }
   component = components[pathToSource];
 
-	component.render(props, toStaticMarkup, function(output) {
-		response.send(output);
-	});
+  component.render(props, toStaticMarkup, function(output) {
+    response.send(output);
+  });
 });
 
 app.use(function errorHandler(err, request, response, next) {
@@ -74,10 +74,10 @@ app.use(function errorHandler(err, request, response, next) {
 });
 
 var server = app.listen(argv.port || 63578, 'localhost', function() {
-	var host = server.address().address;
-	var port = server.address().port;
+  var host = server.address().address;
+  var port = server.address().port;
 
-	console.log('Started server at http://%s:%s', host, port);
+  console.log('Started server at http://%s:%s', host, port);
 });
 
 module.exports = app;
