@@ -1,22 +1,18 @@
 from setuptools import setup
 
-VERSION = '0.9.0'
+VERSION = '0.10.0'
 
 setup(
     name='django-react',
     version=VERSION,
-    packages=['django_react', 'django_react.services'],
+    packages=['django_react'],
     package_data={
         'django_react': [
-            'package.json',
+            'services/package.json',
             'services/render.js',
-            'templates/django_react/*.html',
         ]
     },
     install_requires=[
-        'django',
-        'django-node==3.0.0',
-        'django-webpack==2.1.2',
     ],
     description='Render and bundle React components from a Django application',
     long_description='Documentation at https://github.com/markfinger/django-react',

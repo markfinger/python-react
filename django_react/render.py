@@ -1,22 +1,17 @@
 import os
-import json
+import requests
 from django.contrib.staticfiles import finders
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
-from .exceptions import ComponentSourceFileNotFound
-from .services import RenderService
-from .settings import WATCH_SOURCE
-
-service = RenderService()
+from .exceptions import ComponentSourceFileNotFound, ComponentRenderingError
+from .settings import SERVICE_URL
 
 
 class RenderedComponent(object):
-    def __init__(self, output, path_to_source, props, serialized_props, watch_source):
+    def __init__(self, output, path_to_source, props):
         self.output = output
         self.path_to_source = path_to_source
         self.props = props
-        self.serialized_props = serialized_props
-        self.watch_source = watch_source
 
     def __str__(self):
         return mark_safe(self.output)
@@ -25,32 +20,27 @@ class RenderedComponent(object):
         return mark_safe(self.output)
 
     def render_props(self):
-        if self.serialized_props:
-            return mark_safe(self.serialized_props)
+        if self.props:
+            return mark_safe(DjangoJSONEncoder().encode(self.props))
         return ''
 
 
-def render_component(path_to_source, props=None, to_static_markup=None, watch_source=None, json_encoder=None):
+def render_component(path_to_source, props=None, to_static_markup=False):
     if not os.path.isabs(path_to_source):
-        absolute_path_to_source = finders.find(path_to_source)
-        if not absolute_path_to_source:
-            raise ComponentSourceFileNotFound(path_to_source)
-        path_to_source = absolute_path_to_source
+        path_to_source = finders.find(path_to_source)
 
     if not os.path.exists(path_to_source):
         raise ComponentSourceFileNotFound(path_to_source)
 
-    if watch_source is None:
-        watch_source = WATCH_SOURCE
+    response = requests.post(SERVICE_URL,
+        timeout=10.0,
+        json={
+            'props': props,
+            'path_to_source': path_to_source,
+            'to_static_markup': to_static_markup,
+        })
 
-    if json_encoder is None:
-        json_encoder = DjangoJSONEncoder
+    if response.status_code != 200:
+        raise ComponentRenderingError(response.text)
 
-    if props is not None:
-        serialized_props = json.dumps(props, cls=json_encoder)
-    else:
-        serialized_props = None
-
-    output = service.render(path_to_source, serialized_props, to_static_markup, watch_source)
-
-    return RenderedComponent(output, path_to_source, props, serialized_props, watch_source)
+    return RenderedComponent(response.text, path_to_source, props)

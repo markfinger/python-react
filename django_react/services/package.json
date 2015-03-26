@@ -1,13 +1,13 @@
 {
+  "name": "isomorphic-react",
+  "version": "0.2.0",
+  "description": "A simple HTTP service to render React to static HTML on the server side",
   "private": true,
   "dependencies": {
-    "babel": "^4.7.5",
-    "babel-core": "^4.7.5",
-    "babel-loader": "^4.1.0",
-    "lodash": "^3.5.0",
+    "body-parser": "^1.12.2",
+    "express": "^4.12.3",
+    "node-jsx": "^0.12.4",
     "resolve": "^1.1.5",
-    "tmp": "0.0.25",
-    "webpack": "^1.7.2",
-    "webpack-watcher": "git://github.com/markfinger/webpack-watcher#b95b031434e4cdb52f2640d56be28b95429bc9ce"
+    "yargs": "^3.6.0"
   }
 }
