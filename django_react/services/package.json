@@ -1,8 +1,11 @@
 {
-  "name": "isomorphic-react",
-  "version": "0.2.0",
-  "description": "A simple HTTP service to render React to static HTML on the server side",
+  "name": "react-service",
+  "version": "0.5.0",
+  "description": "HTTP Service for rendering React to HTML on the server side",
   "private": true,
+  "bin": {
+    "react-service": "render.js"
+  },
   "dependencies": {
     "body-parser": "^1.12.2",
     "express": "^4.12.3",

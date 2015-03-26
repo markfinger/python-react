@@ -1,8 +1,16 @@
+#!/usr/bin/env node
+
+var path = require('path');
 var resolve = require('resolve');
 var express = require('express');
 var bodyParser = require('body-parser');
-var argv = require('yargs').argv;
 require('node-jsx').install({extension: '.jsx'});
+
+var argv = require('yargs')
+  .usage('Usage: $0 [--port NUM]')
+  .describe('port', 'The port to listen to')
+  .help('h').alias('h', 'help')
+  .argv;
 
 var app = express();
 app.use(bodyParser.json());
