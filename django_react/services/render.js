@@ -3,18 +3,20 @@
 var path = require('path');
 var resolve = require('resolve');
 var express = require('express');
+var morgan = require('morgan');
 var bodyParser = require('body-parser');
 require('node-jsx').install({extension: '.jsx'});
 
 var argv = require('yargs')
   .usage('Usage: $0 [--port NUM]')
   .describe('port', 'The port to listen to')
+  .describe('debug', 'Print stack traces on error').alias('debug', 'd')
   .help('h').alias('h', 'help')
   .argv;
 
 var app = express();
 app.use(bodyParser.json());
-
+app.use(morgan('combined'));
 
 var components = {};
 
@@ -23,34 +25,21 @@ var Component = function Component(pathToSource) {
 	this.pathToReact = resolve.sync('react', {
 		basedir: path.dirname(pathToSource)
 	});
-	this.component = null;
+	this.component = require(this.pathToSource);
+  // Detect bad JS file
+  if (!this.component || !('displayName' in this.component)) {
+    throw new Error('Not a React component: ' + this.pathToSource);
+  }
 };
 
 Component.prototype.render = function render(props, toStaticMarkup, callback) {
-	console.log('Reacting...');
-	try {
-    if (this.component == null) {
-      this.component = require(this.pathToSource);
-    }
-	  var React = require(this.pathToReact);
-	  var element = React.createElement(this.component, props);
-    console.log('loaded');
-    if (toStaticMarkup) {
-      callback(null, React.renderToStaticMarkup(element));
-    } else {
-      callback(null, React.renderToString(element));
-    }
-	} catch(err) {
-		return callback(err);
-	}
-};
-
-var onError = function onError(response, err) {
-	if (!(err instanceof Error)) {
-		err = new Error(err);
-	}
-	console.error(err.stack);
-	response.status(500).send(err.stack);
+  var React = require(this.pathToReact);
+  var element = React.createElement(this.component, props);
+  if (toStaticMarkup) {
+    callback(React.renderToStaticMarkup(element));
+  } else {
+    callback(React.renderToString(element));
+  }
 };
 
 app.post('/render', function service(request, response) {
@@ -59,29 +48,29 @@ app.post('/render', function service(request, response) {
   var props = request.body.props;
 
 	if (!pathToSource) {
-		return onError(response, 'No path_to_source option was provided');
+    return response.status(400).send('path_to_source required');
 	}
 
-  var component = null;
-	if (pathToSource in components) {
-    component = components[pathToSource];
-  } else {
+	if (!(pathToSource in components)) {
 		console.log('Loading new component', pathToSource);
-		try {
-			component = new Component(pathToSource);
-		} catch(err) {
-			return onError(response, err)
-		}
+		component = new Component(pathToSource);
 		components[pathToSource] = component;
 	}
+  component = components[pathToSource];
 
-	component.render(props, toStaticMarkup, function(err, output) {
-		if (err) {
-			return onError(response, err);
-		}
-    console.log('Done');
+	component.render(props, toStaticMarkup, function(output) {
 		response.send(output);
 	});
+});
+
+app.use(function errorHandler(err, request, response, next) {
+  console.log(err.stack);
+  response.status(500);
+  if (argv.debug) {
+    response.send(err.stack);
+  } else {
+    response.send("An error occurred during rendering");
+  }
 });
 
 var server = app.listen(argv.port || 63578, 'localhost', function() {
