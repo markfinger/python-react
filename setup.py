@@ -6,13 +6,8 @@ setup(
     name='django-react',
     version=VERSION,
     packages=['django_react'],
-    package_data={
-        'django_react': [
-            'services/package.json',
-            'services/render.js',
-        ]
-    },
     install_requires=[
+        'django>=1.6'
     ],
     description='Render and bundle React components from a Django application',
     long_description='Documentation at https://github.com/markfinger/django-react',

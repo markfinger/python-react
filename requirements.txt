@@ -1,2 +1,0 @@
-django
--e git+https://github.com/markfinger/django-node.git#egg=django-node

@@ -3,7 +3,11 @@ Django React
 
 [![Build Status](https://travis-ci.org/markfinger/django-react.svg?branch=master)](https://travis-ci.org/markfinger/django-react)
 
-Render React components from a Django application.
+Render React components on the server side in Django, also called "isomorphic React".
+You would do this for faster page loads, to make it friendlier to web crawlers and for SEO.
+
+Example
+-------
 
 ```python
 from django_react.render import render_component
@@ -18,8 +22,15 @@ rendered = render_component('path/to/component.jsx', props=props)
 print(rendered)
 ```
 
+How it works
+------------
+
+It works by having a NodeJS service on the same server that can render the React components.
+The Python just uses a simple HTTP API to send the context and the file path over to the service, and it responds with
+ the rendered HTML.
+
 Documentation
--------------
+=============
 
 - [Installation](#installation)
 - [render_component()](#render_component)
@@ -30,48 +41,24 @@ Installation
 ------------
 
 **Note**: django-react is currently under active development and the latest
-stable version from PyPI is functional but far, far slower. In practice, you 
-are recommended to use a recent version from master branch. django-react depends 
-on django-node, which is in a similar position of active development, so you
-will also need to use its master branch as well.
+stable version from PyPI completely different to this version.
 
 ```bash
-pip install -e git+https://github.com/markfinger/django-node.git#egg=django-node
-pip install -e git+https://github.com/markfinger/django-react.git#egg=django-react
+npm install git+https://github.com/mic159/django-react.git
+pip install git+https://github.com/mic159/django-react.git#egg=django-react
 ```
 
-Add django-node and django-react to your `INSTALLED_APPS` setting
+_Optional:_ Point it to the service in your settings.py
 
 ```python
-INSTALLED_APPS = (
-    # ...
-    'django_node',
-    'django_react',
-)
-```
-
-Configure django-node to host django-react's renderer.
-
-```python
-DJANGO_NODE = {
-    'SERVICES': (
-        'django_react.services',
-    ),
-}
+REACT_SERVICE_URL = 'http://localhost:63578/render'
 ```
 
 Start the node server which hosts the renderer.
 
 ```bash
-./manage.py start_node_server
+react-service --debug
 ```
-
-**Note**: you *can* omit the step of starting the server manually, 
-as the python process will start it as a subprocess if it is not 
-already running. In general though, you are strongly recommended 
-to run it as an external process as the performance will be greatly
-improved.
-
 
 render_component()
 ------------------
