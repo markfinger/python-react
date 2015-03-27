@@ -14,9 +14,11 @@ var argv = require('yargs')
   .help('h').alias('h', 'help')
   .argv;
 
+morgan.token('file', function(req, res){ return path.basename(req.body.path_to_source); });
+
 var app = express();
 app.use(bodyParser.json());
-app.use(morgan('combined'));
+app.use(morgan('[:date[clf]] :method :url :status :response-time ms - :file :res[content-length]'));
 
 var cache = {};
 
