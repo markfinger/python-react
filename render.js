@@ -18,7 +18,7 @@ morgan.token('file', function(req, res){ return path.basename(req.body.path_to_s
 
 var app = express();
 app.use(bodyParser.json());
-app.use(morgan('[:date[clf]] :method :url :status :response-time ms - :file :res[content-length]'));
+app.use(morgan('[:date[iso]] :method :url :status :response-time ms - :file :res[content-length]'));
 
 var cache = {};
 
@@ -47,7 +47,7 @@ Component.prototype.render = function render(props, toStaticMarkup, callback) {
 app.post('/render', function service(request, response) {
   var toStaticMarkup = request.body.to_static_markup || false;
   var pathToSource = request.body.path_to_source;
-  var props = request.body.props;
+  var props = request.body.props || {};
 
   if (!pathToSource) {
     return response.status(400).send('path_to_source required');
@@ -55,10 +55,9 @@ app.post('/render', function service(request, response) {
 
   if (!(pathToSource in cache)) {
     console.log('Loading new component', pathToSource);
-    component = new Component(pathToSource);
-    cache[pathToSource] = component;
+    cache[pathToSource] = new Component(pathToSource);
   }
-  component = cache[pathToSource];
+  var component = cache[pathToSource];
 
   component.render(props, toStaticMarkup, function(output) {
     response.send(output);
@@ -66,20 +65,12 @@ app.post('/render', function service(request, response) {
 });
 
 app.use(function errorHandler(err, request, response, next) {
-  console.log(err.stack);
-  response.status(500);
-  if (argv.debug) {
-    response.send(err.stack);
-  } else {
-    response.send("An error occurred during rendering");
-  }
+  console.log('[' + new Date().toISOString() + '] ' + err.stack);
+  response.status(500).send(argv.debug ? err.stack : "An error occurred during rendering");
 });
 
 var server = app.listen(argv.port || 63578, 'localhost', function() {
-  var host = server.address().address;
-  var port = server.address().port;
-
-  console.log('Started server at http://%s:%s', host, port);
+  console.log('Started server at http://%s:%s', server.address().address, server.address().port);
 });
 
 module.exports = app;
