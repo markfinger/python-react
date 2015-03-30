@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = '0.10.0'
+VERSION = '0.10.1'
 
 setup(
     name='django-react',

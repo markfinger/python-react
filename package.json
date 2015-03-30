@@ -1,8 +1,8 @@
 {
-  "name": "react-service",
-  "version": "0.5.0",
-  "description": "HTTP Service for rendering React to HTML on the server side",
-  "private": true,
+  "name": "react-render-service",
+  "version": "0.10.1",
+  "description": "HTTP microservice for rendering React to HTML on the server side",
+  "main": "render.js",
   "bin": {
     "react-service": "render.js"
   },
@@ -13,5 +13,11 @@
     "node-jsx": "^0.12.4",
     "resolve": "^1.1.5",
     "yargs": "^3.6.0"
-  }
+  },
+  "author": "mic159",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mic159/django-react.git"
+  },
+  "license": "MIT"
 }
