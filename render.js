@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+var fs = require('fs');
 var path = require('path');
 var resolve = require('resolve');
 var express = require('express');
@@ -11,6 +12,7 @@ var argv = require('yargs')
   .usage('Usage: $0 [--port NUM]')
   .describe('port', 'The port to listen to')
   .describe('debug', 'Print stack traces on error').alias('debug', 'd')
+  .describe('watch', 'Watch the source for changes and reload')
   .help('h').alias('h', 'help')
   .argv;
 
@@ -31,6 +33,14 @@ var Component = function Component(pathToSource) {
   // Detect bad JS file
   if (!this.component || !('displayName' in this.component)) {
     throw new Error('Not a React component: ' + this.pathToSource);
+  }
+  if (argv.watch) {
+    var watcher = fs.watch(this.pathToSource, function reloader(event, filename) {
+      console.log('[%s] Reloading %s', new Date().toISOString(), pathToSource);
+      delete require.cache[pathToSource];
+      delete cache[pathToSource];
+      watcher.close();
+    });
   }
 };
 
@@ -54,7 +64,7 @@ app.post('/render', function service(request, response) {
   }
 
   if (!(pathToSource in cache)) {
-    console.log('Loading new component', pathToSource);
+    console.log('[%s] Loading new component %s', new Date().toISOString(), pathToSource);
     cache[pathToSource] = new Component(pathToSource);
   }
   var component = cache[pathToSource];
