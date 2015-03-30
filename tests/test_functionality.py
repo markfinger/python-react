@@ -76,7 +76,6 @@ class TestDjangoReact(unittest.TestCase):
             }
         )
         self.assertEqual(component.props, {'name': 'world!'})
-        self.assertEqual(component.serialized_props, '{"name": "world!"}')
         self.assertEqual(component.render_props(), '{"name": "world!"}')
 
     def test_can_serialize_datetime_values_in_props(self):
@@ -89,7 +88,7 @@ class TestDjangoReact(unittest.TestCase):
                 'time': datetime.time(3, 4, 5),
             }
         )
-        deserialized = json.loads(component.serialized_props)
+        deserialized = json.loads(component.render_props())
         self.assertEqual(
             deserialized,
             {

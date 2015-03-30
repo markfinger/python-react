@@ -38,7 +38,7 @@ class TestDjangoReactPerformance(unittest.TestCase):
         for i in range(iteration_count):
             start = time.time()
             rendered_components.append(
-                render_component(path_to_component, props={'name': 'world'}, watch_source=True, to_static_markup=True)
+                render_component(path_to_component, props={'name': 'world'}, to_static_markup=True)
             )
             end = time.time()
             render_watched_component_times.append(end - start)

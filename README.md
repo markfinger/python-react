@@ -63,15 +63,10 @@ react-service --debug
 render_component()
 ------------------
 
-Renders a component to its initial HTML. You can use this method to generate HTML
-on the server and send the markup down on the initial request for faster page loads
-and to allow search engines to crawl your pages for SEO purposes.
+Renders a component to its initial HTML.
 
 Returns a `RenderedComponent` instance, which can be passed directly into templates 
 to output the component's HTML.
-
-**Note**: components are loaded with [Babel](http://babeljs.io) which enables you 
-to use JSX + ES6/7 in your components.
 
 Arguments:
 
@@ -82,8 +77,6 @@ Arguments:
 - `to_static_markup` *optional* — a boolean indicating that React's `renderToStaticMarkup`
   method should be used for the rendering. Defaults to `False`, which causes React's 
   `renderToString` method to be used.
-- `watch_source` *optional* — a boolean indicating that the renderer should watch your source
-  files and rebuild the component everytime it changes. Defaults to `True`, in development.
 - `json_encoder` *optional* — a class which is used to encode the JSON which is sent to the 
   renderer. Defaults to `django.core.serializers.json.DjangoJSONEncoder`.
 
@@ -121,6 +114,9 @@ Running the tests
 
 ```bash
 mkvirtualenv django-react
-pip install -r requirements.txt
+pip install .
+cd tests
+npm install
+cd ..
 python runtests.py
 ```
