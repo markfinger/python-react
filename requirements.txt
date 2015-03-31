@@ -1,2 +1,2 @@
 django
--e git+https://github.com/markfinger/django-node.git#egg=django-node
+django-node==4.0.0
