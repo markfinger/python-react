@@ -29,15 +29,8 @@ Documentation
 Installation
 ------------
 
-**Note**: django-react is currently under active development and the latest
-stable version from PyPI is functional but far, far slower. In practice, you 
-are recommended to use a recent version from master branch. django-react depends 
-on django-node, which is in a similar position of active development, so you
-will also need to use its master branch as well.
-
 ```bash
-pip install -e git+https://github.com/markfinger/django-node.git#egg=django-node
-pip install -e git+https://github.com/markfinger/django-react.git#egg=django-react
+pip install django-react
 ```
 
 Add django-node and django-react to your `INSTALLED_APPS` setting
