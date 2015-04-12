@@ -61,7 +61,17 @@ class TestDjangoReact(unittest.TestCase):
         self.assertIn("libraryTarget: 'umd',", config)
         self.assertIn("library: 'components__HelloWorld'", config)
         self.assertIn("},", config)
-        self.assertIn("externals: ['react'],", config)
+        self.assertIn("externals: [", config)
+        self.assertIn("{", config)
+        self.assertIn("'react': {", config)
+        self.assertIn(
+            "commonjs2: '" + os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'react') + "',",
+            config
+        )
+        self.assertIn("root: 'React'", config)
+        self.assertIn("}", config)
+        self.assertIn("}", config)
+        self.assertIn("],", config)
         self.assertIn("devtool: 'eval'\n", config)
         self.assertTrue(config.endswith('};'))
 
@@ -79,7 +89,17 @@ class TestDjangoReact(unittest.TestCase):
         self.assertIn("libraryTarget: 'umd',", config)
         self.assertIn("library: 'components__HelloWorld'", config)
         self.assertIn("},", config)
-        self.assertIn("externals: ['react'],", config)
+        self.assertIn("externals: [", config)
+        self.assertIn("{", config)
+        self.assertIn("'react': {", config)
+        self.assertIn(
+            "commonjs2: '" + os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'react') + "',",
+            config
+        )
+        self.assertIn("root: 'React'", config)
+        self.assertIn("}", config)
+        self.assertIn("}", config)
+        self.assertIn("],", config)
         self.assertIn("devtool: 'eval',", config)
         self.assertIn("module: {", config)
         self.assertIn("loaders: [{", config)
