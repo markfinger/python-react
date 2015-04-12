@@ -24,6 +24,8 @@ def index(request):
             'url': reverse('comment'),
             'pollInterval': 2000,
         },
+        # Ensure that the source code is translated from JSX + ES6/7 to JS
+        translate=True,
         # If we intend to use React on the client-side, React will
         # add extra attributes to the HTML so that the initial mount
         # is faster, however these extra attributes are unnecessary

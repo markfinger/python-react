@@ -1,13 +1,10 @@
 {
   "private": true,
   "dependencies": {
-    "babel": "^4.7.5",
-    "babel-core": "^4.7.5",
-    "babel-loader": "^4.1.0",
-    "lodash": "^3.5.0",
-    "resolve": "^1.1.5",
-    "tmp": "0.0.25",
-    "webpack": "^1.7.2",
-    "webpack-watcher": "git://github.com/markfinger/webpack-watcher#b95b031434e4cdb52f2640d56be28b95429bc9ce"
+    "babel-core": "^5.0.12",
+    "babel-loader": "^5.0.0",
+    "react": "^0.13.1",
+    "react-render": "^0.1.0",
+    "webpack": "^1.8.4"
   }
 }

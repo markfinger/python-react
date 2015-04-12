@@ -4,3 +4,7 @@ class ComponentSourceFileNotFound(Exception):
 
 class ComponentRenderingError(Exception):
     pass
+
+
+class ComponentWasNotBundled(Exception):
+    pass
