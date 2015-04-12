@@ -20,4 +20,6 @@ class RenderService(BaseService):
         except NodeServiceError as e:
             six.reraise(ComponentRenderingError, ComponentRenderingError(*e.args), sys.exc_info()[2])
 
-        return response.text
+        markup = response.text.encode('utf-8')
+
+        return markup

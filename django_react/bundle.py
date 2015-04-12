@@ -34,11 +34,19 @@ def get_webpack_config(path, translate=None, var=None):
             libraryTarget: 'umd',
             library: '{var}'
         }},
-        externals: ['react'],
+        externals: [
+            {{
+                'react': {{
+                    commonjs2: '{path_to_react}',
+                    root: 'React'
+                }}
+            }}
+        ],
         devtool: 'eval\''''.format(
         dir=os.path.dirname(path),
         file='./' + os.path.basename(path),
         var=var,
+        path_to_react=os.path.join(os.path.dirname(__file__), 'services', 'node_modules', 'react'),
     )
 
     if translate:

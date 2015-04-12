@@ -22,10 +22,10 @@ class RenderedComponent(object):
         self.to_static_markup = to_static_markup
 
     def __str__(self):
-        return self.render_markup()
+        return mark_safe(self.render_markup())
 
     def __unicode__(self):
-        return self.render_markup()
+        return mark_safe(unicode(self.render_markup()))
 
     def render_markup(self):
         markup = self.markup
@@ -43,11 +43,13 @@ class RenderedComponent(object):
 
     def get_bundle(self):
         if not self.bundle:
-            raise ComponentWasNotBundled((
-                'The component "{path}" was not bundled during the rendering process. '
-                'Call render_component with `bundle`, `translate`, or `watch_source` '
-                'keyword arguments set to `True` to ensure that it is bundled.'
-            ).format(path=self.path_to_source))
+            raise ComponentWasNotBundled(
+                (
+                    'The component "{path}" was not bundled during the rendering process. '
+                    'Call render_component with `bundle`, `translate`, or `watch_source` '
+                    'keyword arguments set to `True` to ensure that it is bundled.'
+                ).format(path=self.path_to_source)
+            )
         return self.bundle
 
     def get_var(self):
