@@ -5,14 +5,9 @@ python:
   - "3.4"
 
 env:
-  - DJANGO_VERSION=1.6.10
-  - DJANGO_VERSION=1.7.6
-  - DJANGO_VERSION=1.8a1
-
-matrix:
-  exclude:
-    - python: "3.4"
-      env: DJANGO_VERSION=1.6.10
+  - DJANGO_VERSION=1.6.11
+  - DJANGO_VERSION=1.7.7
+  - DJANGO_VERSION=1.8
 
 install:
   - "npm install -g npm"
