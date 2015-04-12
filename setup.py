@@ -14,7 +14,6 @@ setup(
         ]
     },
     install_requires=[
-        'django',
         'django-node==4.0.0',
         'django-webpack==3.0.1'
     ],
