@@ -80,25 +80,25 @@ on the server and send the markup down on the initial request for faster page lo
 and to allow search engines to crawl your pages for SEO purposes.
 
 Returns a `RenderedComponent` instance, which can be passed directly into templates 
-to output the component's HTML.
+to output the component's HTML and to mount the component for client-side interactivity.
 
 Arguments:
 
-- **path_to_source** — a path to a JS or JSX file which exports the component. If the 
-  path is relative, django's static file finders will be used to find the file.
+- **path_to_source** — a path to a file which exports the component. If the path is relative, 
+  django's static file finders will be used to find the file.
 - **props** *optional* — a dictonary that will be serialised to JSON and passed to 
   the component during the renderering process.
 - **to_static_markup** *optional* — a boolean indicating that React's `renderToStaticMarkup`
-  method should be used for the rendering. Defaults to `False`, which causes React's 
-  `renderToString` method to be used.
+  method should be used, rather than `renderToString`.
 - **bundle** *optional* - a boolean indicating that the component should be bundled for
   reuse on the client-side. If `translate` or `watch_source` are used, this argument is
   ignored.
 - **translate** *optional* - a boolean indicating that the component should be translated
   from JSX and ES6/7 before rendering. Components are translated with
   [Babel](http://babeljs.io).
-- **watch_source** *optional* — a boolean indicating that the renderer should watch your source
-  files and rebuild the component whenever it changes. If not defined, defaults to `DEBUG`.
+- **watch_source** *optional* — a boolean indicating that your source files should be watched
+  for changes. When changes are detected, the component is rebuilt in background, ready for 
+  the next request. If not defined, defaults to `django.conf.settings.DEBUG`.
 - **json_encoder** *optional* — a class which is used to encode the props to JSON. Defaults
   to `django.core.serializers.json.DjangoJSONEncoder`.
 
