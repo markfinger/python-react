@@ -328,10 +328,6 @@ module.exports = {
         component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, bundle=True)
         self.assertEqual(component.get_var(), 'components__HelloWorld')
 
-    def test_bundled_components_can_get_access_to_their_props_variable(self):
-        component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, bundle=True)
-        self.assertEqual(component.get_props_var(), 'components__HelloWorld__props')
-
     def test_bundled_components_have_their_markup_wrapped_in_a_container(self):
         component = render_component(HELLO_WORLD_COMPONENT_JS, bundle=True)
         self.assertEqual(str(component), '<span id="reactComponent-components__HelloWorld">' + component.markup + '</span>')

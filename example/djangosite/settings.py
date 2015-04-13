@@ -20,6 +20,14 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'djangosite', 'static'),
+)
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'djangosite', 'templates'),
+)
+
 MIDDLEWARE_CLASSES = ()
 
 ROOT_URLCONF = 'djangosite.urls'
@@ -40,6 +48,11 @@ DJANGO_NODE = {
     'SERVICES': (),
     'PACKAGE_DEPENDENCIES': (),
 }
+
+# Instruct django-node to install the package.json dependencies
+DJANGO_NODE['PACKAGE_DEPENDENCIES'] += (
+    BASE_DIR,
+)
 
 
 # DJANGO WEBPACK
@@ -67,14 +80,3 @@ INSTALLED_APPS += (
 DJANGO_NODE['SERVICES'] += (
     'django_react.services',
 )
-
-
-# EXAMPLE APP
-# ===========
-
-INSTALLED_APPS += (
-    'example_app',
-)
-
-# Instruct django-node to install the example app's package.json dependencies
-DJANGO_NODE['PACKAGE_DEPENDENCIES'] += (BASE_DIR,)

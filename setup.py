@@ -10,7 +10,6 @@ setup(
         'django_react': [
             'services/package.json',
             'services/render.js',
-            'templates/django_react/*.html',
         ]
     },
     install_requires=[

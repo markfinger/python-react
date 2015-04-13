@@ -3,8 +3,8 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django_react.render import render_component
-from django_webpack.compiler import webpack
 
+# An in-memory store of comment objects
 comments = []
 
 
@@ -14,9 +14,10 @@ def index(request):
 
     # Render the CommentBox component down to HTML
     comment_box = render_component(
-        # The path to the component is resolved via Django's
-        # static-file finders
-        'example_app/components/CommentBox.jsx',
+        # The path to the component is resolved via Django's static-file
+        # finders
+        'components/CommentBox.jsx',
+
         # We can pass data along to the component which will be
         # accessible from the component via its `this.props` property
         props={
@@ -24,26 +25,23 @@ def index(request):
             'url': reverse('comment'),
             'pollInterval': 2000,
         },
-        # Ensure that the source code is translated from JSX + ES6/7 to JS
+
+        # Ensure that the source code is translated to JS from JSX & ES6/7.
+        # This enables us to use future-facing JS in across the client-side
+        # and server-side
         translate=True,
+
         # If we intend to use React on the client-side, React will
         # add extra attributes to the HTML so that the initial mount
         # is faster, however these extra attributes are unnecessary
-        # if there is no JS on the client-side.
+        # if there is no JS on the client-side
         to_static_markup=no_js
     )
 
-    context = {
+    return render(request, 'index.html', {
         'comment_box': comment_box,
         'no_js': no_js,
-    }
-
-    if not no_js:
-        # Generate a bundle which shares the same codebase as the server-side
-        # rendering, but will operate on the client-side
-        context['comment_box_bundle'] = webpack('example_app/webpack.config.js')
-
-    return render(request, 'example_app/index.html', context)
+    })
 
 
 def comment(request):

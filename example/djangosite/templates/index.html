@@ -1,0 +1,44 @@
+{% load static %}
+<html>
+<head>
+	<title>Django + React basic demo</title>
+	<link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'main.css' %}">
+</head>
+<body>
+	<div class="container">
+		<h1>Django + React basic demo</h1>
+		<p>
+			The combination of server-side rendering & form-handling with client-side interactivity
+			enables this page to perform similarly with or without JavaScript enabled.
+		</p>
+		<p>
+			{% if no_js %}
+				<a href="{% url 'index' %}">View this page with JavaScript</a>
+			{% else %}
+				<a href="{% url 'index-no-js' %}">View this page without JavaScript</a>
+			{% endif %}
+		</p>
+
+		<!--
+			Insert the CommentBox's rendered markup
+		-->
+		{{ comment_box }}
+	</div>
+	{% if not no_js %}
+		<!--
+			Insert a script element pointing to React. React is omitted from the component's
+			bundle so that:
+			 - build times are faster
+			 - multiple components can be included on a page
+		-->
+		<script src="{% static 'vendor/react/react-0.13.1.js' %}"></script>
+
+		<!--
+			Render JS which will immediately mount the bundled component over the rendered
+			markup so that the interactivity will start
+		-->
+		{{ comment_box.render_js }}
+	{% endif %}
+</body>
+</html>

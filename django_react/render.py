@@ -59,9 +59,6 @@ class RenderedComponent(object):
     def get_container_id(self):
         return 'reactComponent-' + self.get_var()
 
-    def get_props_var(self):
-        return self.get_var() + '__props'
-
     def render_mount_js(self):
         return mark_safe(
             MOUNT_JS.format(
@@ -102,7 +99,7 @@ def render_component(
 
     bundled_component = None
     if bundle or translate or watch_source:
-        bundled_component = bundle_component(path_to_source, translate=translate, watch=watch_source)
+        bundled_component = bundle_component(path_to_source, translate=translate, watch_source=watch_source)
         path_to_source = bundled_component.get_assets()[0]['path']
 
     if json_encoder is None:

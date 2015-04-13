@@ -3,19 +3,23 @@ Django React
 
 [![Build Status](https://travis-ci.org/markfinger/django-react.svg?branch=master)](https://travis-ci.org/markfinger/django-react)
 
-Render React components from a Django application.
+Render and bundle React components from a Django application.
 
 ```python
 from django_react.render import render_component
 
-props = {
-    'foo': 'bar',
+# Render a JSX component
+component = render_component('path/to/component.jsx', translate=True, props={
+	'foo': 'bar',
     'woz': [1,2,3],
-}
+})
 
-rendered = render_component('path/to/component.jsx', props=props)
+# The rendered markup
+print(component)
 
-print(rendered)
+# Render JavaScript that will reuse the data provided and mount the component
+# on the client-side
+print(component.render_js())
 ```
 
 Documentation
@@ -88,37 +92,77 @@ Arguments:
 - `to_static_markup` *optional* — a boolean indicating that React's `renderToStaticMarkup`
   method should be used for the rendering. Defaults to `False`, which causes React's 
   `renderToString` method to be used.
+- `bundle` *optional* - a boolean indicating that the component should be bundled for
+  reuse on the client-side. If `translate` or `watch_source` are used, this argument is
+  ignored.
+- `translate` *optional* - a boolean indicating that the component should be translated
+  from JSX and ES6/7 before rendering.
 - `watch_source` *optional* — a boolean indicating that the renderer should watch your source
-  files and rebuild the component everytime it changes. Defaults to `True`, in development.
-- `json_encoder` *optional* — a class which is used to encode the JSON which is sent to the 
-  renderer. Defaults to `django.core.serializers.json.DjangoJSONEncoder`.
+  files and rebuild the component whenever it changes. If not defined, defaults to `DEBUG`.
+- `json_encoder` *optional* — a class which is used to encode the props to JSON. Defaults
+  to `django.core.serializers.json.DjangoJSONEncoder`.
 
 
 RenderedComponent
 -----------------
 
-The result of rendering a component to its initial HTML. RenderedComponents can be passed
-directly into templates where they output the generated HTML.
+The result of rendering a component to its initial markup. RenderedComponents can be passed
+directly into templates where they will output the generated markup.
 
 ```python
 # Render the component
-my_component = render_component(...)
+component = render_component(...)
 
-# Print the generated HTML
-print(my_component)
+# Print the generated markup
+print(component)
 ```
 ```html
 <!-- Insert the generated HTML into your template -->
-{{ my_component }}
+{{ component }}
 ```
 
-RenderedComponents have a helper method, `render_props`, which outputs your JSON-serialized 
-props. This allows you to reuse the encoded form of your props on the client-side.
+Components can be remounted on the client-side, so that the same codebase and data
+can be reused to provide interactivity.
 
 ```html
-<script>
-    var myProps = {{ my_component.render_props }};
-</script>
+<script src="path/to/react.js"></script>
+
+{{ component.render_js }}
+```
+
+*Note*: if you wish to use the `render_js` method, you *must* provide a `<script>` element
+pointing to React. React is omitted from the bundled component so that build times are reduced,
+and to ensure that multiple components can be included on a single page without duplicating
+React's codebase.
+
+Be aware that the mounting strategy used by `render_js` is fairly basic, if you want to use
+a more custom solution there are a couple of helpers provided to assist:
+```python
+The data used to render the component, this can be plugged straight into the client-side
+print(component.render_props())
+
+# The bundled component (a WebpackBundle instance)
+component.get_bundle()
+
+# Render a script element pointing to the bundled component
+print(component.get_bundle().render())
+
+# The variable that the bundle exposes the component as on the global scope
+print(component.get_var())
+
+# Returns an absolute path to the location of the component's bundle on the file-system
+print(component.bundle.get_path())
+
+# When rendering a bundled component, the component is wrapped in a container
+# element to allow the mount JS to target it. You can use this selector to
+# target the container element
+print(component.get_container_id())
+
+# The rendered markup without the container element wrapping it
+print(component.markup)
+
+# Render the JS used to mount the bundled component over the rendered component
+print(component.render_mount_js())
 ```
 
 
