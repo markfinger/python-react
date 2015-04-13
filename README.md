@@ -1,4 +1,4 @@
-Django React
+django-react
 ============
 
 [![Build Status](https://travis-ci.org/markfinger/django-react.svg?branch=master)](https://travis-ci.org/markfinger/django-react)
@@ -10,7 +10,7 @@ from django_react.render import render_component
 
 # Render a JSX component
 component = render_component('path/to/component.jsx', translate=True, props={
-	'foo': 'bar',
+    'foo': 'bar',
     'woz': [1,2,3],
 })
 
@@ -28,7 +28,10 @@ Documentation
 - [Installation](#installation)
 - [render_component()](#render_component)
 - [RenderedComponent](#renderedcomponent)
+- [Usage in development](#usage-in-development)
+- [Usage in production](#usage-in-production)
 - [Running the tests](#running-the-tests)
+
 
 Installation
 ------------
@@ -43,31 +46,30 @@ Add django-node and django-react to your `INSTALLED_APPS` setting
 INSTALLED_APPS = (
     # ...
     'django_node',
+    'django_webpack',
     'django_react',
 )
 ```
 
-Configure django-node to host django-react's renderer.
+Ensure that Django can find the bundles generated from your components
+
+```
+STATICFILES_FINDERS = (
+    # ...
+    'django_webpack.staticfiles.WebpackFinder',
+)
+```
+
+Configure django-node to host django-webpack and django-react.
 
 ```python
 DJANGO_NODE = {
     'SERVICES': (
+        'django_webpack.services',
         'django_react.services',
     ),
 }
 ```
-
-Start the node server which hosts the renderer.
-
-```bash
-./manage.py start_node_server
-```
-
-**Note**: you *can* omit the step of starting the server manually, 
-as the python process will start it as a subprocess if it is not 
-already running. In general though, you are strongly recommended 
-to run it as an external process as the performance will be greatly
-improved.
 
 
 render_component()
@@ -164,6 +166,48 @@ print(component.markup)
 # Render the JS used to mount the bundled component over the rendered component
 print(component.render_mount_js())
 ```
+
+Usage in development
+--------------------
+
+When running in development, you are *strongly* recommended to run the
+node server as an external process. By using a separate process, the 
+node server will be able to persist in-memory caches of your source files.
+
+The server can be started by running the `start_node_server` management
+command, for example:
+
+```bash
+# Run the node server as an external process. You will need
+# to run your python process in another shell
+./manage.py start_node_server
+```
+
+If you use the default behaviour - and do not start the server yourself - 
+the node server will be run as a detached process that will be restarted 
+whenever the python process restarts. Given how easy it is to trigger a 
+restart of a django devserver, this means that your node server will 
+frequently have to restart and rebuild your source files.
+
+
+Usage in production
+-------------------
+
+When running in production, you are *strongly* recommended to use a 
+process supervisor, such as [supervisor](http://supervisord.org/) or
+[PM2](https://github.com/Unitech/pm2) to control the node server that
+django-react and django-webpack use.
+
+The server can be started by running the `start_node_server` management
+command, for example:
+
+```bash
+./manage.py start_node_server
+```
+
+You can configure your supervisor process to use your virtual environment's
+python to target the manage.py file and run the `start_node_server` 
+management command.
 
 
 Running the tests
