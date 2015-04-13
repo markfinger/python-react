@@ -2,6 +2,7 @@ import os
 import re
 import tempfile
 from django_webpack.compiler import webpack
+from .templates import BUNDLE_CONFIG, BUNDLE_TRANSLATE_CONFIG
 
 COMPONENT_CONFIG_FILES = {}
 
@@ -20,53 +21,24 @@ def get_var_from_path(path):
 
 
 def get_webpack_config(path, translate=None, var=None):
-    config = 'module.exports = {'
-
     if var is None:
         var = get_var_from_path(path)
 
-    config += '''
-        context: '{dir}',
-        entry: '{file}',
-        output: {{
-            path: '[bundle_dir]/components',
-            filename: '{var}-[hash].js',
-            libraryTarget: 'umd',
-            library: '{var}'
-        }},
-        externals: [
-            {{
-                'react': {{
-                    commonjs2: '{path_to_react}',
-                    root: 'React'
-                }}
-            }}
-        ],
-        devtool: 'eval\''''.format(
-        dir=os.path.dirname(path),
-        file='./' + os.path.basename(path),
-        var=var,
-        path_to_react=os.path.join(os.path.dirname(__file__), 'services', 'node_modules', 'react'),
-    )
-
+    translate_config = ''
     if translate:
         # JSX + ES6/7 support
-        config += ''',
-            module: {{
-                loaders: [{{
-                    test: /\{ext}$/,
-                    exclude: /node_modules/,
-                    loader: 'babel-loader'
-                }}]
-            }},
-            resolveLoader: {{
-                root: '{node_modules}'
-            }}'''.format(
+        translate_config += BUNDLE_TRANSLATE_CONFIG.format(
             ext=os.path.splitext(path)[-1],
             node_modules=os.path.join(os.path.dirname(__file__), 'services', 'node_modules')
         )
 
-    return config + '\n};'
+    return BUNDLE_CONFIG.format(
+        dir=os.path.dirname(path),
+        file='./' + os.path.basename(path),
+        var=var,
+        path_to_react=os.path.join(os.path.dirname(__file__), 'services', 'node_modules', 'react'),
+        translate_config=translate_config
+    )
 
 
 def get_component_config_filename(path, translate=None, var=None):

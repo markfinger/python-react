@@ -49,72 +49,68 @@ class TestDjangoReact(unittest.TestCase):
 
     def test_can_generate_a_webpack_config_for_a_js_component(self):
         config = get_webpack_config(HELLO_WORLD_COMPONENT_JS)
-        self.assertTrue(config.startswith('module.exports = {'))
-        self.assertIn(
-            "context: '" + os.path.join(os.path.dirname(__file__), 'components') + "',",
-            config
-        )
-        self.assertIn("entry: './HelloWorld.js',", config)
-        self.assertIn("output: {", config)
-        self.assertIn("path: '[bundle_dir]/components',", config)
-        self.assertIn("filename: 'components__HelloWorld-[hash].js',", config)
-        self.assertIn("libraryTarget: 'umd',", config)
-        self.assertIn("library: 'components__HelloWorld'", config)
-        self.assertIn("},", config)
-        self.assertIn("externals: [", config)
-        self.assertIn("{", config)
-        self.assertIn("'react': {", config)
-        self.assertIn(
-            "commonjs2: '" + os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'react') + "',",
-            config
-        )
-        self.assertIn("root: 'React'", config)
-        self.assertIn("}", config)
-        self.assertIn("}", config)
-        self.assertIn("],", config)
-        self.assertIn("devtool: 'eval'\n", config)
-        self.assertTrue(config.endswith('};'))
+        expected = \
+"""module.exports = {
+    context: '%s',
+    entry: './HelloWorld.js',
+    output: {
+        path: '[bundle_dir]/react-components',
+        filename: 'components__HelloWorld-[hash].js',
+        libraryTarget: 'umd',
+        library: 'components__HelloWorld'
+    },
+    externals: [{
+      'react': {
+        commonjs2: '%s',
+        root: 'React'
+      }
+    }],
+    devtool: 'eval'
+};
+""" % (
+    os.path.join(os.path.dirname(__file__), 'components'),
+    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'react'),
+)
+
+        self.assertEqual(config, expected)
 
     def test_can_generate_a_webpack_config_for_a_jsx_component(self):
         config = get_webpack_config(HELLO_WORLD_COMPONENT_JSX, translate=True)
-        self.assertTrue(config.startswith('module.exports = {'))
-        self.assertIn(
-            "context: '" + os.path.join(os.path.dirname(__file__), 'components') + "',",
-            config
-        )
-        self.assertIn("entry: './HelloWorld.jsx',", config)
-        self.assertIn("output: {", config)
-        self.assertIn("path: '[bundle_dir]/components',", config)
-        self.assertIn("filename: 'components__HelloWorld-[hash].js',", config)
-        self.assertIn("libraryTarget: 'umd',", config)
-        self.assertIn("library: 'components__HelloWorld'", config)
-        self.assertIn("},", config)
-        self.assertIn("externals: [", config)
-        self.assertIn("{", config)
-        self.assertIn("'react': {", config)
-        self.assertIn(
-            "commonjs2: '" + os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'react') + "',",
-            config
-        )
-        self.assertIn("root: 'React'", config)
-        self.assertIn("}", config)
-        self.assertIn("}", config)
-        self.assertIn("],", config)
-        self.assertIn("devtool: 'eval',", config)
-        self.assertIn("module: {", config)
-        self.assertIn("loaders: [{", config)
-        self.assertIn("test: /\.jsx$/,", config)
-        self.assertIn("exclude: /node_modules/,", config)
-        self.assertIn("loader: 'babel-loader'", config)
-        self.assertIn("}]", config)
-        self.assertIn("},", config)
-        self.assertIn("resolveLoader: {", config)
-        self.assertIn(
-            "root: '" + os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules') + "'",
-            config
-        )
-        self.assertIn("}", config)
-        self.assertTrue(config.endswith('};'))
+        expected = \
+"""module.exports = {
+    context: '%s',
+    entry: './HelloWorld.jsx',
+    output: {
+        path: '[bundle_dir]/react-components',
+        filename: 'components__HelloWorld-[hash].js',
+        libraryTarget: 'umd',
+        library: 'components__HelloWorld'
+    },
+    externals: [{
+      'react': {
+        commonjs2: '%s',
+        root: 'React'
+      }
+    }],
+    devtool: 'eval',
+    module: {
+        loaders: [{
+            test: /\.jsx$/,
+            exclude: /node_modules/,
+            loader: 'babel-loader'
+        }]
+    },
+    resolveLoader: {
+        root: '%s'
+    }
+
+};
+""" % (
+    os.path.join(os.path.dirname(__file__), 'components'),
+    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'react'),
+    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules'),
+)
+        self.assertEqual(config, expected)
 
     def test_can_generate_and_create_a_config_file(self):
         filename = get_component_config_filename(HELLO_WORLD_COMPONENT_JS)
