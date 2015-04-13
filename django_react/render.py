@@ -105,13 +105,13 @@ def render_component(
     if not os.path.exists(path_to_source):
         raise ComponentSourceFileNotFound(path_to_source)
 
+    if watch_source is None:
+        watch_source = WATCH_SOURCE
+
     bundled_component = None
     if bundle or translate or watch_source:
         bundled_component = bundle_component(path_to_source, translate=translate, watch=watch_source)
         path_to_source = bundled_component.get_assets()[0]['path']
-
-    if watch_source is None:
-        watch_source = WATCH_SOURCE
 
     if json_encoder is None:
         json_encoder = DjangoJSONEncoder
