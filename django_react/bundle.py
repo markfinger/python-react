@@ -33,10 +33,10 @@ def get_webpack_config(path, translate=None, var=None):
         )
 
     return BUNDLE_CONFIG.format(
+        path_to_resolve=os.path.join(os.path.dirname(__file__), 'services', 'node_modules', 'resolve'),
         dir=os.path.dirname(path),
         file='./' + os.path.basename(path),
         var=var,
-        path_to_react=os.path.join(os.path.dirname(__file__), 'services', 'node_modules', 'react'),
         translate_config=translate_config
     )
 

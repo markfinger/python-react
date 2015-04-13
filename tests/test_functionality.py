@@ -50,7 +50,10 @@ class TestDjangoReact(unittest.TestCase):
     def test_can_generate_a_webpack_config_for_a_js_component(self):
         config = get_webpack_config(HELLO_WORLD_COMPONENT_JS)
         expected = \
-"""module.exports = {
+"""
+var resolve = require('%s');
+
+module.exports = {
     context: '%s',
     entry: './HelloWorld.js',
     output: {
@@ -61,15 +64,16 @@ class TestDjangoReact(unittest.TestCase):
     },
     externals: [{
       'react': {
-        commonjs2: '%s',
+        commonjs2: resolve.sync('react', {basedir: '%s'}),
         root: 'React'
       }
     }],
     devtool: 'eval'
 };
 """ % (
+    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'resolve'),
     os.path.join(os.path.dirname(__file__), 'components'),
-    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'react'),
+    os.path.join(os.path.dirname(__file__), 'components'),
 )
 
         self.assertEqual(config, expected)
@@ -77,7 +81,10 @@ class TestDjangoReact(unittest.TestCase):
     def test_can_generate_a_webpack_config_for_a_jsx_component(self):
         config = get_webpack_config(HELLO_WORLD_COMPONENT_JSX, translate=True)
         expected = \
-"""module.exports = {
+"""
+var resolve = require('%s');
+
+module.exports = {
     context: '%s',
     entry: './HelloWorld.jsx',
     output: {
@@ -88,7 +95,7 @@ class TestDjangoReact(unittest.TestCase):
     },
     externals: [{
       'react': {
-        commonjs2: '%s',
+        commonjs2: resolve.sync('react', {basedir: '%s'}),
         root: 'React'
       }
     }],
@@ -106,8 +113,9 @@ class TestDjangoReact(unittest.TestCase):
 
 };
 """ % (
+    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'resolve'),
     os.path.join(os.path.dirname(__file__), 'components'),
-    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'react'),
+    os.path.join(os.path.dirname(__file__), 'components'),
     os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules'),
 )
         self.assertEqual(config, expected)

@@ -1,5 +1,8 @@
 BUNDLE_CONFIG = \
-"""module.exports = {{
+"""
+var resolve = require('{path_to_resolve}');
+
+module.exports = {{
     context: '{dir}',
     entry: '{file}',
     output: {{
@@ -10,7 +13,7 @@ BUNDLE_CONFIG = \
     }},
     externals: [{{
       'react': {{
-        commonjs2: '{path_to_react}',
+        commonjs2: resolve.sync('react', {{basedir: '{dir}'}}),
         root: 'React'
       }}
     }}],
