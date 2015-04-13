@@ -330,12 +330,34 @@ class TestDjangoReact(unittest.TestCase):
 
     def test_bundled_components_can_render_mount_js(self):
         component = render_component(HELLO_WORLD_COMPONENT_JS, bundle=True)
-        expected = "if (typeof React === 'undefined') throw new Error('Cannot find `React` global variable. Have you added a script element to this page which points to React?');\nif (typeof components__HelloWorld === 'undefined') throw new Error('Cannot find component variable `components__HelloWorld`');\n(function(React, component, containerId) {\n  var props = null;\n  var element = React.createElement(component, props);\n  var container = document.getElementById(containerId);\n  if (!container) throw new Error('Cannot find the container element `#reactComponent-components__HelloWorld` for component `components__HelloWorld`');\n  React.render(element, container);\n})(React, components__HelloWorld, 'reactComponent-components__HelloWorld');"
+        expected = \
+"""
+if (typeof React === 'undefined') throw new Error('Cannot find `React` global variable. Have you added a script element to this page which points to React?');
+if (typeof components__HelloWorld === 'undefined') throw new Error('Cannot find component variable `components__HelloWorld`');
+(function(React, component, containerId) {
+  var props = null;
+  var element = React.createElement(component, props);
+  var container = document.getElementById(containerId);
+  if (!container) throw new Error('Cannot find the container element `#reactComponent-components__HelloWorld` for component `components__HelloWorld`');
+  React.render(element, container);
+})(React, components__HelloWorld, 'reactComponent-components__HelloWorld');
+"""
         self.assertEqual(component.render_mount_js(), expected)
 
     def test_bundled_components_can_render_mount_js_with_props(self):
         component = render_component(HELLO_WORLD_COMPONENT_JS, props={'name': 'world!'}, bundle=True)
-        expected = '''if (typeof React === \'undefined\') throw new Error(\'Cannot find `React` global variable. Have you added a script element to this page which points to React?\');\nif (typeof components__HelloWorld === \'undefined\') throw new Error(\'Cannot find component variable `components__HelloWorld`\');\n(function(React, component, containerId) {\n  var props = {"name": "world!"};\n  var element = React.createElement(component, props);\n  var container = document.getElementById(containerId);\n  if (!container) throw new Error(\'Cannot find the container element `#reactComponent-components__HelloWorld` for component `components__HelloWorld`\');\n  React.render(element, container);\n})(React, components__HelloWorld, \'reactComponent-components__HelloWorld\');'''
+        expected = \
+"""
+if (typeof React === 'undefined') throw new Error('Cannot find `React` global variable. Have you added a script element to this page which points to React?');
+if (typeof components__HelloWorld === 'undefined') throw new Error('Cannot find component variable `components__HelloWorld`');
+(function(React, component, containerId) {
+  var props = {"name": "world!"};
+  var element = React.createElement(component, props);
+  var container = document.getElementById(containerId);
+  if (!container) throw new Error('Cannot find the container element `#reactComponent-components__HelloWorld` for component `components__HelloWorld`');
+  React.render(element, container);
+})(React, components__HelloWorld, 'reactComponent-components__HelloWorld');
+"""
         self.assertEqual(component.render_mount_js(), expected)
 
     def test_bundled_components_can_render_script_elements_with_the_bundle_and_mount_js(self):

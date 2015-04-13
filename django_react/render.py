@@ -7,6 +7,7 @@ from .exceptions import ComponentSourceFileNotFound, ComponentWasNotBundled
 from .services import RenderService
 from .settings import WATCH_SOURCE
 from .bundle import bundle_component
+from .templates import MOUNT_JS
 
 service = RenderService()
 
@@ -62,17 +63,8 @@ class RenderedComponent(object):
         return self.get_var() + '__props'
 
     def render_mount_js(self):
-        mount_js = '''if (typeof React === 'undefined') throw new Error('Cannot find `React` global variable. Have you added a script element to this page which points to React?');
-if (typeof {var} === 'undefined') throw new Error('Cannot find component variable `{var}`');
-(function(React, component, containerId) {{
-  var props = {props};
-  var element = React.createElement(component, props);
-  var container = document.getElementById(containerId);
-  if (!container) throw new Error('Cannot find the container element `#{container_id}` for component `{var}`');
-  React.render(element, container);
-}})(React, {var}, '{container_id}');'''
         return mark_safe(
-            mount_js.format(
+            MOUNT_JS.format(
                 var=self.get_var(),
                 props=self.serialized_props or 'null',
                 container_id=self.get_container_id()
