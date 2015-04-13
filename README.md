@@ -138,7 +138,7 @@ React's codebase.
 Be aware that the mounting strategy used by `render_js` is fairly basic, if you want to use
 a more custom solution there are a couple of helpers provided to assist:
 ```python
-The data used to render the component, this can be plugged straight into the client-side
+# The data used to render the component, this can be plugged straight into the client-side
 print(component.render_props())
 
 # The bundled component (a WebpackBundle instance)
