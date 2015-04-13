@@ -132,7 +132,7 @@ can be reused to provide interactivity.
 {{ component.render_js }}
 ```
 
-*Note*: if you wish to use the `render_js` method, you *must* provide a `<script>` element
+**Note**: if you wish to use the `render_js` method, you **must** provide a `<script>` element
 pointing to React. React is omitted from the bundled component so that build times are reduced,
 and to ensure that multiple components can be included on a single page without duplicating
 React's codebase.
@@ -170,7 +170,7 @@ print(component.render_mount_js())
 Usage in development
 --------------------
 
-When running in development, you are *strongly* recommended to run the
+When running in development, you are **strongly** recommended to run the
 node server as an external process. By using a separate process, the 
 node server will be able to persist in-memory caches of your source files.
 
@@ -193,7 +193,7 @@ frequently have to restart and rebuild your source files.
 Usage in production
 -------------------
 
-When running in production, you are *strongly* recommended to use a 
+When running in production, you are **strongly** recommended to use a 
 process supervisor, such as [supervisor](http://supervisord.org/) or
 [PM2](https://github.com/Unitech/pm2) to control the node server that
 django-react and django-webpack use.
