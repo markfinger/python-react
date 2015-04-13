@@ -3,24 +3,59 @@ django-react
 
 [![Build Status](https://travis-ci.org/markfinger/django-react.svg?branch=master)](https://travis-ci.org/markfinger/django-react)
 
-Render and bundle React components from a Django application.
+Server-side rendering, client-side mounting, JSX translation, and component bundling.
 
 ```python
 from django_react.render import render_component
 
-# Render a JSX component
-component = render_component('path/to/component.jsx', translate=True, props={
-    'foo': 'bar',
-    'woz': [1,2,3],
-})
+component = render_component(
+
+    # A path to a module exporting your React component
+    'path/to/component.jsx',
+
+    # Translate the source to JavaScript from JSX + ES6/7
+    translate=True,
+
+    # Props that will be passed to the renderer, and will be reused
+    # on the client-side to provide client-side interactivity
+    props={
+        'foo': 'bar',
+        'woz': [1,2,3],
+    }
+
+)
 
 # The rendered markup
 print(component)
 
-# Render JavaScript that will reuse the data provided and mount the component
-# on the client-side
+# Render JS which will mount the component on the client-side and
+# provide interactivity
 print(component.render_js())
 ```
+
+If you only want to pre-compile a JSX component to JS, you can bundle your component
+into a single file by calling `bundle_component`.
+
+```python
+from django_react.bundle import bundle_component
+
+bundle = bundle_component(
+
+    # A path to a module exporting your React component
+    'path/to/component.jsx,
+
+    # Translate the source to JavaScript from JSX + ES6/7
+    translate=True
+
+)
+
+# Renders a script element pointing to the bundled component
+print(bundle.render())
+
+# Outputs the variable name that the component is exposed as.
+print(bundle.get_library())
+```
+
 
 Documentation
 -------------
@@ -28,6 +63,7 @@ Documentation
 - [Installation](#installation)
 - [render_component()](#render_component)
 - [RenderedComponent](#renderedcomponent)
+- [bundle_component()](#bundle_component)
 - [Usage in development](#usage-in-development)
 - [Usage in production](#usage-in-production)
 - [Running the tests](#running-the-tests)
@@ -80,27 +116,49 @@ on the server and send the markup down on the initial request for faster page lo
 and to allow search engines to crawl your pages for SEO purposes.
 
 Returns a `RenderedComponent` instance, which can be passed directly into templates 
-to output the component's HTML and to mount the component for client-side interactivity.
+to output the component's HTML, and to mount the component for client-side interactivity.
 
-Arguments:
+**Configuration**
 
-- **path_to_source** — a path to a file which exports the component. If the path is relative, 
-  django's static file finders will be used to find the file.
-- **props** *optional* — a dictonary that will be serialised to JSON and passed to 
-  the component during the renderering process.
-- **to_static_markup** *optional* — a boolean indicating that React's `renderToStaticMarkup`
-  method should be used, rather than `renderToString`.
-- **bundle** *optional* - a boolean indicating that the component should be bundled for
-  reuse on the client-side. If `translate` or `watch_source` are used, this argument is
-  ignored.
-- **translate** *optional* - a boolean indicating that the component should be translated
-  from JSX and ES6/7 before rendering. Components are translated with
-  [Babel](http://babeljs.io).
-- **watch_source** *optional* — a boolean indicating that your source files should be watched
-  for changes. When changes are detected, the component is rebuilt in background, ready for 
-  the next request. If not defined, defaults to `django.conf.settings.DEBUG`.
-- **json_encoder** *optional* — a class which is used to encode the props to JSON. Defaults
-  to `django.core.serializers.json.DjangoJSONEncoder`.
+```python
+from django_react.render import render_component
+
+render_component(
+
+    # A path to a file which exports the component. If the path is relative,
+    # django's static file finders will attempt to find the file
+    path_to_source='...',
+
+    # [optional] a dictionary that will be serialised to JSON and passed to
+  	# the component during the rendering process
+  	props = {
+  	   'foo': 'bar'
+  	},
+
+  	# [optional] a boolean indicating that React's `renderToStaticMarkup`
+  	# method should be used, rather than `renderToString`
+  	to_static_markup = False,
+
+  	# [optional] a boolean indicating that the component should be bundled for
+  	# reuse on the client-side. If `translate` or `watch_source` are provided, this
+  	# argument is ignored
+  	bundle = True,
+
+	# [optional] a boolean indicating that the component should be translated
+    # from JSX and ES6/7 before rendering. Components are translated with Babel
+  	translate = True,
+
+  	# [optional] a boolean indicating that your source files should be watched
+  	# for changes. When changes are detected, the component is rebuilt in background,
+  	# ready for the next request. If not defined, defaults to `DEBUG`
+  	watch_source = True,
+
+  	# [optional] a class which is used to encode the props to JSON. Defaults
+  	# to `django.core.serializers.json.DjangoJSONEncoder`
+  	json_encoder=None,
+
+)
+```
 
 
 RenderedComponent
@@ -164,6 +222,43 @@ print(component.markup)
 # Render the JS used to mount the bundled component over the rendered component
 print(component.render_mount_js())
 ```
+
+
+bundle_component()
+------------------
+
+Packages a React component so that it can be re-used on the client-side. JSX + ES6+7
+files can translated to JavaScript with [Babel](https://babeljs.io/).
+
+Be aware that `bundle_component` is a convenience method which plugs a pre-built
+webpack config into [django-webpack](https://github.com/markfinger/django-webpack).
+If you require more flexibility in the bundling process, you are recommended to
+read the code to understand what is happening, and then use django-webpack yourself.
+
+**Configuration**
+
+```python
+from django_react.bundle import bundle_component
+
+bundle_component(
+
+    # A path to a file which exports the component. If the path is relative,
+    # django's static file finders will attempt to find the file
+    path='...',
+
+	# [optional] a boolean indicating that the component should be translated
+    # from JSX and ES6/7 during the bundling process. Components are translated
+    # with Babel
+  	translate = True,
+
+  	# [optional] a boolean indicating that your source files should be watched
+  	# for changes. When changes are detected, the component is rebuilt in
+  	# background, ready for the next request. If not defined, defaults to `DEBUG`
+  	watch_source = True,
+
+)
+```
+
 
 Usage in development
 --------------------
