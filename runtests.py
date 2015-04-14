@@ -16,6 +16,11 @@ if __name__ == '__main__':
     from django_node import npm
     npm.install(os.path.join(os.path.dirname(__file__), 'tests'))
 
+    if '--start-node-server' in sys.argv:
+        from django_node.server import server
+        server.start(blocking=True)
+        sys.exit('Node server exited')
+
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
     failures = test_runner.run_tests(['tests'])
