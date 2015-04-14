@@ -13,6 +13,8 @@ from django_react.exceptions import ComponentRenderingError, ComponentSourceFile
 from django_webpack.compiler import WebpackBundle
 from .settings import STATIC_ROOT
 
+NODE_MODULES = os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules')
+
 COMPONENT_ROOT = os.path.join(os.path.dirname(__file__), 'components')
 
 HELLO_WORLD_COMPONENT_JS = os.path.join(COMPONENT_ROOT, 'HelloWorld.js')
@@ -20,6 +22,7 @@ HELLO_WORLD_COMPONENT_JSX = os.path.join(COMPONENT_ROOT, 'HelloWorld.jsx')
 HELLO_WORLD_WRAPPER_COMPONENT = os.path.join(COMPONENT_ROOT, 'HelloWorldWrapper.jsx')
 ERROR_THROWING_COMPONENT = os.path.join(COMPONENT_ROOT, 'ErrorThrowingComponent.jsx')
 SYNTAX_ERROR_COMPONENT = os.path.join(COMPONENT_ROOT, 'SyntaxErrorComponent.jsx')
+REACT_ADDONS_COMPONENT = os.path.join(COMPONENT_ROOT, 'ReactAddonsComponent.jsx')
 STATIC_FILE_FINDER_COMPONENT = 'test_app/StaticFileFinderComponent.jsx'
 
 
@@ -63,17 +66,22 @@ module.exports = {
         library: 'components__HelloWorld'
     },
     externals: [{
-      'react': {
+      react: {
         commonjs2: resolve.sync('react', {basedir: '%s'}),
+        root: 'React'
+      },
+      'react/addons': {
+        commonjs2: resolve.sync('react/addons', {basedir: '%s'}),
         root: 'React'
       }
     }],
     devtool: 'eval'
 };
 """ % (
-    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'resolve'),
-    os.path.join(os.path.dirname(__file__), 'components'),
-    os.path.join(os.path.dirname(__file__), 'components'),
+    os.path.join(NODE_MODULES, 'resolve'),
+    COMPONENT_ROOT,
+    COMPONENT_ROOT,
+    COMPONENT_ROOT,
 )
 
         self.assertEqual(config, expected)
@@ -94,8 +102,12 @@ module.exports = {
         library: 'components__HelloWorld'
     },
     externals: [{
-      'react': {
+      react: {
         commonjs2: resolve.sync('react', {basedir: '%s'}),
+        root: 'React'
+      },
+      'react/addons': {
+        commonjs2: resolve.sync('react/addons', {basedir: '%s'}),
         root: 'React'
       }
     }],
@@ -113,10 +125,11 @@ module.exports = {
 
 };
 """ % (
-    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules', 'resolve'),
-    os.path.join(os.path.dirname(__file__), 'components'),
-    os.path.join(os.path.dirname(__file__), 'components'),
-    os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules'),
+    os.path.join(NODE_MODULES, 'resolve'),
+    COMPONENT_ROOT,
+    COMPONENT_ROOT,
+    COMPONENT_ROOT,
+    NODE_MODULES,
 )
         self.assertEqual(config, expected)
 
@@ -370,3 +383,10 @@ if (typeof components__HelloWorld === 'undefined') throw new Error('Cannot find 
             component.render_js(),
             '\n<script src="' + component.bundle.get_urls()[0] + '"></script>\n<script>\n' + component.render_mount_js() + '\n</script>\n',
         )
+
+    def test_bundled_components_omit_react_and_react_addons(self):
+        bundle = bundle_component(REACT_ADDONS_COMPONENT, translate=True)
+        with open(bundle.get_assets()[0]['path'], 'r') as bundle_file:
+            content = bundle_file.read()
+        self.assertIn(os.path.join(NODE_MODULES, 'react', 'react.js'), content)
+        self.assertIn(os.path.join(NODE_MODULES, 'react', 'addons.js'), content)

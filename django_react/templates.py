@@ -12,8 +12,12 @@ module.exports = {{
         library: '{var}'
     }},
     externals: [{{
-      'react': {{
+      react: {{
         commonjs2: resolve.sync('react', {{basedir: '{dir}'}}),
+        root: 'React'
+      }},
+      'react/addons': {{
+        commonjs2: resolve.sync('react/addons', {{basedir: '{dir}'}}),
         root: 'React'
       }}
     }}],
