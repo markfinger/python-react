@@ -3,6 +3,7 @@ import json
 from django.contrib.staticfiles import finders
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
+from optional_django import six
 from .exceptions import ComponentSourceFileNotFound, ComponentWasNotBundled
 from .services import RenderService
 from .settings import WATCH_SOURCE
@@ -31,7 +32,10 @@ class RenderedComponent(object):
     def render_markup(self):
         markup = self.markup
         if self.bundle and not self.to_static_markup:
-            markup = '<span id="{id}">{markup}</span>'.format(
+            template = '<span id="{id}">{markup}</span>'
+            if six.PY2:
+                template = unicode(template)
+            markup = template.format(
                 id=self.get_container_id(),
                 markup=markup,
             )
