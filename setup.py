@@ -1,10 +1,9 @@
 from setuptools import setup
-
-VERSION = '0.10.0'
+import django_react
 
 setup(
     name='django-react',
-    version=VERSION,
+    version=django_react.VERSION,
     packages=['django_react', 'django_react.services'],
     package_data={
         'django_react': [
