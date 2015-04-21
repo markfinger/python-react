@@ -1,3 +1,2 @@
 django
-django-react==0.10.0
 django-webpack==3.0.1

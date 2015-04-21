@@ -20,10 +20,11 @@ module.exports = {{
         commonjs2: resolve.sync('react/addons', {{basedir: '{dir}'}}),
         root: 'React'
       }}
-    }}],
-    devtool: 'eval'{translate_config}
+    }}]{dev_tool_config}{translate_config}
 }};
 """
+
+DEV_TOOL_CONFIG = """,\n    devtool: 'eval'"""
 
 BUNDLE_TRANSLATE_CONFIG = \
 """,

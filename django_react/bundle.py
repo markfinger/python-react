@@ -2,7 +2,8 @@ import os
 import re
 import tempfile
 from django_webpack.compiler import webpack
-from .templates import BUNDLE_CONFIG, BUNDLE_TRANSLATE_CONFIG
+from .templates import BUNDLE_CONFIG, BUNDLE_TRANSLATE_CONFIG, DEV_TOOL_CONFIG
+from .conf import settings
 
 COMPONENT_CONFIG_FILES = {}
 
@@ -33,12 +34,17 @@ def get_webpack_config(path, translate=None):
             node_modules=PATH_TO_NODE_MODULES
         )
 
+    dev_tool_config = ''
+    if settings.DEV_TOOL:
+        dev_tool_config = DEV_TOOL_CONFIG
+
     return BUNDLE_CONFIG.format(
         path_to_resolve=os.path.join(PATH_TO_NODE_MODULES, 'resolve'),
         dir=os.path.dirname(path),
         file='./' + os.path.basename(path),
         var=var,
-        translate_config=translate_config
+        translate_config=translate_config,
+        dev_tool_config=dev_tool_config,
     )
 
 

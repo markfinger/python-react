@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from optional_django import six
 from .exceptions import ComponentSourceFileNotFound, ComponentWasNotBundled
 from .services import RenderService
-from .settings import WATCH_SOURCE
+from .conf import settings
 from .bundle import bundle_component
 from .templates import MOUNT_JS
 
@@ -99,7 +99,7 @@ def render_component(
         raise ComponentSourceFileNotFound(path_to_source)
 
     if watch_source is None:
-        watch_source = WATCH_SOURCE
+        watch_source = settings.WATCH_SOURCE
 
     bundled_component = None
     if bundle or translate or watch_source:

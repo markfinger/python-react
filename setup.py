@@ -14,7 +14,8 @@ setup(
     },
     install_requires=[
         'django-node==4.0.0',
-        'django-webpack==3.0.1'
+        'django-webpack==3.1.0',
+        'optional-django==0.2.1'
     ],
     description='Render and bundle React components from a Django application',
     long_description='Documentation at https://github.com/markfinger/django-react',

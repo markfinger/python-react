@@ -11,6 +11,7 @@ from django_react.bundle import (
 )
 from django_react.exceptions import ComponentRenderingError, ComponentSourceFileNotFound, ComponentWasNotBundled
 from django_webpack.compiler import WebpackBundle
+from django_react.conf import settings
 from .settings import STATIC_ROOT
 
 NODE_MODULES = os.path.join(os.path.dirname(django_react.__file__), 'services', 'node_modules')
@@ -50,7 +51,12 @@ class TestDjangoReact(unittest.TestCase):
         self.assertEqual(get_var_from_path('foo/test/one/two/bar/a'), 'bar__a')
         self.assertEqual(get_var_from_path('foo/test/one/two/bar/.a'), 'bar___a')
 
+    "\nvar resolve = require('/Users/markfinger/Projects/django-react/django_react/services/node_modules/resolve');\n\nmodule.exports = {\n    context: '/Users/markfinger/Projects/django-react/tests/components',\n    entry: './HelloWorld.js',\n    output: {\n        path: '[bundle_dir]/react-components',\n        filename: 'components__HelloWorld-[hash].js',\n        libraryTarget: 'umd',\n        library: 'components__HelloWorld'\n    },\n    externals: [{\n      react: {\n        commonjs2: resolve.sync('react', {basedir: '/Users/markfinger/Projects/django-react/tests/components'}),\n        root: 'React'\n      },\n      'react/addons': {\n        commonjs2: resolve.sync('react/addons', {basedir: '/Users/markfinger/Projects/django-react/tests/components'}),\n        root: 'React'\n      }\n    }]\n};\n"
+    "\nvar resolve = require('/Users/markfinger/Projects/django-react/django_react/services/node_modules/resolve');\n\nmodule.exports = {\n    context: '/Users/markfinger/Projects/django-react/tests/components',\n    entry: './HelloWorld.js',\n    output: {\n        path: '[bundle_dir]/react-components',\n        filename: 'components__HelloWorld-[hash].js',\n        libraryTarget: 'umd',\n        library: 'components__HelloWorld'\n    },\n    externals: [{\n      react: {\n        commonjs2: resolve.sync('react', {basedir: '/Users/markfinger/Projects/django-react/tests/components'}),\n        root: 'React'\n      },\n      'react/addons': {\n        commonjs2: resolve.sync('react/addons', {basedir: '/Users/markfinger/Projects/django-react/tests/components'}),\n        root: 'React'\n      }\n    }],\n    devtool: 'eval'\n};\n"
     def test_can_generate_a_webpack_config_for_a_js_component(self):
+        _DEV_TOOL = settings.DEV_TOOL
+        settings._unlock()
+        settings.DEV_TOOL = True
         config = get_webpack_config(HELLO_WORLD_COMPONENT_JS)
         expected = \
 """
@@ -83,10 +89,16 @@ module.exports = {
     COMPONENT_ROOT,
     COMPONENT_ROOT,
 )
-
         self.assertEqual(config, expected)
-
+        settings.DEV_TOOL = _DEV_TOOL
+        settings._lock()
+    "\nvar resolve = require('/Users/markfinger/Projects/django-react/django_react/services/node_modules/resolve');\n\nmodule.exports = {\n    context: '/Users/markfinger/Projects/django-react/tests/components',\n    entry: './HelloWorld.jsx',\n    output: {\n        path: '[bundle_dir]/react-components',\n        filename: 'components__HelloWorld-[hash].js',\n        libraryTarget: 'umd',\n        library: 'components__HelloWorld'\n    },\n    externals: [{\n      react: {\n        commonjs2: resolve.sync('react', {basedir: '/Users/markfinger/Projects/django-react/tests/components'}),\n        root: 'React'\n      },\n      'react/addons': {\n        commonjs2: resolve.sync('react/addons', {basedir: '/Users/markfinger/Projects/django-react/tests/components'}),\n        root: 'React'\n      }\n    }],\n    devtool: 'eval'\n,\n    module: {\n        loaders: [{\n            test: /\\.jsx$/,\n            exclude: /node_modules/,\n            loader: 'babel-loader'\n        }]\n    },\n    resolveLoader: {\n        root: '/Users/markfinger/Projects/django-react/django_react/services/node_modules'\n    }\n\n};\n"
+    "\nvar resolve = require('/Users/markfinger/Projects/django-react/django_react/services/node_modules/resolve');\n\nmodule.exports = {\n    context: '/Users/markfinger/Projects/django-react/tests/components',\n    entry: './HelloWorld.jsx',\n    output: {\n        path: '[bundle_dir]/react-components',\n        filename: 'components__HelloWorld-[hash].js',\n        libraryTarget: 'umd',\n        library: 'components__HelloWorld'\n    },\n    externals: [{\n      react: {\n        commonjs2: resolve.sync('react', {basedir: '/Users/markfinger/Projects/django-react/tests/components'}),\n        root: 'React'\n      },\n      'react/addons': {\n        commonjs2: resolve.sync('react/addons', {basedir: '/Users/markfinger/Projects/django-react/tests/components'}),\n        root: 'React'\n      }\n    }],\n    devtool: 'eval',\n\n    module: {\n        loaders: [{\n            test: /\\.jsx$/,\n            exclude: /node_modules/,\n            loader: 'babel-loader'\n        }]\n    },\n    resolveLoader: {\n        root: '/Users/markfinger/Projects/django-react/django_react/services/node_modules'\n    }\n\n};\n"
     def test_can_generate_a_webpack_config_for_a_jsx_component(self):
+        _DEV_TOOL = settings.DEV_TOOL
+        settings._unlock()
+        settings.DEV_TOOL = True
+
         config = get_webpack_config(HELLO_WORLD_COMPONENT_JSX, translate=True)
         expected = \
 """
@@ -132,6 +144,8 @@ module.exports = {
     NODE_MODULES,
 )
         self.assertEqual(config, expected)
+        settings.DEV_TOOL = _DEV_TOOL
+        settings._lock()
 
     def test_can_generate_and_create_a_config_file(self):
         filename = get_component_config_filename(HELLO_WORLD_COMPONENT_JS)
@@ -388,5 +402,5 @@ if (typeof components__HelloWorld === 'undefined') throw new Error('Cannot find 
         bundle = bundle_component(REACT_ADDONS_COMPONENT, translate=True)
         with open(bundle.get_assets()[0]['path'], 'r') as bundle_file:
             content = bundle_file.read()
-        self.assertIn(os.path.join(NODE_MODULES, 'react', 'react.js'), content)
-        self.assertIn(os.path.join(NODE_MODULES, 'react', 'addons.js'), content)
+        # A bit hacky, but seems to work
+        self.assertNotIn('Facebook, Inc', content)
