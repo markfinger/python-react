@@ -140,7 +140,7 @@ render_component(
   	to_static_markup = False,
 
   	# [optional] a boolean indicating that the component should be bundled for
-  	# reuse on the client-side. If `translate` or `watch_source` are provided, this
+  	# reuse on the client-side. If `translate` or `watch_source_files` are provided, this
   	# argument is ignored
   	bundle = True,
 
@@ -151,7 +151,7 @@ render_component(
   	# [optional] a boolean indicating that your source files should be watched
   	# for changes. When changes are detected, the component is rebuilt in background,
   	# ready for the next request. If not defined, defaults to `DEBUG`
-  	watch_source = True,
+  	watch_source_files = True,
 
   	# [optional] a class which is used to encode the props to JSON. Defaults
   	# to `django.core.serializers.json.DjangoJSONEncoder`
@@ -254,7 +254,7 @@ bundle_component(
   	# [optional] a boolean indicating that your source files should be watched
   	# for changes. When changes are detected, the component is rebuilt in
   	# background, ready for the next request. If not defined, defaults to `DEBUG`
-  	watch_source = True,
+  	watch_source_files = True,
 
 )
 ```

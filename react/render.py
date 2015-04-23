@@ -17,12 +17,12 @@ service = Service('react')
 
 
 class RenderedComponent(object):
-    def __init__(self, markup, path_to_source, props, serialized_props, watch_source, bundle, to_static_markup):
+    def __init__(self, markup, path_to_source, props, serialized_props, watch_source_files, bundle, to_static_markup):
         self.markup = markup
         self.path_to_source = path_to_source
         self.props = props
         self.serialized_props = serialized_props
-        self.watch_source = watch_source
+        self.watch_source_files = watch_source_files
         self.bundle = bundle
         self.to_static_markup = to_static_markup
 
@@ -54,7 +54,7 @@ class RenderedComponent(object):
             raise ComponentWasNotBundled(
                 (
                     'The component "{path}" was not bundled during the rendering process. '
-                    'Call render_component with `bundle`, `translate`, or `watch_source` '
+                    'Call render_component with `bundle`, `translate`, or `watch_source_files` '
                     'keyword arguments set to `True` to ensure that it is bundled.'
                 ).format(path=self.path_to_source)
             )
@@ -88,7 +88,7 @@ def render_component(
     # Rendering options
     path_to_source, props=None, to_static_markup=None,
     # Bundling options
-    bundle=None, translate=None, watch_source=None,
+    bundle=None, translate=None, watch_source_files=None,
     # Prop handling
     json_encoder=None
 ):
@@ -101,12 +101,12 @@ def render_component(
     if not os.path.exists(path_to_source):
         raise ComponentSourceFileNotFound(path_to_source)
 
-    if watch_source is None:
-        watch_source = settings.WATCH_SOURCE
+    if watch_source_files is None:
+        watch_source_files = settings.WATCH_SOURCE_FILES
 
     bundled_component = None
-    if bundle or translate or watch_source:
-        bundled_component = bundle_component(path_to_source, translate=translate, watch_source=watch_source)
+    if bundle or translate or watch_source_files:
+        bundled_component = bundle_component(path_to_source, translate=translate, watch_source_files=watch_source_files)
         path_to_source = bundled_component.get_assets()[0]['path']
 
     if json_encoder is None:
@@ -129,5 +129,5 @@ def render_component(
     markup = res.text
 
     return RenderedComponent(
-        markup, path_to_source, props, serialized_props, watch_source, bundled_component, to_static_markup
+        markup, path_to_source, props, serialized_props, watch_source_files, bundled_component, to_static_markup
     )

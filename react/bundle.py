@@ -7,9 +7,9 @@ from .templates import BUNDLE_CONFIG, BUNDLE_TRANSLATE_CONFIG, DEV_TOOL_CONFIG
 from .conf import settings
 
 
-def bundle_component(path, translate=None, watch_source=None):
+def bundle_component(path, translate=None, watch_source_files=None):
     filename = get_component_config_filename(path, translate)
-    return webpack(filename, watch_source=watch_source)
+    return webpack(filename, watch_source_files=watch_source_files)
 
 # TODO: replace this with a deterministic config file writer in webpack
 COMPONENT_CONFIG_FILES = {}

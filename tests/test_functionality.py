@@ -336,7 +336,7 @@ class TestReactFunctionality(unittest.TestCase):
         translated_component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, translate=True)
         self.assertIsInstance(translated_component.get_bundle(), WebpackBundle)
 
-        watched_component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, watch_source=True)
+        watched_component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, watch_source_files=True)
         self.assertIsInstance(watched_component.get_bundle(), WebpackBundle)
 
     def test_bundled_components_can_get_access_to_their_variable(self):

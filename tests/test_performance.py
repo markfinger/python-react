@@ -56,7 +56,7 @@ class TestReactPerformance(unittest.TestCase):
                     path_to_component,
                     props={'name': 'world'},
                     translate=True,
-                    watch_source=True,
+                    watch_source_files=True,
                     to_static_markup=True
                 )
             )
