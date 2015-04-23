@@ -27,7 +27,7 @@ class TestReactPerformance(unittest.TestCase):
 
     def test_performance(self):
         print('\n' + ('-' * 80))
-        print('django-react performance test')
+        print('python-react performance test')
         print('-' * 80)
 
         render_component_times = []
@@ -70,18 +70,18 @@ class TestReactPerformance(unittest.TestCase):
             iteration_count=iteration_count,
             value=sum(render_component_times)
         ))
-        print('Times: {value}'.format(value=render_component_times))
-        print('Max: {value}'.format(value=max(render_component_times)))
-        print('Min: {value}'.format(value=min(render_component_times)))
-        print('Mean: {value}'.format(value=sum(render_component_times) / len(render_component_times)))
-        print('Median: {value}'.format(value=median(render_component_times)))
+        print('Times: {value}'.format(render_component_times))
+        print('Max: {value}'.format(max(render_component_times)))
+        print('Min: {value}'.format(min(render_component_times)))
+        print('Mean: {value}'.format(sum(render_component_times) / len(render_component_times)))
+        print('Median: {value}'.format(median(render_component_times)))
 
         print('\nTotal time taken to render a watched component {iteration_count} times: {value}'.format(
             iteration_count=iteration_count,
             value=sum(render_watched_component_times)
         ))
-        print('Times: {value}'.format(value=render_watched_component_times))
-        print('Max: {value}'.format(value=max(render_watched_component_times)))
-        print('Min: {value}'.format(value=min(render_watched_component_times)))
-        print('Mean: {value}'.format(value=sum(render_watched_component_times) / len(render_watched_component_times)))
-        print('Median: {value}'.format(value=median(render_watched_component_times)))
+        print('Times: {}'.format(render_watched_component_times))
+        print('Max: {}'.format(max(render_watched_component_times)))
+        print('Min: {}'.format(min(render_watched_component_times)))
+        print('Mean: {}'.format(sum(render_watched_component_times) / len(render_watched_component_times)))
+        print('Median: {}'.format(median(render_watched_component_times)))
