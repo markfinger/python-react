@@ -56,7 +56,7 @@ class TestReactPerformance(unittest.TestCase):
                     path_to_component,
                     props={'name': 'world'},
                     translate=True,
-                    watch_source_files=True,
+                    watch_source=True,
                     to_static_markup=True
                 )
             )
@@ -70,11 +70,11 @@ class TestReactPerformance(unittest.TestCase):
             iteration_count=iteration_count,
             value=sum(render_component_times)
         ))
-        print('Times: {value}'.format(render_component_times))
-        print('Max: {value}'.format(max(render_component_times)))
-        print('Min: {value}'.format(min(render_component_times)))
-        print('Mean: {value}'.format(sum(render_component_times) / len(render_component_times)))
-        print('Median: {value}'.format(median(render_component_times)))
+        print('Times: {}'.format(render_component_times))
+        print('Max: {}'.format(max(render_component_times)))
+        print('Min: {}'.format(min(render_component_times)))
+        print('Mean: {}'.format(sum(render_component_times) / len(render_component_times)))
+        print('Median: {}'.format(median(render_component_times)))
 
         print('\nTotal time taken to render a watched component {iteration_count} times: {value}'.format(
             iteration_count=iteration_count,
