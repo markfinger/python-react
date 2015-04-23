@@ -1,6 +1,12 @@
 {
   "private": true,
   "dependencies": {
-    "react": "^0.13.0"
+    "babel-core": "^5.1.11",
+    "babel-loader": "^5.0.0",
+    "react": "^0.13.2",
+    "react-render": "^0.2.4",
+    "service-host": "git+https://git@github.com/markfinger/service-host#c26dd63074536dfdb3fbf0bfc7904b2cbe223613",
+    "webpack": "^1.8.8",
+    "webpack-service": "^0.1.1"
   }
 }

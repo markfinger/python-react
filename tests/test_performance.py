@@ -1,7 +1,8 @@
 import os
 import time
 import unittest
-from django_react.render import render_component
+from .utils import clean_bundle_root
+from react.render import render_component
 
 path_to_component = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components', 'PerfTestComponent.jsx'))
 
@@ -15,7 +16,15 @@ def median(l):
         return l[half]
 
 
-class TestDjangoReactPerformance(unittest.TestCase):
+class TestReactPerformance(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        clean_bundle_root()
+
+    @classmethod
+    def tearDownClass(cls):
+        clean_bundle_root()
+
     def test_performance(self):
         print('\n' + ('-' * 80))
         print('django-react performance test')

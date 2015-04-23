@@ -2,7 +2,7 @@ class ComponentSourceFileNotFound(Exception):
     pass
 
 
-class ComponentRenderingError(Exception):
+class ReactRenderingError(Exception):
     pass
 
 

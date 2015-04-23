@@ -1,16 +1,19 @@
 import os
+import sys
 import json
-from django.contrib.staticfiles import finders
-from django.core.serializers.json import DjangoJSONEncoder
-from django.utils.safestring import mark_safe
+from optional_django import staticfiles
+from optional_django.serializers import JSONEncoder
+from optional_django.safestring import mark_safe
 from optional_django import six
+from service_host.service import Service
+from service_host.exceptions import ServiceError
 from .exceptions import ComponentSourceFileNotFound, ComponentWasNotBundled
-from .services import RenderService
 from .conf import settings
 from .bundle import bundle_component
 from .templates import MOUNT_JS
+from .exceptions import ReactRenderingError
 
-service = RenderService()
+service = Service('react')
 
 
 class RenderedComponent(object):
@@ -90,7 +93,7 @@ def render_component(
     json_encoder=None
 ):
     if not os.path.isabs(path_to_source):
-        absolute_path_to_source = finders.find(path_to_source)
+        absolute_path_to_source = staticfiles.find(path_to_source)
         if not absolute_path_to_source:
             raise ComponentSourceFileNotFound(path_to_source)
         path_to_source = absolute_path_to_source
@@ -107,14 +110,23 @@ def render_component(
         path_to_source = bundled_component.get_assets()[0]['path']
 
     if json_encoder is None:
-        json_encoder = DjangoJSONEncoder
+        json_encoder = JSONEncoder
 
     if props is not None:
         serialized_props = json.dumps(props, cls=json_encoder)
     else:
         serialized_props = None
 
-    markup = service.render(path_to_source, serialized_props, to_static_markup)
+    try:
+        res = service.call(
+            path=path_to_source,
+            serializedProps=serialized_props,
+            toStaticMarkup=to_static_markup
+        )
+    except ServiceError as e:
+        raise six.reraise(ReactRenderingError, ReactRenderingError(*e.args), sys.exc_info()[2])
+
+    markup = res.text
 
     return RenderedComponent(
         markup, path_to_source, props, serialized_props, watch_source, bundled_component, to_static_markup

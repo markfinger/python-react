@@ -54,5 +54,4 @@ docs/_build/
 target/
 
 node_modules
-tests/static_root
 example/static
