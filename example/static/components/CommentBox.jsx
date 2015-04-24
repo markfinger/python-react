@@ -20,8 +20,8 @@ export default React.createClass({
 			type: 'POST',
 			dataType: 'json',
 			data: comment,
-			success: (comments) => {
-				this.setState({comments: comments});
+			success: (data) => {
+				this.setState({comments: data.comments});
 			},
 			error: (xhr, status, err) => {
 				console.error(this.props.url, status, err.toString());
@@ -32,8 +32,8 @@ export default React.createClass({
 		$.ajax({
 			url: this.props.url,
 			dataType: 'json',
-			success: (comments) => {
-				this.setState({comments: comments});
+			success: (data) => {
+				this.setState({comments: data.comments});
 			},
 			error: (xhr, status, err) => {
 				console.error(this.props.url, status, err.toString());
