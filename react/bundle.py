@@ -3,24 +3,24 @@ import re
 import tempfile
 from webpack.compiler import webpack
 from service_host.conf import settings as service_host_settings
-from .templates import BUNDLE_CONFIG, BUNDLE_TRANSLATE_CONFIG, DEV_TOOL_CONFIG
+from .templates import BUNDLE_CONFIG, BUNDLE_TRANSLATE_CONFIG, DEVTOOL_CONFIG
 from .conf import settings
 
 
-def bundle_component(path, translate=None, watch_source=None):
-    filename = get_component_config_filename(path, translate)
+def bundle_component(path, translate=None, watch_source=None, path_to_react=None, devtool=None):
+    filename = get_component_config_filename(path, translate=translate, path_to_react=path_to_react, devtool=devtool)
     return webpack(filename, watch_source=watch_source)
 
 # TODO: replace this with a deterministic config file writer in webpack
 COMPONENT_CONFIG_FILES = {}
 
 
-def get_component_config_filename(path, translate=None):
-    cache_key = (path, translate)
+def get_component_config_filename(path, translate=None, path_to_react=None, devtool=None):
+    cache_key = (path, translate, path_to_react, devtool)
     if cache_key in COMPONENT_CONFIG_FILES:
         return COMPONENT_CONFIG_FILES[cache_key]
 
-    config = get_webpack_config(path, translate)
+    config = get_webpack_config(path, translate=translate, path_to_react=path_to_react, devtool=devtool)
     filename = tempfile.mkstemp(suffix='.webpack.config.js')[1]
     with open(filename, 'w') as config_file:
         config_file.write(config)
@@ -30,13 +30,16 @@ def get_component_config_filename(path, translate=None):
     return filename
 
 
-def get_webpack_config(path, translate=None):
-    var = get_var_from_path(path)
+def get_webpack_config(path, translate=None, path_to_react=None, devtool=None):
+    if devtool is None:
+        devtool = settings.DEVTOOL
 
-    # TODO: clean up and scrap resolve?
-    # TODO: probably easiest to rely on node_modules babel-loader and provide a `path_to_react` arg
-    # TODO: actually, given that this is a pure convenience thing, I think just make it as rigid as possible
     node_modules = os.path.join(service_host_settings.SOURCE_ROOT, 'node_modules')
+
+    if path_to_react is None:
+        path_to_react = settings.PATH_TO_REACT or os.path.join(node_modules, 'react')
+
+    var = get_var_from_path(path)
 
     translate_config = ''
     if translate:
@@ -46,17 +49,18 @@ def get_webpack_config(path, translate=None):
             node_modules=node_modules
         )
 
-    dev_tool_config = ''
-    if settings.DEV_TOOL:
-        dev_tool_config = DEV_TOOL_CONFIG
+    devtool_config = ''
+
+    if devtool:
+        devtool_config = DEVTOOL_CONFIG.format(devtool=devtool)
 
     return BUNDLE_CONFIG.format(
-        path_to_react=os.path.join(node_modules, 'react'),
+        path_to_react=path_to_react,
         dir=os.path.dirname(path),
         file='./' + os.path.basename(path),
         var=var,
         translate_config=translate_config,
-        dev_tool_config=dev_tool_config,
+        devtool_config=devtool_config,
     )
 
 

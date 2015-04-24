@@ -3,6 +3,7 @@ from service_host.conf import settings as service_host_settings
 from webpack.conf import settings as webpack_settings
 
 TEST_ROOT = os.path.dirname(__file__)
+COMPONENT_ROOT = os.path.join(TEST_ROOT, 'components')
 
 service_host_settings.configure(
     SOURCE_ROOT=TEST_ROOT,

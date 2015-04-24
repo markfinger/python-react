@@ -18,11 +18,11 @@ module.exports = {{
         commonjs2: '{path_to_react}',
         root: 'React'
       }}
-    }}]{dev_tool_config}{translate_config}
+    }}]{devtool_config}{translate_config}
 }};
 """
 
-DEV_TOOL_CONFIG = """,\n    devtool: 'eval'"""
+DEVTOOL_CONFIG = """,\n    devtool: '{devtool}'"""
 
 BUNDLE_TRANSLATE_CONFIG = \
 """,

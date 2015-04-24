@@ -1,9 +1,28 @@
 import os
 import shutil
-from webpack.conf import settings
+import unittest
+from service_host.host import host
+from webpack.conf import settings as webpack_settings
 
 
-def clean_bundle_root():
-    # Clean out any files generated from previous test runs
-    if os.path.exists(settings.BUNDLE_ROOT):
-        shutil.rmtree(settings.BUNDLE_ROOT)
+class BaseTest(unittest.TestCase):
+    """
+    Between each test run, delete the bundle root and reset the server
+    """
+
+    __test__ = False
+
+    @classmethod
+    def setUpClass(cls):
+        cls.clean_bundle_root()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.clean_bundle_root()
+        host.restart()
+
+    @classmethod
+    def clean_bundle_root(cls):
+        # Clean out any files generated from previous test runs
+        if os.path.exists(webpack_settings.BUNDLE_ROOT):
+            shutil.rmtree(webpack_settings.BUNDLE_ROOT)

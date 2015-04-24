@@ -1,5 +1,5 @@
 # Dependencies
--e git+ssh://git@github.com/markfinger/python-service-host.git@02d4775bd2361bbe6af39b8ae1c3094275fde296#egg=service-host
+-e git+ssh://git@github.com/markfinger/python-service-host.git@6b116759aac48cfefe73eac306d85834c8206bf8#egg=service-host
 -e git+ssh://git@github.com/markfinger/django-webpack.git@9b7f77da48bdcd45a7fc0aaafe0e6931e3104884#egg=django-webpack
 optional-django==0.2.1
 

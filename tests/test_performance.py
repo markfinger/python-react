@@ -1,29 +1,14 @@
 import os
 import time
-import unittest
-from .utils import clean_bundle_root
 from react.render import render_component
+from .utils import BaseTest
+from .settings import TEST_ROOT
 
-path_to_component = os.path.abspath(os.path.join(os.path.dirname(__file__), 'components', 'PerfTestComponent.jsx'))
-
-
-def median(l):
-    half = int(len(l) / 2)
-    l.sort()
-    if len(l) % 2 == 0:
-        return (l[half-1] + l[half]) / 2.0
-    else:
-        return l[half]
+path_to_component = os.path.abspath(os.path.join(TEST_ROOT, 'components', 'PerfTestComponent.jsx'))
 
 
-class TestReactPerformance(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        clean_bundle_root()
-
-    @classmethod
-    def tearDownClass(cls):
-        clean_bundle_root()
+class TestReactPerformance(BaseTest):
+    __test__ = True
 
     def test_performance(self):
         print('\n' + ('-' * 80))
@@ -74,7 +59,7 @@ class TestReactPerformance(unittest.TestCase):
         print('Max: {}'.format(max(render_component_times)))
         print('Min: {}'.format(min(render_component_times)))
         print('Mean: {}'.format(sum(render_component_times) / len(render_component_times)))
-        print('Median: {}'.format(median(render_component_times)))
+        print('Median: {}'.format(self.median(render_component_times)))
 
         print('\nTotal time taken to render a watched component {iteration_count} times: {value}'.format(
             iteration_count=iteration_count,
@@ -84,4 +69,12 @@ class TestReactPerformance(unittest.TestCase):
         print('Max: {}'.format(max(render_watched_component_times)))
         print('Min: {}'.format(min(render_watched_component_times)))
         print('Mean: {}'.format(sum(render_watched_component_times) / len(render_watched_component_times)))
-        print('Median: {}'.format(median(render_watched_component_times)))
+        print('Median: {}'.format(self.median(render_watched_component_times)))
+
+    def median(self, l):
+        half = int(len(l) / 2)
+        l.sort()
+        if len(l) % 2 == 0:
+            return (l[half-1] + l[half]) / 2.0
+        else:
+            return l[half]
