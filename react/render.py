@@ -13,7 +13,7 @@ from .bundle import bundle_component
 from .templates import MOUNT_JS
 from .exceptions import ReactRenderingError
 
-service = Service('react')
+service = Service(settings.SERVICE_NAME)
 
 
 class RenderedComponent(object):
@@ -61,7 +61,7 @@ class RenderedComponent(object):
         return self.bundle
 
     def get_var(self):
-        return self.get_bundle().get_library()
+        return self.get_bundle().get_var()
 
     def get_container_id(self):
         return 'reactComponent-' + self.get_var()
@@ -78,7 +78,7 @@ class RenderedComponent(object):
     def render_js(self):
         return mark_safe(
             '\n{bundle}\n<script>\n{mount_js}\n</script>\n'.format(
-                bundle=self.get_bundle().render(),
+                bundle=self.get_bundle(),
                 mount_js=self.render_mount_js(),
             )
         )
@@ -107,7 +107,7 @@ def render_component(
     bundled_component = None
     if bundle or translate or watch_source:
         bundled_component = bundle_component(path_to_source, translate=translate, watch_source=watch_source)
-        path_to_source = bundled_component.get_assets()[0]['path']
+        path_to_source = bundled_component.get_paths()[0]
 
     if json_encoder is None:
         json_encoder = JSONEncoder

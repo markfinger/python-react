@@ -14,4 +14,6 @@ class Conf(conf.Conf):
     # bundling components
     WATCH_SOURCE_FILES = False
 
+    SERVICE_NAME = 'react'
+
 settings = Conf()
