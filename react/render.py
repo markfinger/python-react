@@ -5,15 +5,15 @@ from optional_django import staticfiles
 from optional_django.serializers import JSONEncoder
 from optional_django.safestring import mark_safe
 from optional_django import six
-from service_host.service import Service
-from service_host.exceptions import ServiceError
+from js_host.function import Function
+from js_host.exceptions import JSFunctionError
 from .exceptions import ComponentSourceFileNotFound, ComponentWasNotBundled
 from .conf import settings
 from .bundle import bundle_component
 from .templates import MOUNT_JS
 from .exceptions import ReactRenderingError
 
-service = Service(settings.SERVICE_NAME)
+function = Function(settings.FUNCTION_NAME)
 
 
 class RenderedComponent(object):
@@ -118,15 +118,13 @@ def render_component(
         serialized_props = None
 
     try:
-        res = service.call(
+        markup = function.call(
             path=path_to_source,
             serializedProps=serialized_props,
             toStaticMarkup=to_static_markup
         )
-    except ServiceError as e:
+    except JSFunctionError as e:
         raise six.reraise(ReactRenderingError, ReactRenderingError(*e.args), sys.exc_info()[2])
-
-    markup = res.text
 
     return RenderedComponent(
         markup, path_to_source, props, serialized_props, watch_source, bundled_component, to_static_markup

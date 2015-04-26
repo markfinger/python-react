@@ -1,7 +1,7 @@
 import os
 import shutil
 import unittest
-from service_host.host import host
+from js_host.host import host
 from webpack.conf import settings as webpack_settings
 
 

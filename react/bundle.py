@@ -2,7 +2,7 @@ import os
 import re
 import tempfile
 from webpack.compiler import webpack
-from service_host.conf import settings as service_host_settings
+from js_host.conf import settings as js_host_settings
 from .templates import BUNDLE_CONFIG, BUNDLE_TRANSLATE_CONFIG, DEVTOOL_CONFIG
 from .conf import settings
 
@@ -34,7 +34,7 @@ def get_webpack_config(path, translate=None, path_to_react=None, devtool=None):
     if devtool is None:
         devtool = settings.DEVTOOL
 
-    node_modules = os.path.join(service_host_settings.SOURCE_ROOT, 'node_modules')
+    node_modules = os.path.join(js_host_settings.SOURCE_ROOT, 'node_modules')
 
     if path_to_react is None:
         path_to_react = settings.PATH_TO_REACT or os.path.join(node_modules, 'react')
