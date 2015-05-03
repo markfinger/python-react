@@ -9,8 +9,6 @@ js_host_settings.configure(
     SOURCE_ROOT=TEST_ROOT,
     # Let the manager spin up an instance
     USE_MANAGER=True,
-    # Ensure the host stops when the python process does
-    ON_EXIT_STOP_MANAGED_HOSTS_AFTER=0,
 )
 
 webpack_settings.configure(

@@ -1,5 +1,5 @@
-django-react example
-====================
+python + react example
+======================
 
 This example illustrates how:
 - A single codebase can be used to generate server-side 
@@ -9,26 +9,13 @@ This example illustrates how:
   interactive features on clients without JavaScript enabled.
 
 
-Run the example
----------------
+Running the example
+-------------------
 
 ```bash
-# In the /example directory
-
-# Create a virtual environment for the example
-mkvirtualenv django-react-example
-
-# Install the project's python dependencies
 pip install -r requirements.txt
-
-# Install the project's JS dependencies
-./manage.py install_package_dependencies
-
-# Start the node server that we use to render and bundle components
-./manage.py start_node_server
-
-# In another shell, start the django devserver
-./manage.py runserver
+npm install
+python example.py
 ```
 
 And visit [http://127.0.0.1:8000](http://127.0.0.1:8000)

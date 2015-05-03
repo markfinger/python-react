@@ -4,10 +4,10 @@
     "babel-core": "^5.1.11",
     "babel-loader": "^5.0.0",
     "jquery": "^2.1.3",
+    "js-host": "^0.11.2",
     "marked": "^0.3.3",
     "react": "^0.13.1",
     "react-render": "^0.2.4",
-    "service-host": "git+https://git@github.com/markfinger/service-host#c26dd63074536dfdb3fbf0bfc7904b2cbe223613",
     "webpack": "^1.8.9",
     "webpack-service": "^0.1.1"
   }

@@ -2,7 +2,7 @@ var reactRender = require('react-render');
 var webpackService = require('webpack-service');
 
 module.exports = {
-	services: {
+	functions: {
 		react: reactRender,
 		webpack: webpackService
 	}

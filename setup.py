@@ -1,24 +1,16 @@
 from setuptools import setup
-import django_react
+import react
 
 setup(
-    name='django-react',
-    version=django_react.VERSION,
-    packages=['django_react', 'django_react.services'],
-    package_data={
-        'django_react': [
-            'services/package.json',
-            'services/render.js',
-        ]
-    },
+    name='react',
+    version=react.__version__,
+    packages=['django_react'],
     install_requires=[
-        'django-node==4.0.0',
-        'django-webpack==3.1.0',
         'optional-django==0.2.1'
     ],
-    description='Render and bundle React components from a Django application',
-    long_description='Documentation at https://github.com/markfinger/django-react',
+    description='Server-side rendering, client-side mounting, JSX translation, and component bundling',
+    long_description='Documentation at https://github.com/markfinger/python-react',
     author='Mark Finger',
     author_email='markfinger@gmail.com',
-    url='https://github.com/markfinger/django-react',
+    url='https://github.com/markfinger/python-react',
 )

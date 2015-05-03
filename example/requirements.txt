@@ -1,4 +1,4 @@
 flask==0.10.1
--e git+ssh://git@github.com/markfinger/python-service-host.git@master#egg=service-host
--e git+ssh://git@github.com/markfinger/django-webpack.git@15151b29c035cd9f44efe6e947dd9b05948b3db6#egg=django-webpack
+webpack==4.0.0
+js-host
 optional-django==0.2.1

@@ -15,7 +15,7 @@ def index():
 
     comment_box = render_component(
         # An absolute path to the component
-        os.path.join(BASE_DIR, 'static', 'components', 'CommentBox.jsx'),
+        os.path.join(BASE_DIR, 'static', 'jsx', 'CommentBox.jsx'),
 
         # The data that we use to render the component and mount it
         # on the client-side

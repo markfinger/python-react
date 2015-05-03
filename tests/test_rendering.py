@@ -103,17 +103,17 @@ class TestRendering(BaseTest):
         self.assertRaises(ComponentSourceFileNotFound, render_component, 'path/to/nothing.jsx')
 
     def test_rendered_components_which_are_bundled_have_access_to_their_bundle(self):
-        bundled_component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True)
+        bundled_component = render_component(HELLO_WORLD_COMPONENT_JS)
         self.assertRaises(ComponentWasNotBundled, bundled_component.get_bundle)
 
-        bundled_component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, bundle=True)
+        bundled_component = render_component(HELLO_WORLD_COMPONENT_JS, bundle=True)
         self.assertIsInstance(bundled_component.get_bundle(), WebpackBundle)
 
-        translated_component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, translate=True)
+        translated_component = render_component(HELLO_WORLD_COMPONENT_JS, translate=True)
         self.assertIsInstance(translated_component.get_bundle(), WebpackBundle)
 
-        watched_component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, watch_source=True)
-        self.assertIsInstance(watched_component.get_bundle(), WebpackBundle)
+        translated_component = render_component(HELLO_WORLD_COMPONENT_JS, bundle=True, translate=True)
+        self.assertIsInstance(translated_component.get_bundle(), WebpackBundle)
 
     def test_bundled_components_can_get_access_to_their_variable(self):
         component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, bundle=True)

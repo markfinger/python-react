@@ -6,23 +6,20 @@ from optional_django.serializers import JSONEncoder
 from optional_django.safestring import mark_safe
 from optional_django import six
 from js_host.function import Function
-from js_host.exceptions import JSFunctionError
+from js_host.exceptions import FunctionError
 from .exceptions import ComponentSourceFileNotFound, ComponentWasNotBundled
 from .conf import settings
 from .bundle import bundle_component
 from .templates import MOUNT_JS
 from .exceptions import ReactRenderingError
 
-function = Function(settings.FUNCTION_NAME)
-
 
 class RenderedComponent(object):
-    def __init__(self, markup, path_to_source, props, serialized_props, watch_source, bundle, to_static_markup):
+    def __init__(self, markup, path_to_source, props, serialized_props, bundle, to_static_markup):
         self.markup = markup
         self.path_to_source = path_to_source
         self.props = props
         self.serialized_props = serialized_props
-        self.watch_source = watch_source
         self.bundle = bundle
         self.to_static_markup = to_static_markup
 
@@ -53,9 +50,8 @@ class RenderedComponent(object):
         if not self.bundle:
             raise ComponentWasNotBundled(
                 (
-                    'The component "{path}" was not bundled during the rendering process. '
-                    'Call render_component with `bundle`, `translate`, or `watch_source` '
-                    'keyword arguments set to `True` to ensure that it is bundled.'
+                    'The component "{path}" was not bundled during the rendering process. Call render_component '
+                    'with `bundle` or `translate` keyword arguments set to `True` to ensure that it is bundled.'
                 ).format(path=self.path_to_source)
             )
         return self.bundle
@@ -84,30 +80,30 @@ class RenderedComponent(object):
         )
 
 
+js_host_function = Function(settings.JS_HOST_FUNCTION)
+
+
 def render_component(
     # Rendering options
-    path_to_source, props=None, to_static_markup=None,
+    path, props=None, to_static_markup=None,
     # Bundling options
-    bundle=None, translate=None, watch_source=None,
+    bundle=None, translate=None,
     # Prop handling
     json_encoder=None
 ):
-    if not os.path.isabs(path_to_source):
-        absolute_path_to_source = staticfiles.find(path_to_source)
-        if not absolute_path_to_source:
-            raise ComponentSourceFileNotFound(path_to_source)
-        path_to_source = absolute_path_to_source
+    if not os.path.isabs(path):
+        abs_path = staticfiles.find(path)
+        if not abs_path:
+            raise ComponentSourceFileNotFound(path)
+        path = abs_path
 
-    if not os.path.exists(path_to_source):
-        raise ComponentSourceFileNotFound(path_to_source)
-
-    if watch_source is None:
-        watch_source = settings.WATCH_SOURCE_FILES
+    if not os.path.exists(path):
+        raise ComponentSourceFileNotFound(path)
 
     bundled_component = None
-    if bundle or translate or watch_source:
-        bundled_component = bundle_component(path_to_source, translate=translate, watch_source=watch_source)
-        path_to_source = bundled_component.get_paths()[0]
+    if bundle or translate:
+        bundled_component = bundle_component(path, translate=translate)
+        path = bundled_component.get_paths()[0]
 
     if json_encoder is None:
         json_encoder = JSONEncoder
@@ -118,14 +114,12 @@ def render_component(
         serialized_props = None
 
     try:
-        markup = function.call(
-            path=path_to_source,
+        markup = js_host_function.call(
+            path=path,
             serializedProps=serialized_props,
             toStaticMarkup=to_static_markup
         )
-    except JSFunctionError as e:
+    except FunctionError as e:
         raise six.reraise(ReactRenderingError, ReactRenderingError(*e.args), sys.exc_info()[2])
 
-    return RenderedComponent(
-        markup, path_to_source, props, serialized_props, watch_source, bundled_component, to_static_markup
-    )
+    return RenderedComponent(markup, path, props, serialized_props, bundled_component, to_static_markup)
