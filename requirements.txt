@@ -5,3 +5,4 @@ webpack==4.0.1
 # Dev dependencies
 js-host
 nose==1.3.6
+django
