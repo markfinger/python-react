@@ -54,9 +54,11 @@ Documentation
 -------------
 
 - [Installation](#installation)
-- [render_component()](#render_component)
-- [RenderedComponent](#renderedcomponent)
-- [bundle_component()](#bundle_component)
+- [API](#API)
+  - [render_component()](#render_component)
+  - [RenderedComponent](#renderedcomponent)
+  - [bundle_component()](#bundle_component)
+- [Django integration](#django-integration)
 - [Settings](#settings)
 - [Running the tests](#running-the-tests)
 
@@ -96,8 +98,11 @@ pip install react
 ```
 
 
-render_component()
-------------------
+API
+---
+
+
+### render_component()
 
 Renders a component to its initial HTML. You can use this method to generate HTML on the server 
 and send the markup down on the initial request for faster page loads and to allow search engines 
@@ -136,8 +141,7 @@ render_component(
 ```
 
 
-RenderedComponent
------------------
+### RenderedComponent
 
 The result of rendering a component to its initial markup. RenderedComponents can be converted to 
 strings to output their generated markup. If `translate` or `bundle` was provided to `render_component`, 
@@ -192,8 +196,7 @@ print(component.render_mount_js())
 ```
 
 
-bundle_component()
-------------------
+### bundle_component()
 
 Packages a React component so that it can be re-used on the client-side. JSX + ES6+7 files are translated
 to JavaScript with [Babel](https://babeljs.io/).
@@ -221,6 +224,31 @@ bundle_component(
 ```
 
 
+Django integration
+------------------
+
+If you are using python-react in a Django project, add `'react'` to your `INSTALLED_APPS`
+
+```python
+INSTALLED_APPS = (
+    # ...
+    'react',
+)
+```
+
+To configure python-react, place a dictionary named `REACT` into your settings file. For example
+
+```python
+REACT = {
+    'DEVTOOL': 'eval' if DEBUG else None,
+}
+```
+
+When calling `render_component` or `bundle_component`, python-react will attempt to use Django's
+static file finders to resolve relative paths. If you provide a path such as `'my_app/component.jsx'`,
+Django would resolve that path to an app's static folder, eg: `'my_app/static/my_app/component.jsx'`.
+
+
 Settings
 --------
 
@@ -235,15 +263,6 @@ DEBUG = True
 settings.configure(
     DEVTOOL='eval' if DEBUG else None,
 )
-```
-
-If you are using python-react in a Django project, you should place a dictionary named `REACT` into
-your settings file. For example
-
-```python
-REACT = {
-    'DEVTOOL': 'eval' if DEBUG else None,
-}
 ```
 
 ### DEVTOOL
