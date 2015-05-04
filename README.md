@@ -37,7 +37,7 @@ from react.bundle import bundle_component
 
 bundle = bundle_component(
     # A path to a file exporting your React component
-    'path/to/component.jsx,
+    'path/to/component.jsx',
     # Translate the source to JavaScript from JSX + ES6/7
     translate=True
 )
@@ -107,7 +107,7 @@ Returns a [RenderedComponent](#renderedcomponent) instance which can be passed d
 front end to output the component's markup and to mount the component for client-side interactivity.
 
 
-### Usage
+#### Usage
 
 ```python
 from react.render import render_component
@@ -205,7 +205,7 @@ If you require more flexibility in the bundling process, you are recommended to 
 what is happening, and then use python-webpack yourself.
 
 
-### Usage
+#### Usage
 
 ```python
 from react.bundle import bundle_component
