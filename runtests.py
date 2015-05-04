@@ -15,7 +15,7 @@ print('\n' + '-' * 80)
 print('Running tests with django')
 print('-' * 80)
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings_django'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
 if hasattr(django, 'setup'):  # Only compatible with Django >= 1.7
     django.setup()
 

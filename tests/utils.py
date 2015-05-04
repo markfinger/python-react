@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 from js_host.host import host
-from webpack.conf import settings as webpack_settings
+import webpack.conf
 
 
 class BaseTest(unittest.TestCase):
@@ -24,5 +24,5 @@ class BaseTest(unittest.TestCase):
     @classmethod
     def clean_bundle_root(cls):
         # Clean out any files generated from previous test runs
-        if os.path.exists(webpack_settings.BUNDLE_ROOT):
-            shutil.rmtree(webpack_settings.BUNDLE_ROOT)
+        if os.path.exists(webpack.conf.settings.BUNDLE_ROOT):
+            shutil.rmtree(webpack.conf.settings.BUNDLE_ROOT)
