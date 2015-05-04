@@ -1,5 +1,5 @@
-python + react example
-======================
+python + react + webpack example
+================================
 
 This example illustrates how:
 - A single codebase can be used to generate server-side 
@@ -19,12 +19,3 @@ python example.py
 ```
 
 And visit [http://127.0.0.1:8000](http://127.0.0.1:8000)
-
-**Note** that the first request may take a while to render, this is down to the 
-node server having to read the app's codebase into memory. The initial overhead
-will only occur on the first request, subsequent requests will be rendered
-immediately.
-
-If you make changes to the app's JS codebase, the node server will detect the
-changes and perform incremental rebuilds so that when the next request comes in,
-everything is ready and immediately responsive.

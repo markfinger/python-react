@@ -8,7 +8,7 @@ DEBUG = True
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 js_host_settings.configure(
-    # USE_MANAGER=DEBUG
+    USE_MANAGER=DEBUG
 )
 
 webpack_settings.configure(
