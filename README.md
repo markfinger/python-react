@@ -29,15 +29,15 @@ print(component)
 print(component.render_js())
 ```
 
-If you only want to pre-compile a JSX file to JS, you can bundle your component into a single file by 
-calling `bundle_component`.
+If you only want to translate your JSX files to JS, you can translate and bundle your source code into 
+a single file by using `bundle_component`.
 
 ```python
 from react.bundle import bundle_component
 
 bundle = bundle_component(
     # A path to a file exporting your React component
-    'path/to/component.jsx',
+    '/path/to/component.jsx',
     # Translate the source to JavaScript from JSX + ES6/7
     translate=True
 )
