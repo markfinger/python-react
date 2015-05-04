@@ -4,7 +4,7 @@ import react
 setup(
     name='react',
     version=react.__version__,
-    packages=['django_react'],
+    packages=['react'],
     install_requires=[
         'webpack==4.0.1',
         'optional-django==0.3.0',
