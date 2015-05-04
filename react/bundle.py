@@ -1,13 +1,24 @@
 import os
 import re
 import tempfile
+from optional_django import staticfiles
 from webpack.compiler import webpack
 from js_host.conf import settings as js_host_settings
+from .exceptions import ComponentSourceFileNotFound
 from .templates import BUNDLE_CONFIG, BUNDLE_TRANSLATE_CONFIG, DEVTOOL_CONFIG
 from .conf import settings
 
 
 def bundle_component(path, translate=None, path_to_react=None, devtool=None):
+    if not os.path.isabs(path):
+        abs_path = staticfiles.find(path)
+        if not abs_path:
+            raise ComponentSourceFileNotFound(path)
+        path = abs_path
+
+    if not os.path.exists(path):
+        raise ComponentSourceFileNotFound(path)
+
     filename = get_component_config_filename(path, translate=translate, path_to_react=path_to_react, devtool=devtool)
     return webpack(filename)
 
