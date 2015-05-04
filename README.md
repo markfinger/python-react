@@ -54,7 +54,7 @@ Documentation
 -------------
 
 - [Installation](#installation)
-- [API](#API)
+- [API](#api)
   - [render_component()](#render_component)
   - [RenderedComponent](#renderedcomponent)
   - [bundle_component()](#bundle_component)
