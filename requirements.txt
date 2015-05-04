@@ -1,6 +1,6 @@
 # Dependencies
-optional-django==0.2.1
-webpack==4.0.0
+optional-django==0.3.0
+webpack==4.0.1
 
 # Dev dependencies
 js-host
