@@ -24,7 +24,7 @@ component = render_component(
 # The rendered markup
 print(component)
 
-# Render JavaScript which will mount the component on the client-side and
+# Outputs JavaScript which will mount the component on the client-side and
 # provide immediate interactivity
 print(component.render_js())
 ```
@@ -57,6 +57,7 @@ Documentation
 - [render_component()](#render_component)
 - [RenderedComponent](#renderedcomponent)
 - [bundle_component()](#bundle_component)
+- [Settings](#settings)
 - [Running the tests](#running-the-tests)
 
 
@@ -98,12 +99,12 @@ pip install react
 render_component()
 ------------------
 
-Renders a component to its initial HTML. You can use this method to generate HTML
-on the server and send the markup down on the initial request for faster page loads
-and to allow search engines to crawl your pages for SEO purposes.
+Renders a component to its initial HTML. You can use this method to generate HTML on the server 
+and send the markup down on the initial request for faster page loads and to allow search engines 
+to crawl your pages for SEO purposes.
 
-Returns a `RenderedComponent` instance, which can be passed directly into templates 
-to output the component's HTML, and to mount the component for client-side interactivity.
+Returns a [RenderedComponent](#renderedcomponent) instance which can be passed directly into your 
+front end to output the component's markup and to mount the component for client-side interactivity.
 
 
 ### Usage
@@ -119,14 +120,15 @@ render_component(
     props = {
         'foo': 'bar'
     },
-    # An optional boolean indicating that the component should be translated
-    # from JSX and ES6/7 before rendering. Components are translated with Babel
+    # An optional boolean indicating that the component should be bundled and 
+    # translated from JSX and ES6/7 before rendering. Components are translated 
+    # with Babel
     translate = True,
     # An optional boolean indicating that the component should be bundled for
-    # reuse on the client-side. If `translate` is set to True, this argument is ignored
+    # before rendering. If `translate` is set to True, this argument is ignored
     bundle = True,
-    # An optional boolean indicating that React's `renderToStaticMarkup`
-    # method should be used, rather than `renderToString`
+    # An optional boolean indicating that React's `renderToStaticMarkup` method 
+    # should be used, rather than `renderToString`
     to_static_markup = False,
     # An optional class which is used to encode the props to JSON
     json_encoder=None,
@@ -137,10 +139,9 @@ render_component(
 RenderedComponent
 -----------------
 
-The result of rendering a component to its initial markup. RenderedComponents can be 
-converted to strings to output their generated markup. If `translate` or `bundle` was
-provided to `render_component`, they can also be mounted on the client-side to provide
-immediate interactivity.
+The result of rendering a component to its initial markup. RenderedComponents can be converted to 
+strings to output their generated markup. If `translate` or `bundle` was provided to `render_component`, 
+they can also be mounted on the client-side to provide immediate interactivity.
 
 ```python
 component = render_component(...)
@@ -151,7 +152,8 @@ str(component)
 # Also outputs the generated markup
 component.render_markup()
 
-# Render JS which will remount the component over the call
+# Render JS which will mount the component over the rendered markup.
+# This enables you to provide immediate interactivity
 component.render_js()
 ```
 
@@ -162,7 +164,7 @@ page without duplicating React's codebase.
 
 Be aware that the mounting strategy used by `render_js` is only intended for convenience. If you 
 want to use a more custom solution for mounting or bundling, there are a couple of helpers provided 
-to assist:
+to assist you:
 
 ```python
 # The data used to render the component, this can be plugged straight into the client-side
@@ -196,8 +198,8 @@ bundle_component()
 Packages a React component so that it can be re-used on the client-side. JSX + ES6+7 files are translated
 to JavaScript with [Babel](https://babeljs.io/).
 
-Be aware that `bundle_component` is primarily a convenience method. It plugs a pre-built webpack config 
-into [python-webpack](https://github.com/markfinger/python-webpack).
+Be aware that `bundle_component` is primarily a convenience method. Under the hood, it plugs a pre-built 
+webpack config file into [python-webpack](https://github.com/markfinger/python-webpack).
 
 If you require more flexibility in the bundling process, you are recommended to read the code to understand
 what is happening, and then use python-webpack yourself.
@@ -217,6 +219,51 @@ bundle_component(
     translate = True,
 )
 ```
+
+
+Settings
+--------
+
+Settings can be defined by calling `react.conf.settings.configure` with keyword arguments matching 
+the setting that you want to define. For example
+
+```python
+from react.conf import settings
+
+DEBUG = True
+
+settings.configure(
+    DEVTOOL='eval' if DEBUG else None,
+)
+```
+
+If you are using python-react in a Django project, you should place a dictionary named `REACT` into
+your settings file. For example
+
+```python
+REACT = {
+    'DEVTOOL': 'eval' if DEBUG else None,
+}
+```
+
+### DEVTOOL
+
+The [devtool](http://webpack.github.io/docs/configuration.html#devtool) that webpack uses when 
+bundling components.
+
+During development, you are recommended to set this to `'eval'`, as it will assist with debugging
+translated and bundled assets.
+
+Default: `None`
+
+### PATH_TO_REACT
+
+An import path that will be used when rendering bundled components.
+
+If not defined, this will default to the version of React installed within the `node_modules` directory 
+within your js-host `SOURCE_ROOT` setting.
+
+Default: `None`
 
 
 Running the tests
