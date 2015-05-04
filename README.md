@@ -29,8 +29,8 @@ print(component)
 print(component.render_js())
 ```
 
-If you only want to translate your JSX files to JS, you can translate and bundle your source code into 
-a single file by using `bundle_component`.
+If you only want to plug your JSX files into the client-side, you can translate the source code and
+bundle it into a single file by using `bundle_component`.
 
 ```python
 from react.bundle import bundle_component
@@ -45,7 +45,7 @@ bundle = bundle_component(
 # Renders a script element pointing to the bundled component
 print(bundle.render())
 
-# Outputs the variable name that the component is exposed as.
+# Outputs the global variable name that the component is exposed as.
 print(bundle.get_var())
 ```
 
