@@ -17,7 +17,11 @@ setup(
         'optional-django==0.2.1'
     ],
     description='Render and bundle React components from a Django application',
-    long_description='Documentation at https://github.com/markfinger/django-react',
+    long_description='''
+django-react is now deprecated and has been replaced by https://github.com/markfinger/python-react
+
+Documentation for django-react is available at https://github.com/markfinger/python-react/tree/0.11.0
+''',
     author='Mark Finger',
     author_email='markfinger@gmail.com',
     url='https://github.com/markfinger/django-react',
