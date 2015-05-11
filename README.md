@@ -279,8 +279,16 @@ Default: `None`
 
 An import path that will be used when rendering bundled components.
 
-If not defined, this will default to the version of React installed within the `node_modules` directory 
-within your js-host `SOURCE_ROOT` setting.
+If not defined, the bundler will default to using js-host's SOURCE_ROOT via `os.path.join(SOURCE_ROOT, 'node_modules', 'react')`.
+
+Default: `None`
+
+### TRANSLATE_TEST
+
+When bundling a component with `translate=True`, this JavaScript regex is tested against every file to 
+determine if the babel loader should run over it.
+
+If not defined, the bundler will default to using `'/.jsx$/'`.
 
 Default: `None`
 
