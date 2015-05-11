@@ -150,8 +150,11 @@ bundle = bundle_component(
     translate = True,
 )
 
-# Render the 
+# Render a <script> element pointing to the bundle
 bundle.render()
+
+# Returns the variable that the bundle exposes the component as
+bundle.get_var()
 ```
 
 ### RenderedComponent
