@@ -29,8 +29,11 @@ print(component)
 print(component.render_js())
 ```
 
-If you only want to use your JSX files on the client-side, you can translate and bundle the source code 
-with [bundle_component](#bundle_component).
+[render_component](#render_component) is the main entry point to pre-render components and package them for 
+use on the client-side.
+
+If you only want to use your JSX files on the client-side, you can use [bundle_component](#bundle_component) 
+to translate and bundle the source code into a form that will run in a browser.
 
 
 Documentation
