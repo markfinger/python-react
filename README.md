@@ -135,8 +135,8 @@ to JavaScript with [Babel](https://babeljs.io/).
 Be aware that `bundle_component` is primarily a convenience method. Under the hood, it simply generates a webpack 
 config file which is passed to [python-webpack](https://github.com/markfinger/python-webpack).
 
-If you require more flexibility in the bundling process, you are recommended to [read the code](react/bundle.py) 
-and then use [python-webpack](https://github.com/markfinger/python-webpack) directly.
+If you require more flexibility in the bundling process, you are recommended to read the code and then use
+python-webpack directly.
 
 
 #### Usage
@@ -239,7 +239,8 @@ REACT = {
 
 When calling `render_component` or `bundle_component`, python-react will attempt to use Django's
 static file finders to resolve relative paths. If you provide a relative path such as 
-`'my_app/component.jsx'`, Django may resolve that path to an app's static folder, for example: `'my_app/static/my_app/component.jsx'`.
+`'my_app/component.jsx'`, Django may resolve that path to an app's static folder, for example: 
+`'my_app/static/my_app/component.jsx'`.
 
 
 Settings
@@ -272,7 +273,8 @@ Default: `None`
 
 An import path that will be used when rendering bundled components.
 
-If not defined, the bundler will default to using js-host's SOURCE_ROOT via `os.path.join(SOURCE_ROOT, 'node_modules', 'react')`.
+If not defined, the bundler will default to using js-host's SOURCE_ROOT via 
+`os.path.join(SOURCE_ROOT, 'node_modules', 'react')`.
 
 Default: `None`
 
