@@ -1,10 +1,7 @@
-import os
 import time
 from react.render import render_component
 from .utils import BaseTest
-from .settings import TEST_ROOT
-
-path_to_component = os.path.abspath(os.path.join(TEST_ROOT, 'components', 'PerfTestComponent.jsx'))
+from .settings import Components
 
 
 class TestReactPerformance(BaseTest):
@@ -24,7 +21,7 @@ class TestReactPerformance(BaseTest):
             start = time.time()
             rendered_components.append(
                 render_component(
-                    path_to_component,
+                    Components.PERF_TEST,
                     props={'name': 'world'},
                     translate=True,
                     to_static_markup=True

@@ -1,11 +1,12 @@
+import json
 import os
 import re
 import tempfile
 from optional_django import staticfiles
 from webpack.compiler import webpack
+from webpack.config_file import ConfigFile, JS
 from js_host.conf import settings as js_host_settings
 from .exceptions import ComponentSourceFileNotFound
-from .templates import BUNDLE_CONFIG, BUNDLE_TRANSLATE_CONFIG, DEVTOOL_CONFIG
 from .conf import settings
 
 
@@ -19,63 +20,125 @@ def bundle_component(path, translate=None, path_to_react=None, devtool=None):
     if not os.path.exists(path):
         raise ComponentSourceFileNotFound(path)
 
-    filename = get_component_config_filename(path, translate=translate, path_to_react=path_to_react, devtool=devtool)
-    return webpack(filename)
+    config = generate_config_for_component(path, translate=translate, path_to_react=path_to_react, devtool=devtool)
 
-# TODO: replace this with a deterministic config file writer in webpack
-COMPONENT_CONFIG_FILES = {}
+    config_file = generate_config_file(config)
 
+    var = generate_var_from_path(path)
 
-def get_component_config_filename(path, translate=None, path_to_react=None, devtool=None):
-    cache_key = (path, translate, path_to_react, devtool)
-    if cache_key in COMPONENT_CONFIG_FILES:
-        return COMPONENT_CONFIG_FILES[cache_key]
+    path_to_config_file = get_path_to_config_file(config_file, prefix=var + '.')
 
-    config = get_webpack_config(path, translate=translate, path_to_react=path_to_react, devtool=devtool)
-    filename = tempfile.mkstemp(suffix='.webpack.config.js')[1]
-    with open(filename, 'w') as config_file:
-        config_file.write(config)
-
-    COMPONENT_CONFIG_FILES[cache_key] = filename
-
-    return filename
+    return webpack(path_to_config_file)
 
 
-def get_webpack_config(path, translate=None, path_to_react=None, devtool=None):
-    if devtool is None:
-        devtool = settings.DEVTOOL
+def get_path_to_config_file(config_file, prefix=None):
+    path = config_file.generate_path_to_file(prefix=prefix)
+    return config_file.write(path, force=False)
+
+
+def generate_config_file(config):
+    return ConfigFile(
+        JS('var path = require("path");\n'),
+        JS('module.exports = '), config, JS(';'),
+    )
+
+
+def generate_config_for_component(path, translate=None, path_to_react=None, devtool=None):
+    """
+    Generates a webpack config object to bundle a component
+    """
+
+    var = generate_var_from_path(path)
 
     node_modules = os.path.join(js_host_settings.SOURCE_ROOT, 'node_modules')
 
     if path_to_react is None:
         path_to_react = settings.PATH_TO_REACT or os.path.join(node_modules, 'react')
 
-    var = get_var_from_path(path)
+    config = {
+        'context': js_path_join(os.path.dirname(path)),
+        'entry': '.' + os.path.sep + os.path.basename(path),
+        'output': {
+            'path': '[bundle_dir]/react-components',
+            'filename': var + '-[hash].js',
+            'libraryTarget': 'umd',
+            'library': var
+        },
+        'externals': [{
+            'react': {
+                'commonjs2': js_path_join(path_to_react),
+                'root': 'React'
+            },
+            'react/addons': {
+                'commonjs2': js_path_join(path_to_react),
+                'root': 'React'
+            }
+        }]
+    }
 
-    translate_config = ''
     if translate:
-        # JSX + ES6/7 support
-        translate_config += BUNDLE_TRANSLATE_CONFIG.format(
-            ext=os.path.splitext(path)[-1],
-            node_modules=node_modules
-        )
+        translate_test = settings.TRANSLATE_TEST or '/.jsx$/'
 
-    devtool_config = ''
+        config.update({
+            'module': {
+                'loaders': [{
+                    'test': JS(translate_test),
+                    'exclude': JS('/node_modules/'),
+                    'loader': 'babel-loader'
+                }]
+            },
+            'resolveLoader': {
+                'root': js_path_join(node_modules)
+            }
+        })
 
     if devtool:
-        devtool_config = DEVTOOL_CONFIG.format(devtool=devtool)
+        config['devtool'] = devtool
 
-    return BUNDLE_CONFIG.format(
-        path_to_react=path_to_react,
-        dir=os.path.dirname(path),
-        file='./' + os.path.basename(path),
-        var=var,
-        translate_config=translate_config,
-        devtool_config=devtool_config,
-    )
+    return config
 
 
-def get_var_from_path(path):
+def split_path(path):
+    """
+    Splits a path into the various parts and returns a list
+    """
+
+    parts = []
+
+    drive, path = os.path.splitdrive(path)
+
+    while True:
+        newpath, tail = os.path.split(path)
+
+        if newpath == path:
+            assert not tail
+            if path:
+                parts.append(path)
+            break
+
+        parts.append(tail)
+        path = newpath
+
+    if drive:
+        parts.append(drive)
+
+    parts.reverse()
+
+    return parts
+
+
+def js_path_join(path):
+    """
+    Splits a path so that it can be rejoined by the JS engine. Helps to avoid
+    OS compatibility issues due to string encoding
+    """
+    return JS('path.join.apply(path, ' + json.dumps(split_path(path)) + ')')
+
+
+def generate_var_from_path(path):
+    """
+    Infer a variable name from a path
+    """
     var = '{parent_dir}__{filename}'.format(
         parent_dir=os.path.basename(os.path.dirname(path)),
         filename=os.path.splitext(os.path.basename(path))[0]

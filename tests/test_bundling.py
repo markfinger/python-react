@@ -1,247 +1,169 @@
 import os
+from webpack.config_file import JS, ConfigFile
 from react.render import render_component
-from react.bundle import get_webpack_config, get_var_from_path, get_component_config_filename, bundle_component
+from react.bundle import (
+    generate_var_from_path, generate_config_for_component, js_path_join, split_path, generate_config_file,
+    get_path_to_config_file, bundle_component
+)
 from .utils import BaseTest
-from .settings import TEST_ROOT, COMPONENT_ROOT
-
-
-HELLO_WORLD_COMPONENT_JS = os.path.join(COMPONENT_ROOT, 'HelloWorld.js')
-HELLO_WORLD_COMPONENT_JSX = os.path.join(COMPONENT_ROOT, 'HelloWorld.jsx')
-REACT_ADDONS_COMPONENT = os.path.join(COMPONENT_ROOT, 'ReactAddonsComponent.jsx')
+from .settings import TEST_ROOT, Components
 
 
 class TestBundling(BaseTest):
     __test__ = True
 
     def test_can_generate_a_var_from_a_path(self):
-        self.assertEqual(get_var_from_path('/foo/bar/woz.jsx'), 'bar__woz')
-        self.assertEqual(get_var_from_path('/foo-bar/woz.jsx'), 'foo_bar__woz')
-        self.assertEqual(get_var_from_path('/foo/ba +\\r/woz.jsx'), 'ba_r__woz')
-        self.assertEqual(get_var_from_path('foo/test/one/two/bar/a'), 'bar__a')
-        self.assertEqual(get_var_from_path('foo/test/one/two/bar/.a'), 'bar___a')
+        self.assertEqual(generate_var_from_path('/foo/bar/woz.jsx'), 'bar__woz')
+        self.assertEqual(generate_var_from_path('/foo-bar/woz.jsx'), 'foo_bar__woz')
+        self.assertEqual(generate_var_from_path('/foo/ba +\\r/woz.jsx'), 'ba_r__woz')
+        self.assertEqual(generate_var_from_path('foo/test/one/two/bar/a'), 'bar__a')
+        self.assertEqual(generate_var_from_path('foo/test/one/two/bar/.a'), 'bar___a')
+
+    def test_can_generate_js_literal_to_join_paths(self):
+        js = js_path_join(Components.HELLO_WORLD_JS)
+        self.assertIsInstance(js, JS)
+        self.assertEqual(
+            js.content,
+            'path.join.apply(path, ["' + '", "'.join(split_path(Components.HELLO_WORLD_JS)) + '"])'
+        )
+
+    def validate_generated_config(self, config, path, translate=None, path_to_react=None, devtool=None):
+        self.assertIsInstance(config['context'], JS)
+        self.assertEqual(
+            config['context'].content,
+            'path.join.apply(path, ["' + '", "'.join(split_path(os.path.dirname(path))) + '"])'
+        )
+
+        self.assertEqual(
+            config['entry'],
+            '.' + os.path.sep + os.path.basename(path)
+        )
+
+        var = generate_var_from_path(path)
+
+        self.assertEqual(
+            config['output']['path'],
+            '[bundle_dir]/react-components'
+        )
+
+        self.assertEqual(
+            config['output']['filename'],
+            var + '-[hash].js'
+        )
+
+        self.assertEqual(
+            config['output']['filename'],
+            var + '-[hash].js'
+        )
+
+        self.assertEqual(
+            config['output']['libraryTarget'],
+            'umd'
+        )
+
+        self.assertEqual(
+            config['output']['library'],
+            var
+        )
+
+        path_to_react = path_to_react or os.path.join(TEST_ROOT, 'node_modules', 'react')
+
+        self.assertIsInstance(config['externals'][0]['react']['commonjs2'], JS)
+        self.assertEqual(
+            config['externals'][0]['react']['commonjs2'].content,
+            'path.join.apply(path, ["' + '", "'.join(split_path(path_to_react)) + '"])'
+        )
+        self.assertEqual(config['externals'][0]['react']['root'], 'React')
+
+        self.assertIsInstance(config['externals'][0]['react/addons']['commonjs2'], JS)
+        self.assertEqual(
+            config['externals'][0]['react/addons']['commonjs2'].content,
+            'path.join.apply(path, ["' + '", "'.join(split_path(path_to_react)) + '"])'
+        )
+        self.assertEqual(config['externals'][0]['react/addons']['root'], 'React')
+
+        if devtool:
+            self.assertEqual(config['devtool'], devtool)
+
+        if translate:
+            self.assertIsInstance(config['module']['loaders'][0]['test'], JS)
+            self.assertEqual(config['module']['loaders'][0]['test'].content, '/.jsx$/')
+
+            self.assertIsInstance(config['module']['loaders'][0]['exclude'], JS)
+            self.assertEqual(config['module']['loaders'][0]['exclude'].content, '/node_modules/')
+
+            self.assertEqual(config['module']['loaders'][0]['loader'], 'babel-loader')
+
+            node_modules = os.path.join(TEST_ROOT, 'node_modules')
+            self.assertIsInstance(config['resolveLoader']['root'], JS)
+            self.assertEqual(
+                config['resolveLoader']['root'].content,
+                'path.join.apply(path, ["' + '", "'.join(split_path(node_modules)) + '"])',
+            )
 
     def test_can_generate_a_webpack_config_for_a_js_component(self):
-        config = get_webpack_config(HELLO_WORLD_COMPONENT_JS)
-        expected = \
-"""
-module.exports = {
-    context: '%s',
-    entry: './HelloWorld.js',
-    output: {
-        path: '[bundle_dir]/react-components',
-        filename: 'components__HelloWorld-[hash].js',
-        libraryTarget: 'umd',
-        library: 'components__HelloWorld'
-    },
-    externals: [{
-      react: {
-        commonjs2: '%s',
-        root: 'React'
-      },
-      'react/addons': {
-        commonjs2: '%s',
-        root: 'React'
-      }
-    }]
-};
-""" % (
-    COMPONENT_ROOT,
-    os.path.join(TEST_ROOT, 'node_modules', 'react'),
-    os.path.join(TEST_ROOT, 'node_modules', 'react'),
-)
-        self.assertEqual(config, expected)
+        config = generate_config_for_component(Components.HELLO_WORLD_JS)
+        self.validate_generated_config(config, Components.HELLO_WORLD_JS)
 
     def test_can_generate_a_webpack_config_for_a_js_component_with_a_devtool(self):
-        config = get_webpack_config(HELLO_WORLD_COMPONENT_JS, devtool='eval')
-        expected = \
-"""
-module.exports = {
-    context: '%s',
-    entry: './HelloWorld.js',
-    output: {
-        path: '[bundle_dir]/react-components',
-        filename: 'components__HelloWorld-[hash].js',
-        libraryTarget: 'umd',
-        library: 'components__HelloWorld'
-    },
-    externals: [{
-      react: {
-        commonjs2: '%s',
-        root: 'React'
-      },
-      'react/addons': {
-        commonjs2: '%s',
-        root: 'React'
-      }
-    }],
-    devtool: 'eval'
-};
-""" % (
-    COMPONENT_ROOT,
-    os.path.join(TEST_ROOT, 'node_modules', 'react'),
-    os.path.join(TEST_ROOT, 'node_modules', 'react'),
-)
-        self.assertEqual(config, expected)
+        config = generate_config_for_component(Components.HELLO_WORLD_JS, devtool='eval')
+        self.validate_generated_config(config, Components.HELLO_WORLD_JS, devtool='eval')
 
     def test_can_generate_a_webpack_config_with_a_path_to_react(self):
-        config = get_webpack_config(HELLO_WORLD_COMPONENT_JS, path_to_react='/abs/path/to/node_modules/react')
-        expected = \
-"""
-module.exports = {
-    context: '%s',
-    entry: './HelloWorld.js',
-    output: {
-        path: '[bundle_dir]/react-components',
-        filename: 'components__HelloWorld-[hash].js',
-        libraryTarget: 'umd',
-        library: 'components__HelloWorld'
-    },
-    externals: [{
-      react: {
-        commonjs2: '/abs/path/to/node_modules/react',
-        root: 'React'
-      },
-      'react/addons': {
-        commonjs2: '/abs/path/to/node_modules/react',
-        root: 'React'
-      }
-    }]
-};
-""" % (
-    COMPONENT_ROOT
-)
-        self.assertEqual(config, expected)
+        config = generate_config_for_component(
+            Components.HELLO_WORLD_JS,
+            path_to_react='/abs/path/to/node_modules/react'
+        )
+        self.validate_generated_config(
+            config,
+            Components.HELLO_WORLD_JS,
+            path_to_react='/abs/path/to/node_modules/react'
+        )
 
     def test_can_generate_a_webpack_config_for_a_jsx_component(self):
-        config = get_webpack_config(HELLO_WORLD_COMPONENT_JSX, translate=True)
-        expected = \
-"""
-module.exports = {
-    context: '%s',
-    entry: './HelloWorld.jsx',
-    output: {
-        path: '[bundle_dir]/react-components',
-        filename: 'components__HelloWorld-[hash].js',
-        libraryTarget: 'umd',
-        library: 'components__HelloWorld'
-    },
-    externals: [{
-      react: {
-        commonjs2: '%s',
-        root: 'React'
-      },
-      'react/addons': {
-        commonjs2: '%s',
-        root: 'React'
-      }
-    }],
-    module: {
-        loaders: [{
-            test: /\.jsx$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader'
-        }]
-    },
-    resolveLoader: {
-        root: '%s'
-    }
-
-};
-""" % (
-    COMPONENT_ROOT,
-    os.path.join(TEST_ROOT, 'node_modules', 'react'),
-    os.path.join(TEST_ROOT, 'node_modules', 'react'),
-    os.path.join(TEST_ROOT, 'node_modules'),
-)
-        self.assertEqual(config, expected)
+        config = generate_config_for_component(Components.HELLO_WORLD_JSX, translate=True)
+        self.validate_generated_config(config, Components.HELLO_WORLD_JSX, translate=True)
 
     def test_can_generate_a_webpack_config_for_a_jsx_component_with_a_devtool(self):
-        config = get_webpack_config(HELLO_WORLD_COMPONENT_JSX, translate=True, devtool='eval')
-        expected = \
-"""
-module.exports = {
-    context: '%s',
-    entry: './HelloWorld.jsx',
-    output: {
-        path: '[bundle_dir]/react-components',
-        filename: 'components__HelloWorld-[hash].js',
-        libraryTarget: 'umd',
-        library: 'components__HelloWorld'
-    },
-    externals: [{
-      react: {
-        commonjs2: '%s',
-        root: 'React'
-      },
-      'react/addons': {
-        commonjs2: '%s',
-        root: 'React'
-      }
-    }],
-    devtool: 'eval',
-    module: {
-        loaders: [{
-            test: /\.jsx$/,
-            exclude: /node_modules/,
-            loader: 'babel-loader'
-        }]
-    },
-    resolveLoader: {
-        root: '%s'
-    }
-
-};
-""" % (
-    COMPONENT_ROOT,
-    os.path.join(TEST_ROOT, 'node_modules', 'react'),
-    os.path.join(TEST_ROOT, 'node_modules', 'react'),
-    os.path.join(TEST_ROOT, 'node_modules'),
-)
-        self.assertEqual(config, expected)
+        config = generate_config_for_component(Components.HELLO_WORLD_JSX, translate=True, devtool='eval')
+        self.validate_generated_config(config, Components.HELLO_WORLD_JSX, translate=True, devtool='eval')
 
     def test_can_generate_and_create_a_config_file(self):
-        filename = get_component_config_filename(HELLO_WORLD_COMPONENT_JS)
-        with open(filename, 'r') as config_file:
-            contents = config_file.read()
-            self.assertEqual(contents, get_webpack_config(HELLO_WORLD_COMPONENT_JS))
+        config = generate_config_for_component(Components.HELLO_WORLD_JS)
 
-        filename = get_component_config_filename(HELLO_WORLD_COMPONENT_JSX, translate=True)
-        with open(filename, 'r') as config_file:
-            contents = config_file.read()
-            self.assertEqual(contents, get_webpack_config(HELLO_WORLD_COMPONENT_JSX, translate=True))
+        config_file = generate_config_file(config)
+        self.assertIsInstance(config_file, ConfigFile)
 
-    def test_generated_config_files_are_cached(self):
-        self.assertEqual(
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS),
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS),
-        )
-        self.assertEqual(
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS, translate=True),
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS, translate=True),
-        )
-        self.assertNotEqual(
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS, translate=True),
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS, translate=False),
-        )
-        self.assertNotEqual(
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS),
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JSX),
-        )
-        self.assertNotEqual(
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS, translate=True),
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JSX, translate=True),
-        )
-        self.assertNotEqual(
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS, translate=True),
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JSX, translate=False),
-        )
-        self.assertNotEqual(
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JS, translate=False),
-            get_component_config_filename(HELLO_WORLD_COMPONENT_JSX, translate=False),
-        )
+        self.assertIsInstance(config_file.content[0], JS)
+        self.assertEqual(config_file.content[0].content, 'var path = require("path");\n')
+
+        self.assertIsInstance(config_file.content[1], JS)
+        self.assertEqual(config_file.content[1].content, 'module.exports = ')
+
+        self.assertEqual(config_file.content[2], config)
+        self.validate_generated_config(config_file.content[2], Components.HELLO_WORLD_JS)
+
+        self.assertIsInstance(config_file.content[3], JS)
+        self.assertEqual(config_file.content[3].content, ';')
+
+    def test_can_get_a_path_to_a_config_file(self):
+        config = generate_config_for_component(Components.HELLO_WORLD_JS)
+
+        config_file = generate_config_file(config)
+
+        path = get_path_to_config_file(config_file)
+
+        self.assertEqual(config_file.generate_path_to_file(), path)
+
+        self.assertTrue(os.path.exists(path))
+
+        with open(path, 'r') as output_file:
+            content = output_file.read()
+
+        self.assertEqual(content, config_file.render())
 
     def test_can_bundle_a_js_component(self):
-        bundle = bundle_component(HELLO_WORLD_COMPONENT_JS)
+        bundle = bundle_component(Components.HELLO_WORLD_JS)
         asset = bundle.get_assets()[0]
         self.assertTrue(os.path.exists(asset['path']))
         with open(asset['path'], 'r') as asset_file:
@@ -249,7 +171,7 @@ module.exports = {
             self.assertIn('// __WEBPACK_BUNDLE_TEST__', contents)
 
     def test_can_bundle_a_jsx_component(self):
-        bundle = bundle_component(HELLO_WORLD_COMPONENT_JSX, translate=True)
+        bundle = bundle_component(Components.HELLO_WORLD_JSX, translate=True)
         asset = bundle.get_assets()[0]
         self.assertTrue(os.path.exists(asset['path']))
         with open(asset['path'], 'r') as asset_file:
@@ -257,25 +179,25 @@ module.exports = {
             self.assertIn('// __WEBPACK_TRANSLATE_BUNDLE_TEST__', contents)
 
     def test_can_render_a_bundled_js_component(self):
-        bundle = bundle_component(HELLO_WORLD_COMPONENT_JS)
+        bundle = bundle_component(Components.HELLO_WORLD_JS)
         asset = bundle.get_assets()[0]
         component = render_component(asset['path'], to_static_markup=True)
         self.assertEqual(str(component), '<span>Hello </span>')
 
     def test_can_render_a_bundled_jsx_component(self):
-        bundle = bundle_component(HELLO_WORLD_COMPONENT_JSX, translate=True)
+        bundle = bundle_component(Components.HELLO_WORLD_JSX, translate=True)
         asset = bundle.get_assets()[0]
         component = render_component(asset['path'], to_static_markup=True)
         self.assertEqual(str(component), '<span>Hello </span>')
 
     def test_can_pass_props_when_rendering_a_bundled_js_component(self):
-        bundle = bundle_component(HELLO_WORLD_COMPONENT_JS)
+        bundle = bundle_component(Components.HELLO_WORLD_JS)
         asset = bundle.get_assets()[0]
         component = render_component(asset['path'], props={'name': 'world!'}, to_static_markup=True)
         self.assertEqual(str(component), '<span>Hello world!</span>')
 
     def test_can_pass_props_when_rendering_a_bundled_jsx_component(self):
-        bundle = bundle_component(HELLO_WORLD_COMPONENT_JSX, translate=True)
+        bundle = bundle_component(Components.HELLO_WORLD_JSX, translate=True)
         asset = bundle.get_assets()[0]
         component = render_component(asset['path'], props={'name': 'world!'}, to_static_markup=True)
         self.assertEqual(
@@ -284,8 +206,8 @@ module.exports = {
         )
 
     def test_bundled_components_omit_react_and_react_addons(self):
-        bundle = bundle_component(REACT_ADDONS_COMPONENT, translate=True)
+        bundle = bundle_component(Components.REACT_ADDONS, translate=True)
         with open(bundle.get_assets()[0]['path'], 'r') as bundle_file:
             content = bundle_file.read()
         # A bit hacky, but seems to work
-        self.assertNotIn('Facebook, Inc', content)
+        self.assertNotIn('Facebook', content)

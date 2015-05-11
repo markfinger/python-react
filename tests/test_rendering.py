@@ -1,33 +1,25 @@
-import os
 from optional_django import six
 from webpack.compiler import WebpackBundle
 from react.render import render_component, RenderedComponent
 from react.exceptions import ReactRenderingError, ComponentSourceFileNotFound, ComponentWasNotBundled
 from .utils import BaseTest
-from .settings import COMPONENT_ROOT
-
-
-HELLO_WORLD_COMPONENT_JS = os.path.join(COMPONENT_ROOT, 'HelloWorld.js')
-HELLO_WORLD_COMPONENT_JSX = os.path.join(COMPONENT_ROOT, 'HelloWorld.jsx')
-HELLO_WORLD_WRAPPER_COMPONENT = os.path.join(COMPONENT_ROOT, 'HelloWorldWrapper.jsx')
-ERROR_THROWING_COMPONENT = os.path.join(COMPONENT_ROOT, 'ErrorThrowingComponent.jsx')
-SYNTAX_ERROR_COMPONENT = os.path.join(COMPONENT_ROOT, 'SyntaxErrorComponent.jsx')
+from .settings import Components
 
 
 class TestRendering(BaseTest):
     __test__ = True
 
     def test_can_render_a_component_in_js(self):
-        component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True)
+        component = render_component(Components.HELLO_WORLD_JS, to_static_markup=True)
         self.assertEqual(str(component), '<span>Hello </span>')
 
     def test_can_render_a_component_in_jsx(self):
-        component = render_component(HELLO_WORLD_COMPONENT_JSX, translate=True, to_static_markup=True)
+        component = render_component(Components.HELLO_WORLD_JSX, translate=True, to_static_markup=True)
         self.assertEqual(str(component), '<span>Hello </span>')
 
     def test_can_render_a_component_requiring_another_component(self):
         component = render_component(
-            HELLO_WORLD_WRAPPER_COMPONENT,
+            Components.HELLO_WORLD_JSX_WRAPPER,
             props={
                 'name': 'world!',
                 'numbers': [1, 2, 3, 4, 5],
@@ -39,7 +31,7 @@ class TestRendering(BaseTest):
 
     def test_can_render_a_component_to_a_string_with_props(self):
         component = render_component(
-            HELLO_WORLD_COMPONENT_JSX,
+            Components.HELLO_WORLD_JSX,
             {'name': 'world!'},
             translate=True,
         )
@@ -50,7 +42,7 @@ class TestRendering(BaseTest):
 
     def test_render_component_returns_a_rendered_component(self):
         component = render_component(
-            HELLO_WORLD_COMPONENT_JSX,
+            Components.HELLO_WORLD_JSX,
             props={
                 'name': 'world!'
             },
@@ -65,7 +57,7 @@ class TestRendering(BaseTest):
 
     def test_can_get_a_components_serialized_props(self):
         component = render_component(
-            HELLO_WORLD_COMPONENT_JSX,
+            Components.HELLO_WORLD_JSX,
             props={
                 'name': 'world!',
             },
@@ -76,24 +68,24 @@ class TestRendering(BaseTest):
         self.assertEqual(component.render_props(), '{"name": "world!"}')
 
     def test_component_js_rendering_errors_raise_an_exception(self):
-        self.assertRaises(ReactRenderingError, render_component, ERROR_THROWING_COMPONENT)
-        self.assertRaises(ReactRenderingError, render_component, ERROR_THROWING_COMPONENT, to_static_markup=True)
+        self.assertRaises(ReactRenderingError, render_component, Components.ERROR_THROWING)
+        self.assertRaises(ReactRenderingError, render_component, Components.ERROR_THROWING, to_static_markup=True)
 
     def test_components_with_syntax_errors_raise_exceptions(self):
-        self.assertRaises(ReactRenderingError, render_component, SYNTAX_ERROR_COMPONENT)
-        self.assertRaises(ReactRenderingError, render_component, SYNTAX_ERROR_COMPONENT, to_static_markup=True)
+        self.assertRaises(ReactRenderingError, render_component, Components.SYNTAX_ERROR)
+        self.assertRaises(ReactRenderingError, render_component, Components.SYNTAX_ERROR, to_static_markup=True)
 
     def test_unserializable_props_raise_an_exception(self):
         self.assertRaises(
             TypeError,
             render_component,
-            HELLO_WORLD_COMPONENT_JSX,
+            Components.HELLO_WORLD_JSX,
             props={'name': lambda: None}
         )
         self.assertRaises(
             TypeError,
             render_component,
-            HELLO_WORLD_COMPONENT_JSX,
+            Components.HELLO_WORLD_JSX,
             props={'name': self}
         )
 
@@ -103,28 +95,28 @@ class TestRendering(BaseTest):
         self.assertRaises(ComponentSourceFileNotFound, render_component, 'path/to/nothing.jsx')
 
     def test_rendered_components_which_are_bundled_have_access_to_their_bundle(self):
-        bundled_component = render_component(HELLO_WORLD_COMPONENT_JS)
+        bundled_component = render_component(Components.HELLO_WORLD_JS)
         self.assertRaises(ComponentWasNotBundled, bundled_component.get_bundle)
 
-        bundled_component = render_component(HELLO_WORLD_COMPONENT_JS, bundle=True)
+        bundled_component = render_component(Components.HELLO_WORLD_JS, bundle=True)
         self.assertIsInstance(bundled_component.get_bundle(), WebpackBundle)
 
-        translated_component = render_component(HELLO_WORLD_COMPONENT_JS, translate=True)
+        translated_component = render_component(Components.HELLO_WORLD_JS, translate=True)
         self.assertIsInstance(translated_component.get_bundle(), WebpackBundle)
 
-        translated_component = render_component(HELLO_WORLD_COMPONENT_JS, bundle=True, translate=True)
+        translated_component = render_component(Components.HELLO_WORLD_JS, bundle=True, translate=True)
         self.assertIsInstance(translated_component.get_bundle(), WebpackBundle)
 
     def test_bundled_components_can_get_access_to_their_variable(self):
-        component = render_component(HELLO_WORLD_COMPONENT_JS, to_static_markup=True, bundle=True)
+        component = render_component(Components.HELLO_WORLD_JS, to_static_markup=True, bundle=True)
         self.assertEqual(component.get_var(), 'components__HelloWorld')
 
     def test_bundled_components_have_their_markup_wrapped_in_a_container(self):
-        component = render_component(HELLO_WORLD_COMPONENT_JS, bundle=True)
+        component = render_component(Components.HELLO_WORLD_JS, bundle=True)
         self.assertEqual(str(component), '<span id="reactComponent-components__HelloWorld">' + component.markup + '</span>')
 
     def test_bundled_components_can_render_mount_js(self):
-        component = render_component(HELLO_WORLD_COMPONENT_JS, bundle=True)
+        component = render_component(Components.HELLO_WORLD_JS, bundle=True)
         expected = \
 """
 if (typeof React === 'undefined') throw new Error('Cannot find `React` global variable. Have you added a script element to this page which points to React?');
@@ -140,7 +132,7 @@ if (typeof components__HelloWorld === 'undefined') throw new Error('Cannot find 
         self.assertEqual(component.render_mount_js(), expected)
 
     def test_bundled_components_can_render_mount_js_with_props(self):
-        component = render_component(HELLO_WORLD_COMPONENT_JS, props={'name': 'world!'}, bundle=True)
+        component = render_component(Components.HELLO_WORLD_JS, props={'name': 'world!'}, bundle=True)
         expected = \
 """
 if (typeof React === 'undefined') throw new Error('Cannot find `React` global variable. Have you added a script element to this page which points to React?');
@@ -156,7 +148,7 @@ if (typeof components__HelloWorld === 'undefined') throw new Error('Cannot find 
         self.assertEqual(component.render_mount_js(), expected)
 
     def test_bundled_components_can_render_script_elements_with_the_bundle_and_mount_js(self):
-        component = render_component(HELLO_WORLD_COMPONENT_JS, bundle=True)
+        component = render_component(Components.HELLO_WORLD_JS, bundle=True)
         self.assertEqual(
             component.render_js(),
             '\n<script src="' + component.bundle.get_urls()[0] + '"></script>\n<script>\n' + component.render_mount_js() + '\n</script>\n',
