@@ -132,11 +132,11 @@ render_component(
 Packages a React component so that it can be re-used on the client-side. JSX + ES6+7 files are translated
 to JavaScript with [Babel](https://babeljs.io/).
 
-Be aware that `bundle_component` is primarily a convenience method. Under the hood, it plugs a pre-built 
-webpack config file into [python-webpack](https://github.com/markfinger/python-webpack).
+Be aware that `bundle_component` is primarily a convenience method. Under the hood, it simply generates a webpack 
+config file which is passed to [python-webpack](https://github.com/markfinger/python-webpack).
 
-If you require more flexibility in the bundling process, you are recommended to read the code to understand
-what is happening, and then use python-webpack yourself.
+If you require more flexibility in the bundling process, you are recommended to [read the code](react/bundle.py) 
+and then use [python-webpack](https://github.com/markfinger/python-webpack) directly.
 
 
 #### Usage
