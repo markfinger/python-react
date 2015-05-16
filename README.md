@@ -75,7 +75,7 @@ Install [python-webpack](https://github.com/markfinger/python-webpack)
 Install python-react's JS dependencies
 
 ```bash
-npm install --save react react-render
+npm install --save react react-render babel-core babel-loader
 ```
 
 Add react-render to the functions definition of your `host.config.js` file
