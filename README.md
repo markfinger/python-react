@@ -283,9 +283,7 @@ Default: `None`
 When bundling a component with `translate=True`, this JavaScript regex is tested against every file to 
 determine if the babel loader should run over it.
 
-If not defined, the bundler will default to using `'/.jsx$/'`.
-
-Default: `None`
+Default: `'/.jsx?$/'`
 
 
 Running the tests
