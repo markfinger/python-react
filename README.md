@@ -29,25 +29,11 @@ print(component)
 print(component.render_js())
 ```
 
-If you only want to plug your JSX files into the client-side, you can translate the source code and
-bundle it into a single file by using `bundle_component`.
+[render_component](#render_component) is the main entry point to pre-render components and package them for 
+use on the client-side.
 
-```python
-from react.bundle import bundle_component
-
-bundle = bundle_component(
-    # A path to a file exporting your React component
-    '/path/to/component.jsx',
-    # Translate the source to JavaScript from JSX + ES6/7
-    translate=True
-)
-
-# Renders a script element pointing to the bundled component
-print(bundle.render())
-
-# Outputs the global variable name that the component is exposed as.
-print(bundle.get_var())
-```
+If you only want to use your JSX files on the client-side, you can use [bundle_component](#bundle_component) 
+to translate and bundle the source code into a form that will run in a browser.
 
 
 Documentation
@@ -56,8 +42,8 @@ Documentation
 - [Installation](#installation)
 - [API](#api)
   - [render_component()](#render_component)
-  - [RenderedComponent](#renderedcomponent)
   - [bundle_component()](#bundle_component)
+  - [RenderedComponent](#renderedcomponent)
 - [Django integration](#django-integration)
 - [Settings](#settings)
 - [Running the tests](#running-the-tests)
@@ -141,11 +127,44 @@ render_component(
 ```
 
 
+### bundle_component()
+
+Packages a React component so that it can be re-used on the client-side. JSX + ES6+7 files are translated
+to JavaScript with [Babel](https://babeljs.io/).
+
+Be aware that `bundle_component` is primarily a convenience method. Under the hood, it simply generates a webpack 
+config file which is passed to [python-webpack](https://github.com/markfinger/python-webpack).
+
+If you require more flexibility in the bundling process, you are recommended to read the code and then use
+python-webpack directly.
+
+
+#### Usage
+
+```python
+from react.bundle import bundle_component
+
+bundle = bundle_component(
+    # A path to a file which exports the component. If the path is relative,
+    # django's static file finders will attempt to find the file
+    path='...',
+    # An optional boolean indicating that the component should be translated
+    # from JSX and ES6/7 during the bundling process
+    translate = True,
+)
+
+# Render a <script> element pointing to the bundle
+bundle.render()
+
+# Returns the variable that the bundle exposes the component as
+bundle.get_var()
+```
+
 ### RenderedComponent
 
 The result of rendering a component to its initial markup. RenderedComponents can be converted to 
 strings to output their generated markup. If `translate` or `bundle` was provided to `render_component`, 
-they can also be mounted on the client-side to provide immediate interactivity.
+the component can also be mounted on the client-side to provide immediate interactivity.
 
 ```python
 component = render_component(...)
@@ -161,14 +180,13 @@ component.render_markup()
 component.render_js()
 ```
 
-Note: if you wish to use the `render_js` method on the client-side, you **must** provide a 
-`<script>` element pointing to React. React is omitted from the bundled component so that 
-build times are reduced, and to ensure that multiple components can be included on a single 
-page without duplicating React's codebase.
+Note: if you wish to use the `render_js` method on the client-side, you **must** provide a `<script>` 
+element pointing to React. React is omitted from the bundled component so that build times are reduced, 
+and to ensure that multiple components can be included on a single page without duplicating React's
+codebase.
 
-Be aware that the mounting strategy used by `render_js` is only intended for convenience. If you 
-want to use a more custom solution for mounting or bundling, there are a couple of helpers provided 
-to assist you:
+Be aware that the mounting strategy used by `render_js` is only intended for convenience. If you want to 
+use a more custom solution for mounting or bundling, there are a couple of helpers provided to assist you:
 
 ```python
 # The data used to render the component, this can be plugged straight into the client-side
@@ -195,33 +213,8 @@ print(component.markup)
 print(component.render_mount_js())
 ```
 
-
-### bundle_component()
-
-Packages a React component so that it can be re-used on the client-side. JSX + ES6+7 files are translated
-to JavaScript with [Babel](https://babeljs.io/).
-
-Be aware that `bundle_component` is primarily a convenience method. Under the hood, it plugs a pre-built 
-webpack config file into [python-webpack](https://github.com/markfinger/python-webpack).
-
-If you require more flexibility in the bundling process, you are recommended to read the code to understand
-what is happening, and then use python-webpack yourself.
-
-
-#### Usage
-
-```python
-from react.bundle import bundle_component
-
-bundle_component(
-    # A path to a file which exports the component. If the path is relative,
-    # django's static file finders will attempt to find the file
-    path='...',
-    # An optional boolean indicating that the component should be translated
-    # from JSX and ES6/7 during the bundling process
-    translate = True,
-)
-```
+The codebase in `react/bundle.py` also provides a number of examples illustrating how you can 
+programmatically generate configuration files for webpack.
 
 
 Django integration
@@ -245,8 +238,9 @@ REACT = {
 ```
 
 When calling `render_component` or `bundle_component`, python-react will attempt to use Django's
-static file finders to resolve relative paths. If you provide a path such as `'my_app/component.jsx'`,
-Django would resolve that path to an app's static folder, eg: `'my_app/static/my_app/component.jsx'`.
+static file finders to resolve relative paths. If you provide a relative path such as 
+`'my_app/component.jsx'`, Django may resolve that path to an app's static folder, for example: 
+`'my_app/static/my_app/component.jsx'`.
 
 
 Settings
@@ -279,8 +273,17 @@ Default: `None`
 
 An import path that will be used when rendering bundled components.
 
-If not defined, this will default to the version of React installed within the `node_modules` directory 
-within your js-host `SOURCE_ROOT` setting.
+If not defined, the bundler will default to using js-host's SOURCE_ROOT via 
+`os.path.join(SOURCE_ROOT, 'node_modules', 'react')`.
+
+Default: `None`
+
+### TRANSLATE_TEST
+
+When bundling a component with `translate=True`, this JavaScript regex is tested against every file to 
+determine if the babel loader should run over it.
+
+If not defined, the bundler will default to using `'/.jsx$/'`.
 
 Default: `None`
 
