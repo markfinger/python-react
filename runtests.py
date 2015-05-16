@@ -2,7 +2,6 @@
 
 import subprocess
 import os
-import sys
 import django
 
 print('\n' + '-' * 80)
@@ -26,4 +25,11 @@ from django.test.utils import get_runner
 TestRunner = get_runner(settings)
 test_runner = TestRunner()
 failures = test_runner.run_tests(['tests'])
-sys.exit(bool(failures))
+
+print('\n' + '-' * 80)
+print('Perf test')
+print('-' * 80)
+
+from tests import perf
+
+perf.run_perf_test()

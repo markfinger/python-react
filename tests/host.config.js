@@ -1,10 +1,10 @@
 var reactRender = require('react-render');
-var webpackService = require('webpack-service');
+var webpackWrapper = require('webpack-wrapper');
 
 module.exports = {
 	functions: {
 		react: reactRender,
-		webpack: webpackService
+		webpack: webpackWrapper
 	},
 	// Force hosts to stop as soon as the python process exits
 	disconnectTimeout: 0

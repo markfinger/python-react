@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import tempfile
 from optional_django import staticfiles
 from webpack.compiler import webpack
 from webpack.config_file import ConfigFile, JS
@@ -39,7 +38,9 @@ def get_path_to_config_file(config_file, prefix=None):
 def generate_config_file(config):
     return ConfigFile(
         JS('var path = require("path");\n'),
-        JS('module.exports = '), config, JS(';'),
+        JS('module.exports = '),
+        config,
+        JS(';'),
     )
 
 
@@ -57,9 +58,9 @@ def generate_config_for_component(path, translate=None, path_to_react=None, devt
 
     config = {
         'context': js_path_join(os.path.dirname(path)),
-        'entry': '.' + os.path.sep + os.path.basename(path),
+        'entry': './{}'.format(os.path.basename(path)),
         'output': {
-            'path': '[bundle_dir]/react-components',
+            'path': js_path_join(os.path.join('[bundle_dir]', 'components')),
             'filename': var + '-[hash].js',
             'libraryTarget': 'umd',
             'library': var
@@ -77,12 +78,10 @@ def generate_config_for_component(path, translate=None, path_to_react=None, devt
     }
 
     if translate:
-        translate_test = settings.TRANSLATE_TEST or '/.jsx$/'
-
         config.update({
             'module': {
                 'loaders': [{
-                    'test': JS(translate_test),
+                    'test': JS(settings.TRANSLATE_TEST),
                     'exclude': JS('/node_modules/'),
                     'loader': 'babel-loader'
                 }]

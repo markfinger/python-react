@@ -10,7 +10,7 @@ class Conf(conf.Conf):
 
     # A JavaScript regex which is used to test if a file should have the babel
     # loader run over it
-    TRANSLATE_TEST = None
+    TRANSLATE_TEST = '/.jsx?$/'
 
     JS_HOST_FUNCTION = 'react'
 

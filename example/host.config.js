@@ -1,9 +1,9 @@
 var reactRender = require('react-render');
-var webpackService = require('webpack-service');
+var webpackWrapper = require('webpack-wrapper');
 
 module.exports = {
 	functions: {
 		react: reactRender,
-		webpack: webpackService
+		webpack: webpackWrapper
 	}
 };

@@ -36,15 +36,16 @@ class TestBundling(BaseTest):
 
         self.assertEqual(
             config['entry'],
-            '.' + os.path.sep + os.path.basename(path)
+            './' + os.path.basename(path)
+        )
+
+        self.assertIsInstance(config['output']['path'], JS)
+        self.assertEqual(
+            config['output']['path'].content,
+            'path.join.apply(path, ["[bundle_dir]", "components"])'
         )
 
         var = generate_var_from_path(path)
-
-        self.assertEqual(
-            config['output']['path'],
-            '[bundle_dir]/react-components'
-        )
 
         self.assertEqual(
             config['output']['filename'],
@@ -87,7 +88,7 @@ class TestBundling(BaseTest):
 
         if translate:
             self.assertIsInstance(config['module']['loaders'][0]['test'], JS)
-            self.assertEqual(config['module']['loaders'][0]['test'].content, '/.jsx$/')
+            self.assertEqual(config['module']['loaders'][0]['test'].content, '/.jsx?$/')
 
             self.assertIsInstance(config['module']['loaders'][0]['exclude'], JS)
             self.assertEqual(config['module']['loaders'][0]['exclude'].content, '/node_modules/')
