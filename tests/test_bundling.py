@@ -27,7 +27,7 @@ class TestBundling(BaseTest):
             'path.join.apply(path, ["' + '", "'.join(split_path(Components.HELLO_WORLD_JS)) + '"])'
         )
 
-    def validate_generated_config(self, config, path, translate=None, path_to_react=None, devtool=None):
+    def validate_generated_config(self, config, path, translate=None, devtool=None):
         self.assertIsInstance(config['context'], JS)
         self.assertEqual(
             config['context'].content,
@@ -67,20 +67,10 @@ class TestBundling(BaseTest):
             var
         )
 
-        path_to_react = path_to_react or os.path.join(TEST_ROOT, 'node_modules', 'react')
-
-        self.assertIsInstance(config['externals'][0]['react']['commonjs2'], JS)
-        self.assertEqual(
-            config['externals'][0]['react']['commonjs2'].content,
-            'path.join.apply(path, ["' + '", "'.join(split_path(path_to_react)) + '"])'
-        )
+        self.assertEqual(config['externals'][0]['react']['commonjs2'], 'react',)
         self.assertEqual(config['externals'][0]['react']['root'], 'React')
 
-        self.assertIsInstance(config['externals'][0]['react/addons']['commonjs2'], JS)
-        self.assertEqual(
-            config['externals'][0]['react/addons']['commonjs2'].content,
-            'path.join.apply(path, ["' + '", "'.join(split_path(path_to_react)) + '"])'
-        )
+        self.assertEqual(config['externals'][0]['react/addons']['commonjs2'], 'react')
         self.assertEqual(config['externals'][0]['react/addons']['root'], 'React')
 
         if devtool:
@@ -109,17 +99,6 @@ class TestBundling(BaseTest):
     def test_can_generate_a_webpack_config_for_a_js_component_with_a_devtool(self):
         config = generate_config_for_component(Components.HELLO_WORLD_JS, devtool='eval')
         self.validate_generated_config(config, Components.HELLO_WORLD_JS, devtool='eval')
-
-    def test_can_generate_a_webpack_config_with_a_path_to_react(self):
-        config = generate_config_for_component(
-            Components.HELLO_WORLD_JS,
-            path_to_react='/abs/path/to/node_modules/react'
-        )
-        self.validate_generated_config(
-            config,
-            Components.HELLO_WORLD_JS,
-            path_to_react='/abs/path/to/node_modules/react'
-        )
 
     def test_can_generate_a_webpack_config_for_a_jsx_component(self):
         config = generate_config_for_component(Components.HELLO_WORLD_JSX, translate=True)

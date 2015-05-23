@@ -269,15 +269,6 @@ translated and bundled assets.
 
 Default: `None`
 
-### PATH_TO_REACT
-
-An import path that will be used when rendering bundled components.
-
-If not defined, the bundler will default to using js-host's SOURCE_ROOT via 
-`os.path.join(SOURCE_ROOT, 'node_modules', 'react')`.
-
-Default: `None`
-
 ### TRANSLATE_TEST
 
 When bundling a component with `translate=True`, this JavaScript regex is tested against every file to 

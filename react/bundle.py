@@ -9,7 +9,7 @@ from .exceptions import ComponentSourceFileNotFound
 from .conf import settings
 
 
-def bundle_component(path, translate=None, path_to_react=None, devtool=None):
+def bundle_component(path, translate=None, devtool=None):
     if not os.path.isabs(path):
         abs_path = staticfiles.find(path)
         if not abs_path:
@@ -19,7 +19,7 @@ def bundle_component(path, translate=None, path_to_react=None, devtool=None):
     if not os.path.exists(path):
         raise ComponentSourceFileNotFound(path)
 
-    config = generate_config_for_component(path, translate=translate, path_to_react=path_to_react, devtool=devtool)
+    config = generate_config_for_component(path, translate=translate, devtool=devtool)
 
     config_file = generate_config_file(config)
 
@@ -44,7 +44,7 @@ def generate_config_file(config):
     )
 
 
-def generate_config_for_component(path, translate=None, path_to_react=None, devtool=None):
+def generate_config_for_component(path, translate=None, devtool=None):
     """
     Generates a webpack config object to bundle a component
     """
@@ -52,9 +52,6 @@ def generate_config_for_component(path, translate=None, path_to_react=None, devt
     var = generate_var_from_path(path)
 
     node_modules = os.path.join(js_host_settings.SOURCE_ROOT, 'node_modules')
-
-    if path_to_react is None:
-        path_to_react = settings.PATH_TO_REACT or os.path.join(node_modules, 'react')
 
     config = {
         'context': js_path_join(os.path.dirname(path)),
@@ -67,11 +64,11 @@ def generate_config_for_component(path, translate=None, path_to_react=None, devt
         },
         'externals': [{
             'react': {
-                'commonjs2': js_path_join(path_to_react),
+                'commonjs2': 'react',
                 'root': 'React'
             },
             'react/addons': {
-                'commonjs2': js_path_join(path_to_react),
+                'commonjs2': 'react',
                 'root': 'React'
             }
         }]

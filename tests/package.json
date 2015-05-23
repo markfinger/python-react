@@ -6,7 +6,7 @@
     "js-host": "^0.11.4",
     "node-libs-browser": "^0.5.0",
     "react": "^0.13.3",
-    "react-render": "^0.2.4",
+    "react-render": "^0.3.0",
     "webpack": "^1.9.6",
     "webpack-wrapper": "^0.2.2"
   }
