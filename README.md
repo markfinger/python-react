@@ -281,7 +281,9 @@ Running the tests
 -----------------
 
 ```bash
-mkvirtualenv django-react
 pip install -r requirements.txt
+cd tests
+npm install
+cd ..
 python runtests.py
 ```
