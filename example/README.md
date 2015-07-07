@@ -1,21 +1,24 @@
-python + react + webpack example
-================================
+python + react simple rendering
+===============================
 
-This example illustrates how:
-- A single codebase can be used to generate server-side 
-  rendered HTML as well client-side interactivity.
-- To pre-render HTML so that you can optimise for search-engines.
-- Server-side rendering enables you to gracefully-degrade 
-  interactive features on clients without JavaScript enabled.
+This is a fairly rudimentary example which illustrates how to pre-render React
+components from python.
 
+Install the dependencies
 
-Running the example
--------------------
-
-```bash
+```
 pip install -r requirements.txt
 npm install
-python example.py
 ```
+
+Start the render server
+
+```
+node server.js
+```
+
+Start the python server
+
+python example.py
 
 And visit [http://127.0.0.1:5000](http://127.0.0.1:5000)

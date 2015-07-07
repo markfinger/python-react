@@ -3,7 +3,7 @@ import atexit
 import subprocess
 
 process = subprocess.Popen(
-    args=('node', os.path.join(os.path.dirname(__file__), 'test_server.js'),),
+    args=('node', os.path.join(os.path.dirname(__file__), '..', 'example', 'server.js'),),
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT
 )
@@ -16,5 +16,5 @@ output = process.stdout.readline().decode('utf-8')
 if output.strip() == '':
     output += process.stdout.readline().decode('utf-8')
 
-if 'python-react test server' not in output:
+if 'render server' not in output:
     raise Exception('Unexpected output: "{}"'.format(output))
