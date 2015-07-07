@@ -2,7 +2,7 @@ import json
 import hashlib
 import requests
 from .conf import settings
-from .exceptions import RenderServerConnectionError, RenderServerUnexpectedResponse
+from .exceptions import RenderServerError
 
 
 class RenderServer(object):
@@ -21,10 +21,12 @@ class RenderServer(object):
                 params={'hash': options_hash}
             )
         except requests.ConnectionError:
-            raise RenderServerConnectionError('Tried to send build request to {}'.format(self.url))
+            raise RenderServerError('Could not connect to render server at {}'.format(self.url))
 
         if res.status_code != 200:
-            raise RenderServerUnexpectedResponse('{}: {}'.format(res.status_code, res.text))
+            raise RenderServerError(
+                'Unexpected response from render server at {} - {}: {}'.format(self.url, res.status_code, res.text)
+            )
 
         return res.json()
 

@@ -6,9 +6,5 @@ class ReactRenderingError(Exception):
     pass
 
 
-class RenderServerConnectionError(Exception):
-    pass
-
-
-class RenderServerUnexpectedResponse(Exception):
+class RenderServerError(Exception):
     pass
