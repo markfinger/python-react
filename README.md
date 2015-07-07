@@ -3,7 +3,7 @@ python-react
 
 [![Build Status](https://travis-ci.org/markfinger/python-react.svg?branch=master)](https://travis-ci.org/markfinger/python-react)
 
-Server-side rendering, client-side mounting, JSX translation, and component bundling.
+Python utils for server-side rendering with React.
 
 ```python
 from react.render import render_component
@@ -19,6 +19,7 @@ rendered = render_component(
 # The rendered markup
 print(rendered)
 ```
+
 
 Documentation
 -------------
