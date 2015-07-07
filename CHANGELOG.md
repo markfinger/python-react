@@ -1,6 +1,12 @@
 Changelog
 =========
 
+
+### 0.13.1 (16/5/2015)
+
+- Fixed a potential path issue in config files
+- Replaced the webpack-service dependency with webpack-wrapper.
+
 ### 0.8.0 (26/1/2015)
 
 - Boosting render performance by using a dedicated render server.
