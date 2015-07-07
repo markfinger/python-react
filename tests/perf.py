@@ -1,7 +1,6 @@
 import time
 from react.render import render_component
 from .settings import Components
-from .utils import clean_bundle_root
 
 
 def median(l):
@@ -25,14 +24,11 @@ def run_perf_test():
             render_component(
                 Components.PERF_TEST,
                 props={'name': 'world'},
-                translate=True,
                 to_static_markup=True
             )
         )
         end = time.time()
         render_component_times.append(end - start)
-
-    clean_bundle_root()
 
     for component in rendered_components:
         assert str(component) == '<span>Hello world</span>'

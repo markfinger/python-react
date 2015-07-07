@@ -6,5 +6,9 @@ class ReactRenderingError(Exception):
     pass
 
 
-class ComponentWasNotBundled(Exception):
+class RenderServerConnectionError(Exception):
+    pass
+
+
+class RenderServerUnexpectedResponse(Exception):
     pass

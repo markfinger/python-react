@@ -1,9 +1,20 @@
-import sys
+import os
+import atexit
+import subprocess
 
-if 'nosetests' in sys.argv[0]:
-    # Configure js-host and webpack before any tests are run
-    import js_host.conf
-    import webpack.conf
-    from .settings import JS_HOST, WEBPACK
-    js_host.conf.settings.configure(**JS_HOST)
-    webpack.conf.settings.configure(**WEBPACK)
+process = subprocess.Popen(
+    args=('node', os.path.join(os.path.dirname(__file__), 'test_server.js'),),
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT
+)
+
+# Ensure the process is killed on exit
+atexit.register(lambda _process: _process.kill(), process)
+
+output = process.stdout.readline().decode('utf-8')
+
+if output.strip() == '':
+    output += process.stdout.readline().decode('utf-8')
+
+if 'python-react test server' not in output:
+    raise Exception('Unexpected output: "{}"'.format(output))
