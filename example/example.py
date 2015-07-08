@@ -12,8 +12,8 @@ comments = []
 @app.route('/')
 def index():
     rendered = render_component(
-        os.path.join(os.getcwd(), 'app', 'CommentBox.jsx'),
-        props={
+        os.path.join(os.getcwd(), 'static', 'js', 'CommentBox.jsx'),
+        {
             'comments': comments,
             'url': '/comment/',
         },
