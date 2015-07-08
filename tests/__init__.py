@@ -3,7 +3,7 @@ import atexit
 import subprocess
 
 process = subprocess.Popen(
-    args=('node', os.path.join(os.path.dirname(__file__), '..', 'example', 'server.js'),),
+    args=('node', os.path.join(os.path.dirname(__file__), 'test_server.js'),),
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT
 )
