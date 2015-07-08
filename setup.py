@@ -6,6 +6,7 @@ setup(
     version=react.__version__,
     packages=['react'],
     install_requires=[
+        'requests>=2.5.0',
         'optional-django==0.3.0',
     ],
     description='Server-side rendering, client-side mounting, JSX translation, and component bundling',
