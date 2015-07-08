@@ -14,10 +14,6 @@ var server = http.Server(app);
 
 app.use(bodyParser.json());
 
-app.get('/', function(req, res) {
-	res.end('python-react test server');
-});
-
 app.post('/render', function(req, res) {
 	reactRender(req.body, function(err, markup) {
 		res.json({
@@ -28,5 +24,5 @@ app.post('/render', function(req, res) {
 });
 
 server.listen(PORT, ADDRESS, function() {
-	console.log('render server listening at http://' + ADDRESS + ':' + PORT);
+	console.log('python-react test render server listening at http://' + ADDRESS + ':' + PORT);
 });
