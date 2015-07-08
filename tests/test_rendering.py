@@ -1,6 +1,9 @@
 import unittest
 from optional_django import six
-from react.render import render_component, RenderedComponent
+import mock
+from react.conf import Conf
+from react.render import render_component
+from react.render_server import RenderedComponent
 from react.exceptions import ReactRenderingError, ComponentSourceFileNotFound
 from .settings import Components
 
@@ -19,7 +22,7 @@ class TestRendering(unittest.TestCase):
     def test_can_render_a_component_requiring_another_component(self):
         component = render_component(
             Components.HELLO_WORLD_JSX_WRAPPER,
-            props={
+            {
                 'name': 'world!',
                 'numbers': [1, 2, 3, 4, 5],
             },
@@ -40,7 +43,7 @@ class TestRendering(unittest.TestCase):
     def test_render_component_returns_a_rendered_component(self):
         component = render_component(
             Components.HELLO_WORLD_JSX,
-            props={
+            {
                 'name': 'world!'
             },
             to_static_markup=True,
@@ -54,7 +57,7 @@ class TestRendering(unittest.TestCase):
     def test_can_get_a_components_serialized_props(self):
         component = render_component(
             Components.HELLO_WORLD_JSX,
-            props={
+            {
                 'name': 'world!',
             },
         )
@@ -73,16 +76,30 @@ class TestRendering(unittest.TestCase):
             TypeError,
             render_component,
             Components.HELLO_WORLD_JSX,
-            props={'name': lambda: None}
+            {'name': lambda: None}
         )
         self.assertRaises(
             TypeError,
             render_component,
             Components.HELLO_WORLD_JSX,
-            props={'name': self}
+            {'name': self}
         )
 
     def test_missing_paths_throw_an_exception(self):
         self.assertRaises(ComponentSourceFileNotFound, render_component, '/path/to/nothing.jsx')
         # Ensure that relative paths are handled as well
         self.assertRaises(ComponentSourceFileNotFound, render_component, 'path/to/nothing.jsx')
+
+    def test_render_setting_is_respected(self):
+        mock_settings = Conf()
+        mock_settings.configure(RENDER=False)
+        with mock.patch('react.conf.settings', mock_settings):
+            rendered = render_component(
+                Components.HELLO_WORLD_JSX,
+                {'name': 'world!'},
+                to_static_markup=True,
+            )
+            self.assertIsInstance(rendered, RenderedComponent)
+            self.assertEqual(rendered.markup, '')
+            self.assertEqual(str(rendered), '')
+            self.assertEqual(rendered.props, '{"name": "world!"}')

@@ -13,12 +13,12 @@ class TestDjangoIntegration(unittest.TestCase):
     def test_can_serialize_datetime_values_in_props(self):
         component = render_component(
             Components.HELLO_WORLD_JSX,
-            props={
+            {
                 'name': 'world!',
                 'datetime': datetime.datetime(2015, 1, 2, 3, 4, 5, tzinfo=timezone.utc),
                 'date': datetime.date(2015, 1, 2),
                 'time': datetime.time(3, 4, 5),
-            }
+            },
         )
         deserialized = json.loads(component.props)
         self.assertEqual(

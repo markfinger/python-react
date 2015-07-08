@@ -23,8 +23,8 @@ def run_perf_test():
         rendered_components.append(
             render_component(
                 Components.PERF_TEST,
-                props={'name': 'world'},
-                to_static_markup=True
+                {'name': 'world'},
+                to_static_markup=True,
             )
         )
         end = time.time()
