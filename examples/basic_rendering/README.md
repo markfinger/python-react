@@ -1,5 +1,5 @@
-python + react simple rendering
-===============================
+python + react - simple rendering
+=================================
 
 This is a basic example that illustrates how to pre-render React components from python. In effect,
 it illustrates how to use React as a substitute for python template layers.
