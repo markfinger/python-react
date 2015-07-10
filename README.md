@@ -25,6 +25,7 @@ Documentation
 
 - [Installation](#installation)
 - [Basic usage](#basic-usage)
+  - [Setting up a render server](#setting-up-a-render-server)
 - [render_component](#render_component)
 - [Render server](#render-server)
   - [Usage in development](#usage-in-development)
@@ -41,17 +42,11 @@ Installation
 pip install react
 ```
 
-**TODO: once the example's settled add links**
-
 
 Basic usage
 -----------
 
 python-react provides an interface to a render server which is capable of rendering React components.
-
-To start the server, run
-
-**TODO: once the example's settled**
 
 Render requests should provide a path to a JS file that exports a React component
 
@@ -70,6 +65,14 @@ The object returned has two properties:
 
 The object can be coerced to a string to output the markup. Hence you can dump the object directly into
 your template layer.
+
+
+### Setting up a render server
+
+Render servers are typically Node.js processes which sit alongside the python process and respond to network requests. 
+
+To add a render server to your project, you can refer to the [basic rendering example](examples/basic_rendering) 
+for a basic server which will cover most cases. The key files for the render server are the `server.js` and `package.json` files.
 
 
 render_component
