@@ -29,6 +29,9 @@ class RenderServer(object):
         else:
             props = None
 
+        if not conf.settings.RENDER:
+            return RenderedComponent('', props)
+
         options = {
             'path': path,
             'serializedProps': props,
@@ -36,9 +39,6 @@ class RenderServer(object):
         }
         serialized_options = json.dumps(options)
         options_hash = hashlib.sha1(serialized_options.encode('utf-8')).hexdigest()
-
-        if not conf.settings.RENDER:
-            return RenderedComponent('', props)
 
         try:
             res = requests.post(
