@@ -95,14 +95,14 @@ to be streamed into your browser - it tends to make development a much faster an
 With regards to integrating webpack into a python system, there are two solutions currently available:
 
 - [django-webpack-loader](https://github.com/owais/django-webpack-loader) provides hooks to integrate 
-  webpack's output into your project. It relies on you to interact with webpack and integrate a plugin which
-  generates a file for the python process to consume.
+  webpack's output into your project. It uses a webpack plugin to generate a file that your python process 
+  can consume.
 - [python-webpack](https://github.com/markfinger/python-webpack) provides similar hooks to integrate 
   webpack's output into your project. It talks to a build server that wraps around webpack.
 
 Both projects have a lot of crossover. django-webpack-loader's a lot simpler to reason about, it aims
 to do one thing and do it well. python-webpack's more complex, but offers interchange of data between the 
-processes, which can make integration easier.
+processes, which can make integrations easier.
 
 
 render_component
