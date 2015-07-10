@@ -1,0 +1,5 @@
+flask==0.10.1
+optional-django==0.3.0
+requests==2.7.0
+-e git+ssh://git@github.com/markfinger/python-webpack.git@5ace0f26cdfd345c14ef8f608352d128511edc31#egg=webpack
+react

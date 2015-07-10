@@ -54,4 +54,4 @@ docs/_build/
 target/
 
 node_modules
-example/static/webpack
+.webpack_build_cache
