@@ -23,18 +23,18 @@ class RenderServer(object):
     def __init__(self, url):
         self.url = url
 
-    def render(self, path, data=None, to_static_markup=False):
-        if data is not None:
-            props = json.dumps(data, cls=JSONEncoder)
+    def render(self, path, props=None, to_static_markup=False):
+        if props is not None:
+            serialized_props = json.dumps(props, cls=JSONEncoder)
         else:
-            props = None
+            serialized_props = None
 
         if not conf.settings.RENDER:
-            return RenderedComponent('', props)
+            return RenderedComponent('', serialized_props)
 
         options = {
             'path': path,
-            'serializedProps': props,
+            'serializedProps': serialized_props,
             'toStaticMarkup': to_static_markup
         }
         serialized_options = json.dumps(options)
@@ -70,7 +70,7 @@ class RenderServer(object):
         if markup is None:
             raise ReactRenderingError('Render server failed to return markup. Returned: {}'.format(obj))
 
-        return RenderedComponent(markup, props)
+        return RenderedComponent(markup, serialized_props)
 
 
 render_server = RenderServer(conf.settings.RENDER_URL)
