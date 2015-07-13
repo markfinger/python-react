@@ -16,8 +16,16 @@ app.use(bodyParser.json());
 
 app.post('/render', function(req, res) {
 	reactRender(req.body, function(err, markup) {
+		var error = null;
+		if (err) {
+			error = {
+				type: err.constructor.name,
+				message: err.message,
+				stack: err.stack
+			};
+		}
 		res.json({
-			error: err,
+			error: error,
 			markup: markup
 		});
 	});
