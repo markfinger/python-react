@@ -9,7 +9,7 @@ setup(
         'requests>=2.5.0',
         'optional-django==0.3.0',
     ],
-    description='Server-side rendering, client-side mounting, JSX translation, and component bundling',
+    description='Server-side rendering of React components with data from your Python system',
     long_description='Documentation at https://github.com/markfinger/python-react',
     author='Mark Finger',
     author_email='markfinger@gmail.com',
