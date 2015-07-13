@@ -92,10 +92,10 @@ setup involves a build tool and a python package that can integrate it.
 
 The two most popular build tools are:
 
-- [Webpack](https://webpack.github.io) - can compile your files into browser-executable code and provides a 
+- [Webpack](https://webpack.github.io) - compiles your files into browser-executable code and provides a 
   variety of tools and processes which can simplify complicated workflows.
-- [Browserify](http://browserify.org/) is another popular tool and has a lot of cross-over with webpack. It
-  is argurably the easiest of the two to use, but it tends to lag behind webpack in certain functionalities.
+- [Browserify](http://browserify.org/) - has a lot of cross-over with webpack. Is argurably the easiest of the 
+  two to use, but it tends to lag behind webpack in functionality.
 
 For React projects, you'll find that webpack is the usual recommendation. Webpack's hot module replacement, 
 code-splitting, and a wealth of loaders are the features typically cited as being irreplaceable. 
@@ -105,10 +105,11 @@ changes to your components to be streamed live into your browser.
 To integrate webpack's output into a python system, the two most popular solutions are:
 
 - [django-webpack-loader](https://github.com/owais/django-webpack-loader) - uses a webpack plugin to generate a 
-  file for your python process to consume. Tends to be simpler to reason about, does one thing and does it well. 
+  file for your python process to consume. Tends to be easier to reason about - does one thing and does it well. 
   Requires you to interact with webpack directly.
 - [python-webpack](https://github.com/markfinger/python-webpack) - talks to a build server that wraps around
-  webpack. Tends to be more complex, but offers more features. Requires you to run a build server.
+  webpack. Tends to be more complex, but offers more features. Requires you to interact with a webpack-build
+  process.
 
 For most use-cases, both tools will provide similar functionalities. django-webpack-loader puts you in direct
 control of webpack's processes, so it's a good starting point to learn about the tool. python-webpack
