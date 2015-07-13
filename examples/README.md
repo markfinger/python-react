@@ -1,8 +1,8 @@
 React/Python examples
 =====================
 
-[python-webpack examples](https://github.com/markfinger/python-webpack/tree/master/examples)
-[django-webpack-loader examples](https://github.com/owais/django-webpack-loader/tree/master/examples)
+- [python-webpack examples](https://github.com/markfinger/python-webpack/tree/master/examples)
+- [django-webpack-loader examples](https://github.com/owais/django-webpack-loader/tree/master/examples)
 
 Illustrates how to use webpack so that you can integrate your React components into the frontend of a python system.
 
