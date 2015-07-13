@@ -1,6 +1,15 @@
 Changelog
 =========
 
+### 1.0.0 (13/7/2015)
+
+- Removed the webpack integration. While it can be initially convenient, it tends to introduce more problems than
+  it solves. The repo contains an example illustrating how to implement self-mounting components which provide 
+  similar functionality to the former webpack integration.
+- Replaced the js-host dependency with an externally-managed render server.
+- Added a `renderer` hook on `render_component`. Enabling you to override the default which assumes 
+  [render-react](https://github.com/markfinger/react-render)
+
 
 ### 0.13.1 (16/5/2015)
 
