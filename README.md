@@ -19,7 +19,7 @@ rendered = render_component(
 print(rendered)
 ```
 
-For client-side side integrations, refer to the [docs](#using-react-on-the-front-end).
+For client-side integrations, refer to the [docs](#using-react-on-the-front-end).
 
 
 Documentation
@@ -181,7 +181,7 @@ objects with the `markup` attribute as an empty string.
 In development environments, it can be easiest to set the `RENDER` setting to False. This ensures that the 
 render server will not be used, hence you only need to manage your python process.
 
-Be aware that the render servers provided in the example and elsewhere rely on Node.js's module system
+Be aware that the render servers provided in the examples and elsewhere rely on Node.js's module system
 which - similarly to Python - caches all modules as soon as they are imported. If you use the render
 server in a development environment, your code is cached and your changes will **not** effect the
 rendered markup until you reset the render server.
@@ -192,10 +192,10 @@ rendered markup until you reset the render server.
 In production environments, you should ensure that `RENDER` is set to True.
 
 You will want to run the render server under whatever supervisor process suits your need. Depending on
-your setup, you may need to change the `RENDER_URL` setting to reflect your setup.
+your setup, you may need to change the `RENDER_URL` setting to reflect your environment.
 
-When the render server wrapper connects to the JS process, it adds a `?hash=<SHA1>` parameter to the url. The
-hash parameter is generated from the serialized data that is sent in the request's body and is intended
+When the render server wrapper connects to the JS process, it adds a `?hash=...` parameter to the url. The
+hash parameter is a SHA-1 hash of the serialized data that is sent in the request's body and is intended
 for consumption by caching layers.
 
 Depending on your load, you may want to put a reverse proxy in front of the render server. Be aware that
