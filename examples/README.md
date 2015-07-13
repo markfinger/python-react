@@ -1,4 +1,4 @@
-React/Python examples
+Python + React examples
 =====================
 
 - [python-webpack examples](https://github.com/markfinger/python-webpack/tree/master/examples)
