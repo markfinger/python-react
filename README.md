@@ -87,14 +87,13 @@ for a simple server that will cover most cases. The key files for the render ser
 Using React on the front-end
 ----------------------------
 
-There are a number of way in which you can integrate React into the frontend of a Python system. Generally,
-you will want to a JS build tool and a python package which can read in it's output.
+There are a number of way in which you can integrate React into the frontend of a Python system. The typical
+setup involves a build tool and a python package that can integrate it.
 
 The two most popular build tools are:
 
-- [Webpack](https://webpack.github.io) is currently the recommended build tool for frontend projects. It can
-  compile your files into browser-executable code and provides a variety of tools and processes which can 
-  simplify complicated workflows.
+- [Webpack](https://webpack.github.io) can compile your files into browser-executable code and provides a variety of
+  tools and processes which can simplify complicated workflows.
 - [Browserify](http://browserify.org/) is another popular tool and has a lot of cross-over with webpack. It
   is argurably the easiest of the two to use, but it tends to lag behind webpack in certain functionalities.
 
