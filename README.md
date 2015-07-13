@@ -87,8 +87,10 @@ for a simple server that will cover most cases. The key files for the render ser
 Using React on the front-end
 ----------------------------
 
-There are plenty of solutions for integrating React into the frontend of a Python system, each with upsides
-and downsides.
+There are a number of way in which you can integrate React into the frontend of a Python system. Generally,
+you will want to a JS build tool and a python package which can read in it's output.
+
+The two most popular build tools are:
 
 - [Webpack](https://webpack.github.io) is currently the recommended build tool for frontend projects. It can
   compile your files into browser-executable code and provides a variety of tools and processes which can 
@@ -101,15 +103,17 @@ code-splitting, and a wealth of loaders are the features typically cited.
 [react-hot-loader](https://github.com/gaearon/react-hot-loader) is a particularly useful tool as it allows
 changes to your components to be streamed live into your browser.
 
-There are two solutions currently available to integrate webpack into a python system:
+To integrate webpack's output into a python system, the two most popular solutions are:
 
-- [django-webpack-loader](https://github.com/owais/django-webpack-loader) integrates webpack's output into 
-  your project by leveraging a webpack plugin that generates a file for your python process to consume.
-- [python-webpack](https://github.com/markfinger/python-webpack) integrates webpack's output by talking to 
-  a build server that wraps around webpack.
+- [django-webpack-loader](https://github.com/owais/django-webpack-loader) - uses a webpack plugin to generates
+  a file for your python process to consume. Tends to be simpler to reason about, does one thing and does it 
+  well. Requires you to interact with webpack directly.
+- [python-webpack](https://github.com/markfinger/python-webpack) - talks to a build server that wraps around
+  webpack. Tends to be more complex, but offers more features. Requires you to run a build server.
 
-Both projects can perform the same task of integrating webpack's output. django-webpack-loader is simpler to 
-reason about, it aims to do one thing and do it well. python-webpack's more complex, but offers more features.
+For most use-cases, both tools will provide similar functionalities. django-webpack-loader puts you in direct
+control of webpack's processes, so it's a good starting point to learn about the tool. python-webpack
+abstracts away webpack, so it may be easier to integrate.
 
 Note: older versions of this library used to provide tools for integrating React into your frontend. While 
 they provided some conveniences they also overly complicated deployments, limited the functionalities that 
