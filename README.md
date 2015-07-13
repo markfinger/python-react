@@ -50,7 +50,8 @@ pip install react
 Basic usage
 -----------
 
-python-react provides an interface to a render server which is capable of rendering React components.
+python-react provides an interface to a render server which is capable of rendering React components with data
+from your python process.
 
 Render requests should provide a path to a JS file that exports a React component. If you want to pass
 data to the component, you can optionally provide a second argument that will be used as the component's 
@@ -74,12 +75,12 @@ If the object is coerced to a string, it will emit the value of the `markup` att
 
 ### Setting up a render server
 
-Render servers are typically Node.js processes which sit alongside the python process and respond to network requests. 
+Render servers are typically Node.js processes which sit alongside the python process and respond to network requests.
 
 To add a render server to your project, you can refer to the [basic rendering example](examples/basic_rendering) 
 for a simple server that will cover most cases. The key files for the render server are: 
- - [server.js](examples/basic_rendering/server.js) the server's source code
- - [package.json](examples/basic_rendering/package.json) the server's dependencies, installable with 
+ - [server.js](examples/basic_rendering/server.js) - the server's source code
+ - [package.json](examples/basic_rendering/package.json) - the server's dependencies, installable with 
    [npm](http://npmjs.com)
 
 
@@ -92,10 +93,10 @@ and downsides.
 - [Webpack](https://webpack.github.io) is currently the recommended build tool for frontend projects. It can
   compile your files into browser-executable code and provides a variety of tools and processes which can 
   simplify complicated workflows.
-- [Browserify](http://browserify.org/) is another popular tool, which has a lot of cross-over with webpack. It
+- [Browserify](http://browserify.org/) is another popular tool and has a lot of cross-over with webpack. It
   is argurably the easiest of the two to use, but it tends to lag behind webpack in certain functionalities.
 
-For React projects, you'll find that webpack is the usual recommendation - hot module replacement, 
+For React projects, you'll find that webpack is the usual recommendation. Webpack's hot module replacement, 
 code-splitting, and a wealth of loaders are the features typically cited. 
 [react-hot-loader](https://github.com/gaearon/react-hot-loader) is a particularly useful tool as it allows
 changes to your components to be streamed live into your browser.
@@ -111,9 +112,10 @@ Both projects can perform the same task of integrating webpack's output. django-
 reason about, it aims to do one thing and do it well. python-webpack's more complex, but offers more features.
 
 Note: older versions of this library used to provide tools for integrating React into your frontend. While 
-those tools tended to provide some conveniences, they also overly complicated deployments, limited the 
-functionalities that you could apply, and locked you in to a limited workflow which was contrary to React's 
-best practices. If you want to persist with the worflow previously offered, the [self-mounting components example](examples) illustrates the functionality.
+they provided some conveniences they also overly complicated deployments, limited the functionalities that 
+you could apply, and locked you in to a workflow which was contrary to React's best practices. If you want to
+persist with the worflow previously offered, the [self-mounting components example](examples) illustrates the
+wiring necessary to achieve comparable functionality.
 
 
 render_component
@@ -135,7 +137,7 @@ render_component(
 
     # An optional dictionary of data that will be passed to the renderer
     # and can be reused on the client-side.
-    data={
+    props={
         'foo': 'bar'
     },
 
@@ -160,19 +162,20 @@ accepts the `path`, `data`, and `to_static_markup` arguments.
 Render server
 -------------
 
-Earlier versions of this library used to run the render server as a subprocess, this tended to make
-development easier, but also introduced instabilities and inexplicable behaviour. To avoid these issues
-python-react now relies on externally managed process.
+Earlier versions of this library would run the render server as a subprocess, this tended to make development
+easier, but introduced instabilities and opaque behaviour. To avoid these issues python-react now relies on 
+externally managed process. While managing extra processes can add more overhead initially, it avoids pain down
+the track.
 
 If you only want to run the render server in particular environments, change the `RENDER` setting to
-False. When `RENDER` is False, the render server is not used, but the similar objects are returned
-with the `markup` attribute as an empty string.
+False. When `RENDER` is False, the render server is not used directly, but it's wrapper will return similar 
+objects with the `markup` attribute as an empty string.
 
 
 ### Usage in development
 
-In development environments, it's often easiest to set `RENDER` to False. This ensures that the render
-server will not be used, hence you only need to manage your python process.
+In development environments, it can be easiest to set the `RENDER` setting to False. This ensures that the 
+render server will not be used, hence you only need to manage your python process.
 
 Be aware that the render servers provided in the example and elsewhere rely on Node.js's module system
 which - similarly to Python - caches all modules as soon as they are imported. If you use the render
@@ -187,14 +190,14 @@ In production environments, you should ensure that `RENDER` is set to True.
 You will want to run the render server under whatever supervisor process suits your need. Depending on
 your setup, you may need to change the `RENDER_URL` setting to reflect your setup.
 
-Requests are sent to the render server as POST requests.
-
-The render server connector that ships with python-react adds a `?hash=<SHA1>` parameter to the url. The
+When the render server wrapper connects to the JS process, it adds a `?hash=<SHA1>` parameter to the url. The
 hash parameter is generated from the serialized data that is sent in the request's body and is intended
 for consumption by caching layers.
 
 Depending on your load, you may want to put a reverse proxy in front of the render server. Be aware that
-many reverse proxies are configured by default to **not** cache POST requests.
+render server requests are sent as POST requests and many reverse proxies are configured by default to 
+**not** cache POST requests.
+
 
 ### Overriding the renderer
 
