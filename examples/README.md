@@ -1,26 +1,27 @@
-React/Python examples
+Python + React examples
 =====================
 
-[Basic rendering](basic_rendering)
+- [python-webpack examples](https://github.com/markfinger/python-webpack/tree/master/examples)
+- [django-webpack-loader examples](https://github.com/owais/django-webpack-loader/tree/master/examples)
 
-Illustrates how to pre-render React components from python. It illustrates how to use React as a
-substitute for python template layers.
+Illustrates how to use webpack so that you can integrate your React components into the frontend of a python system.
 
 --------------------------------------
 
-[python-webpack examples](https://github.com/markfinger/python-webpack/tree/master/examples)
+[Basic rendering](basic_rendering)
 
-Illustrates how to use python-webpack to integrate React assets into a python system.
+Illustrates how to pre-render React components for a production system. The example use React as a substitute for 
+python template systems.
 
 --------------------------------------
 
 [Self mounting components](self_mounting_components)
 
-Illustrates a workflow where webpack is used to generate bundles so that the root React component
-can immediately mount itself over the markup that was pre-rendered with the same data.
+Illustrates a workflow where webpack is used to generate bundles of your components with self mounting code. The 
+bundles will immediately mount themselves over the pre-rendered markup as soon as the page has loaded the JS.
 
 This workflow is similar to what was provided in older versions of python-react. It can be useful
-if you want to add interactivity to an otherwise backend-heavy site.
+if you want to add a small amount of interactivity to an otherwise backend-heavy site.
 
 Be aware that while this workflow can be initially convenient, it tends to rely on components maintaining
 large amounts of state. A better workflow is for your components to minimize state by delegating all
