@@ -7,6 +7,7 @@ class ReactConfig(AppConfig):
     name = 'react'
 
     def ready(self):
+        react.conf.settings._PROXY_DJANGO_SETTINGS = True
         react.conf.settings.configure(
             **getattr(settings, 'REACT', {})
         )

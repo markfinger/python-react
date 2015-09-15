@@ -14,6 +14,13 @@ INSTALLED_APPS = (
 TEST_ROOT = os.path.dirname(__file__)
 COMPONENT_ROOT = os.path.join(TEST_ROOT, 'components')
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',
+    }
+}
+
 
 class Components(object):
     HELLO_WORLD_JS = os.path.join(COMPONENT_ROOT, 'HelloWorld.js')

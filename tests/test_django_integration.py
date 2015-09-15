@@ -1,13 +1,14 @@
 import json
 import datetime
-import unittest
+from django.test import TestCase
 from django.utils import timezone
 from optional_django.env import DJANGO_CONFIGURED
 from react.render import render_component
+from react import conf
 from .settings import Components
 
 
-class TestDjangoIntegration(unittest.TestCase):
+class TestDjangoIntegration(TestCase):
     __test__ = DJANGO_CONFIGURED
 
     def test_can_serialize_datetime_values_in_props(self):
@@ -34,3 +35,9 @@ class TestDjangoIntegration(unittest.TestCase):
     def test_relative_paths_are_resolved_via_the_static_file_finder(self):
         component = render_component(Components.DJANGO_REL_PATH, to_static_markup=True)
         self.assertEqual(str(component), '<span>You found me.</span>')
+
+    def test_django_settings_are_proxied(self):
+        self.assertEqual(conf.settings.RENDER, True)
+        with self.settings(REACT={'RENDER': False}):
+            self.assertEqual(conf.settings.RENDER, False)
+
