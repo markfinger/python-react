@@ -20,9 +20,6 @@ class RenderedComponent(object):
 
 
 class RenderServer(object):
-    def __init__(self, url):
-        self.url = url
-
     def render(self, path, props=None, to_static_markup=False):
         if props is not None:
             serialized_props = json.dumps(props, cls=JSONEncoder)
@@ -42,7 +39,7 @@ class RenderServer(object):
 
         try:
             res = requests.post(
-                self.url,
+                conf.settings.RENDER_URL,
                 data=serialized_options,
                 headers={'content-type': 'application/json'},
                 params={'hash': options_hash}
@@ -73,4 +70,4 @@ class RenderServer(object):
         return RenderedComponent(markup, serialized_props)
 
 
-render_server = RenderServer(conf.settings.RENDER_URL)
+render_server = RenderServer()
