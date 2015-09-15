@@ -16,5 +16,5 @@ output = process.stdout.readline().decode('utf-8')
 if output.strip() == '':
     output += process.stdout.readline().decode('utf-8')
 
-if 'python-react test render server' not in output:
+if 'React render server' not in output:
     raise Exception('Unexpected output: "{}"'.format(output))
