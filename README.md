@@ -194,9 +194,13 @@ When the render server wrapper connects to the JS process, it adds a `?hash=...`
 hash parameter is a SHA-1 hash of the serialized data that is sent in the request's body and is intended
 for consumption by caching layers.
 
-Depending on your load, you may want to put a reverse proxy in front of the render server. Be aware that
-render server requests are sent as POST requests and many reverse proxies are configured by default to 
-**not** cache POST requests.
+Depending on your load, you may want to use a worker farm to handle rendering.
+[Node's cluster module](https://nodejs.org/api/cluster.html) provides an easy way to fork a process and
+serve multiple instances from a single network address.
+
+An alternative to worker farms is to put a reverse proxy in front of the render server. Be aware that
+render server requests are sent as POST requests and most reverse proxies have issues with caching POST
+requests.
 
 
 ### Overriding the renderer
