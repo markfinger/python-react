@@ -102,24 +102,18 @@ code-splitting, and a wealth of loaders are the features typically cited as bein
 [react-hot-loader](https://github.com/gaearon/react-hot-loader) is a particularly useful tool, as it allows
 changes to your components to be streamed live into your browser.
 
-To integrate webpack's output into a python system, the two most popular solutions are:
+If you want to integrate webpack's output into your python system, you can either hard-code the paths or you
+can use a manifest plugin that provides a way for your python system to introspect the compiler's state.
 
-- [django-webpack-loader](https://github.com/owais/django-webpack-loader) - uses a webpack plugin to generate a 
-  file for your python process to consume. Tends to be easier to reason about - does one thing and does it well. 
-  Requires you to interact with webpack directly.
-- [python-webpack](https://github.com/markfinger/python-webpack) - talks to a build server that wraps around
-  webpack. Tends to be more complex, but offers more features. Requires you to interact with a webpack-build
-  process.
+The most popular manifest tool is [owais/django-webpack-loader](https://github.com/owais/django-webpack-loader).
+Owais has provided a great set of docs and examples, so it's your best bet for integrating webpack into your
+project.
 
-For most use-cases, both tools will provide similar functionalities. django-webpack-loader puts you in direct
-control of webpack's processes, so it's a good starting point to learn about the tool. python-webpack
-abstracts away webpack, so it may be easier to integrate.
+If you need support for non-Django projects - or you want to use webpack with a decoupled library or app -
+[markfinger/python-webpack-manifest](https://github.com/markfinger/python-webpack-manifest) will sort you out.
 
-Note: older versions of this library used to provide tools for integrating React into your frontend. While 
-they provided some conveniences they also overly complicated deployments, limited the functionalities that 
-you could apply, and locked you in to a workflow which was contrary to React's best practices. If you want to
-persist with the worflow previously offered, the [self-mounting components example](examples) illustrates the
-wiring necessary to achieve it.
+There's also [markfinger/python-webpack](https://github.com/markfinger/python-webpack), but it's a bit more
+heavy handed and is only of use if you need a really tight coupling between your python and javascript worlds.
 
 
 render_component
