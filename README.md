@@ -109,11 +109,13 @@ The most popular manifest tool is [owais/django-webpack-loader](https://github.c
 Owais has provided a great set of docs and examples, so it's your best bet for integrating webpack into your
 project.
 
-If you need support for non-Django projects - or you want to use webpack with a decoupled library or app -
-[markfinger/python-webpack-manifest](https://github.com/markfinger/python-webpack-manifest) will sort you out.
+If you aren't running a Django system, or you need portable manifests that can be decoupled and deployed,
+[markfinger/python-webpack-manifest](https://github.com/markfinger/python-webpack-manifest) might suit your
+needs.
 
 There's also [markfinger/python-webpack](https://github.com/markfinger/python-webpack), but it's a bit more
-heavy handed and is only of use if you need a really tight coupling between your python and javascript worlds.
+heavy handed, abstract, and is only of use if you need a really tight coupling between your python and
+javascript worlds.
 
 
 render_component
