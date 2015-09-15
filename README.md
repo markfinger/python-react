@@ -190,9 +190,9 @@ In production environments, you should ensure that `RENDER` is set to True.
 You will want to run the render server under whatever supervisor process suits your need. Depending on
 your setup, you may need to change the `RENDER_URL` setting to reflect your environment.
 
-Depending on your load, you may want to use a worker farm to handle rendering.
-[Node's cluster module](https://nodejs.org/api/cluster.html) provides an easy way to fork a process and
-serve multiple instances from a single network address.
+Depending on your load, you may want to use a worker farm to handle rendering. Node's
+[cluster module](https://nodejs.org/api/cluster.html) provides an easy way to fork a process and serve
+multiple instances from a single network address.
 
 An alternative to worker farms is to put a reverse proxy in front of the render server. Be aware that
 render server requests are sent as POST requests and most reverse proxies have issues with caching POST
