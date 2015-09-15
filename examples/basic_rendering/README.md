@@ -11,7 +11,7 @@ npm install
 Start the render server
 
 ```
-node server.js
+node render_server.js
 ```
 
 Start the python server
