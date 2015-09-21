@@ -1,6 +1,15 @@
 Changelog
 =========
 
+### 2.0.0 (22/9/2015)
+
+- **Breaking change** The base renderer's __init__  no longer accepts the RENDER_URL setting as an argument.
+  The url is now resolved during calls, rather than initialisation.
+- When used in companion with Django, settings will now be dynamically fetched rather than bound on
+  initialisation. This enables a codebase to be more easily controlled from a test suite
+- Updated docs regarding front-end integration
+
+
 ### 1.0.0 (13/7/2015)
 
 - Removed the webpack integration. While it can be initially convenient, it tends to introduce more problems than
