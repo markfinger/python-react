@@ -1,6 +1,11 @@
 class Conf(object):
     _render_url = 'http://127.0.0.1:9009/render'
     _render = True
+
+    # Indicates that we should rely on Django's settings as the
+    # canonical reference and use the above defaults as fallbacks.
+    # Proxying to django.conf.settings allows us to swap out Django's
+    # tests during tests
     _PROXY_DJANGO_SETTINGS = False
 
     @property
