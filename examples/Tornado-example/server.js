@@ -4,7 +4,7 @@ var bodyParser = require('body-parser');
 var reactRender = require('react-render');
 
 // Ensure support for JSX files
-require('babel/register');
+require('babel-core/register');
 
 var ADDRESS = '127.0.0.1';
 var PORT = 9009;

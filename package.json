@@ -1,11 +1,13 @@
 {
   "private": true,
   "dependencies": {
-    "babel": "^5.8.23",
-    "body-parser": "^1.13.2",
+    "babel-core": "^6.1.20",
+    "babel-plugin-transform-react-jsx": "^6.1.18",
+    "body-parser": "^1.14.1",
     "express": "^4.13.3",
-    "react": "^0.13.3",
-    "react-render": "^0.3.0",
-    "yargs": "^3.25.0"
+    "react": "^0.14.2",
+    "react-dom": "^0.14.2",
+    "react-render": "^1.1.0",
+    "yargs": "^3.29.0"
   }
 }
