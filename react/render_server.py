@@ -21,6 +21,8 @@ class RenderedComponent(object):
 
 class RenderServer(object):
     def render(self, path, props=None, to_static_markup=False):
+        url = conf.settings.RENDER_URL
+        
         if props is not None:
             serialized_props = json.dumps(props, cls=JSONEncoder)
         else:
@@ -39,17 +41,17 @@ class RenderServer(object):
 
         try:
             res = requests.post(
-                conf.settings.RENDER_URL,
+                url,
                 data=serialized_options,
                 headers={'content-type': 'application/json'},
                 params={'hash': options_hash}
             )
         except requests.ConnectionError:
-            raise RenderServerError('Could not connect to render server at {}'.format(self.url))
+            raise RenderServerError('Could not connect to render server at {}'.format(url))
 
         if res.status_code != 200:
             raise RenderServerError(
-                'Unexpected response from render server at {} - {}: {}'.format(self.url, res.status_code, res.text)
+                'Unexpected response from render server at {} - {}: {}'.format(url, res.status_code, res.text)
             )
 
         obj = res.json()
