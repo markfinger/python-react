@@ -79,7 +79,7 @@ Render servers are typically Node.js processes which sit alongside the python pr
 
 To add a render server to your project, you can refer to the [basic rendering example](examples/basic_rendering) 
 for a simple server that will cover most cases. The key files for the render server are: 
- - [server.js](examples/basic_rendering/server.js) - the server's source code
+ - [render_server.js](examples/basic_rendering/render_server.js) - the server's source code
  - [package.json](examples/basic_rendering/package.json) - the server's dependencies, installable with 
    [npm](http://npmjs.com)
 
