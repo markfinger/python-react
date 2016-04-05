@@ -5,7 +5,18 @@ Changelog
 
 - **Possibly breaking change** render_component now accepts a `request_headers` keyword argument.
   There are some edge-cases where this may break down-stream code. If you are overriding
-  part of the render pipeline, you may need to ensure that you are using `**kwargs` to read and/or pass wildcard arguments. ([Ben Ilegbodu](https://github.com/benmvp)) https://github.com/markfinger/python-react/pull/64
+  part of the render pipeline, you may need to ensure that you are using `**kwargs` to read and/or pass wildcard arguments.
+  ([Ben Ilegbodu](https://github.com/benmvp))
+  https://github.com/markfinger/python-react/pull/64
+- [Documentation] Fix outdated link to server.js
+  ([Jonathan Cox](https://github.com/geezhawk))
+  https://github.com/markfinger/python-react/pull/60
+- [Examples] missing babel-preset-es2015 in package.json in Tornado-example
+  ([付雨帆](https://github.com/letfly))
+  https://github.com/markfinger/python-react/pull/59
+- [Examples] Added missing dependency on babel-preset-es2015
+  ([Rune Juhl Jacobsen](https://github.com/runejuhl))
+  https://github.com/markfinger/python-react/pull/56
 
 ### 2.0.0 (22/9/2015)
 
@@ -19,10 +30,10 @@ Changelog
 ### 1.0.0 (13/7/2015)
 
 - Removed the webpack integration. While it can be initially convenient, it tends to introduce more problems than
-  it solves. The repo contains an example illustrating how to implement self-mounting components which provide 
+  it solves. The repo contains an example illustrating how to implement self-mounting components which provide
   similar functionality to the former webpack integration.
 - Replaced the js-host dependency with an externally-managed render server.
-- Added a `renderer` hook on `render_component`. Enabling you to override the default which assumes 
+- Added a `renderer` hook on `render_component`. Enabling you to override the default which assumes
   [render-react](https://github.com/markfinger/react-render)
 
 
@@ -34,9 +45,9 @@ Changelog
 ### 0.8.0 (26/1/2015)
 
 - Boosting render performance by using a dedicated render server.
-- Added a new setting, DJANGO_REACT['RENDERER'], which is a string denoting an import path to a 
+- Added a new setting, DJANGO_REACT['RENDERER'], which is a string denoting an import path to a
  callable object which returns a on object with a `render` method. By default it points to the new
- render server, 'django_react.render_server.ReactRenderServer'. The legacy renderer is useable by 
+ render server, 'django_react.render_server.ReactRenderServer'. The legacy renderer is useable by
  setting DJANGO_REACT['RENDERER'] = 'django_react.renderer.ReactRenderer'.
 
 ### 0.7.0 (2/1/2015)
