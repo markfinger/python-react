@@ -2,10 +2,12 @@ import unittest
 from optional_django import six
 import mock
 from react.conf import Conf
+from react import render_server
 from react.render import render_component
 from react.render_server import RenderedComponent
 from react.exceptions import ReactRenderingError, ComponentSourceFileNotFound
 from .settings import Components
+import json
 
 
 class TestRendering(unittest.TestCase):
@@ -103,3 +105,37 @@ class TestRendering(unittest.TestCase):
             self.assertEqual(rendered.markup, '')
             self.assertEqual(str(rendered), '')
             self.assertEqual(rendered.props, '{"name": "world!"}')
+
+    @mock.patch('requests.post')
+    def test_can_pass_additional_request_headers(self, requests_post_mock):
+        mock_json = {
+            'markup': '<div>Hello</div>',
+        }
+        mock_url = 'http://localhost/render'
+
+        response_mock = mock.Mock()
+        response_mock.status_code = 200
+        response_mock.text = json.dumps(mock_json)
+        response_mock.json = mock.Mock(return_value=mock_json)
+        requests_post_mock.return_value = response_mock
+
+        mock_settings = Conf()
+        mock_settings.configure(RENDER_URL=mock_url)
+        with mock.patch('react.conf.settings', mock_settings):
+            component = render_component(
+                path=Components.HELLO_WORLD_JSX,
+                props={'name': 'world!'},
+                request_headers={
+                    'Accept-language': 'fr-FR,en-US,en',
+                },
+            )
+
+        requests_post_mock.assert_called_with(
+            mock_url,
+            data=mock.ANY,
+            params=mock.ANY,
+            headers={
+                'content-type': 'application/json',
+                'Accept-language': 'fr-FR,en-US,en',
+            },
+        )
