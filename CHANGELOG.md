@@ -17,6 +17,9 @@ Changelog
 - [Examples] Added missing dependency on babel-preset-es2015
   ([Rune Juhl Jacobsen](https://github.com/runejuhl))
   https://github.com/markfinger/python-react/pull/56
+- [Examples] Added es6 compiler plugin to .bablerc in basic_rendering
+  ([Pringels](https://github.com/Pringels))
+  https://github.com/markfinger/python-react/pull/55
 
 ### 2.0.0 (22/9/2015)
 
