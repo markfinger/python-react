@@ -1,6 +1,12 @@
 Changelog
 =========
 
+### 3.0.0 (6/4/2016)
+
+- **Possibly breaking change** render_component now accepts a `request_headers` keyword argument.
+  There are some edge-cases where this may break down-stream code. If you are overriding
+  part of the render pipeline, you may need to ensure that you are using `**kwargs` to read and/or pass wildcard arguments. ([Ben Ilegbodu](https://github.com/benmvp)) https://github.com/markfinger/python-react/pull/64
+
 ### 2.0.0 (22/9/2015)
 
 - **Breaking change** The base renderer's __init__  no longer accepts the RENDER_URL setting as an argument.
