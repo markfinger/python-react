@@ -20,9 +20,9 @@ class RenderedComponent(object):
 
 
 class RenderServer(object):
-    def render(self, path, props=None, to_static_markup=False):
+    def render(self, path, props=None, to_static_markup=False, request_headers=None):
         url = conf.settings.RENDER_URL
-        
+
         if props is not None:
             serialized_props = json.dumps(props, cls=JSONEncoder)
         else:
@@ -39,11 +39,17 @@ class RenderServer(object):
         serialized_options = json.dumps(options)
         options_hash = hashlib.sha1(serialized_options.encode('utf-8')).hexdigest()
 
+        all_request_headers = {'content-type': 'application/json'}
+
+        # Add additional requests headers if the requet_headers dictionary is specified
+        if request_headers is not None:
+            all_request_headers.update(request_headers)
+
         try:
             res = requests.post(
                 url,
                 data=serialized_options,
-                headers={'content-type': 'application/json'},
+                headers=all_request_headers,
                 params={'hash': options_hash}
             )
         except requests.ConnectionError:
