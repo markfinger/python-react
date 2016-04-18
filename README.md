@@ -200,13 +200,17 @@ Depending on your load, you may want to use a worker farm to handle rendering. N
 [cluster module](https://nodejs.org/api/cluster.html) provides an easy way to fork a process and serve
 multiple instances from a single network address.
 
-An alternative to worker farms is to put a reverse proxy in front of the render server. Be aware that
-render server requests are sent as POST requests and most reverse proxies have issues with caching POST
-requests.
+An alternative to worker farms is to put a cache in front of the render server. Be aware that
+render server requests are sent as POST requests and most reverse proxies have issues with 
+caching POST requests.
 
 When the render server wrapper connects to the JS process, it adds a `?hash=...` parameter to the url. The
 hash parameter is a SHA-1 hash of the serialized data that is sent in the request's body and is intended
 for consumption by caching layers.
+
+Another alternative is to wire the calls to the render server into your caching system. If you override the
+`renderer` kwarg, you could wrap the call to the server to first check if the data is available locally and
+fallback to populating the cache with the rendered markup.
 
 
 ### Overriding the renderer
