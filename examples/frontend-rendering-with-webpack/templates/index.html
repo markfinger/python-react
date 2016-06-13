@@ -1,0 +1,19 @@
+<html>
+<head>
+	<title>Python + React example</title>
+	<link rel="stylesheet" href="static/css/bootstrap.css">
+	<link rel="stylesheet" href="static/css/app.css">
+</head>
+<body>
+	<div class="container">
+		<h1>Python + React example</h1>
+        <div id="app-container">{{ rendered|safe }}</div>
+	</div>
+    <script>
+        // Info stored for re-rendering the app
+        var store = {{ store | tojson | safe }}; 
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js" type="text/javascript"></script>
+    <script src="./static/js/dist/bundle.js" type="text/javascript"></script>
+</body>
+</html>

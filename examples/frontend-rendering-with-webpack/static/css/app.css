@@ -1,0 +1,15 @@
+h2 {
+	border-bottom: 1px solid #eee;
+}
+
+form label {
+	display: block;
+}
+
+form button {
+	margin-left: 5px;
+}
+
+.btn-danger {
+    float: right;
+}
