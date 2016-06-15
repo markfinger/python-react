@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "watch": "webpack --watch & forever  --watch --watchDirectory ./static/js/src ./render_server.js"
+    "watch": "webpack --watch & forever  --watch --watchDirectory ./static/js/src ./render_server.js",
+    "postinstall": "webpack -p"
   },
   "dependencies": {
     "babel-core": "^6.1.20",
