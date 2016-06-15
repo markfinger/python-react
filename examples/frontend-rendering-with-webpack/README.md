@@ -13,7 +13,7 @@ pip install -r requirements.txt
 npm install
 ```
 ### Usage in development
-Extending the explanation in the [README](https://github.com/markfinger/python-react/blob/master/README.md#usage-in-development) section of the repo, restarting the render server everytime a change is made in the `.jsx` files, can be avoided by running:
+Extending the explanation in the [README](https://github.com/markfinger/python-react/blob/master/README.md#usage-in-development) section of the repo, restarting the render server everytime a change is made in the `.jsx` files can be avoided, by running:
 ```
 npm run watch
 ```
@@ -26,5 +26,5 @@ The forever utility check for changes and restarts the `render_server` according
 ### Usage in production
 Node server can be hosted in multiple ways. Either in the same box as flask server, or elsewhere. One way is to run it as a supervisord job on the same server. The React app needs to bundled as production ready before deploying the python server. This bundle is included in the `base` template for the app to render again on the client side. For bundling, run:
 ```
-npm run preinstall
+npm run postinstall
 ```
