@@ -34,7 +34,6 @@ Documentation
   - [Usage in development](#usage-in-development)
   - [Usage in production](#usage-in-production)
   - [Overriding the renderer](#overriding-the-renderer)
-- [Django integration](#django-integration)
 - [Settings](#settings)
 - [Running the tests](#running-the-tests)
 
