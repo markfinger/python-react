@@ -35,6 +35,7 @@ Documentation
   - [Usage in production](#usage-in-production)
   - [Overriding the renderer](#overriding-the-renderer)
 - [Settings](#settings)
+- [Frequently Asked Questions](#frequently-asked-questions)
 - [Running the tests](#running-the-tests)
 
 
@@ -283,6 +284,19 @@ A complete url to an endpoint which accepts POST requests conforming to
 [react-render's API](https://github.com/markfinger/react-render).
 
 Default: `'http://127.0.0.1:9009/render'`
+
+
+Frequently Asked Questions
+--------------------------
+
+### Can python-react integrate with Django?
+
+python-react can integrate with Django's settings and the renderer integration can resolve relative paths to components via django's static file finders.
+
+### Can python-react integrate with Web2Py?
+
+[@Anima-t3d](https://github.com/Anima-t3d) has a write-up of their experience
+in [#70](https://github.com/markfinger/python-react/issues/70#issuecomment-254396083).
 
 
 Running the tests
