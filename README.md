@@ -196,6 +196,11 @@ In production environments, you should ensure that `RENDER` is set to True.
 You will want to run the render server under whatever supervisor process suits your need. Depending on
 your setup, you may need to change the `RENDER_URL` setting to reflect your environment.
 
+The render server should be run with the `NODE_ENV` environment variable set to `production`, 
+eg: `NODE_ENV=production node render_server.js`. React defaults to development mode and relies on the 
+`NODE_ENV` variable to deactivate dev-oriented code (types and constraint checking) that slows down renders. 
+Defining this variable will ensure that your code is rendered much faster.
+
 Depending on your load, you may want to use a worker farm to handle rendering. Node's
 [cluster module](https://nodejs.org/api/cluster.html) provides an easy way to fork a process and serve
 multiple instances from a single network address.
