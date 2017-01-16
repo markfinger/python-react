@@ -13,8 +13,16 @@ atexit.register(lambda _process: _process.kill(), process)
 
 output = process.stdout.readline().decode('utf-8')
 
+def read_line():
+    return process.stdout.readline().decode('utf-8')
+
 if output.strip() == '':
-    output += process.stdout.readline().decode('utf-8')
+    output += read_line()
 
 if 'React render server' not in output:
-    raise Exception('Unexpected output: "{}"'.format(output))
+    if 'module.js' in output:
+        line = read_line()
+        while line:
+            output += line + os.linesep
+            line = read_line()
+    raise Exception('Unexpected output from render server subprocess...' + os.linesep + os.linesep + output)
