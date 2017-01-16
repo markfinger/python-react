@@ -9,10 +9,15 @@ env:
   - DJANGO_VERSION=1.8.1
 
 install:
+  # Install node 6 (current LTS as of January 2017)
+  - "rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install 6"
+  # Install latest npm
   - "npm install -g npm"
+  # Install node deps for render server
   - "cd tests"
   - "npm install"
   - "cd .."
+  # Setup python packages
   - "pip install Django==$DJANGO_VERSION"
   - "pip install -r requirements.txt"
 
