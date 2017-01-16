@@ -11,11 +11,10 @@ process = subprocess.Popen(
 # Ensure the process is killed on exit
 atexit.register(lambda _process: _process.kill(), process)
 
-output = process.stdout.readline().decode('utf-8')
-
 def read_line():
     return process.stdout.readline().decode('utf-8')
 
+output = read_line()
 if output.strip() == '':
     output += read_line()
 
