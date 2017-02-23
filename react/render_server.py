@@ -20,7 +20,10 @@ class RenderedComponent(object):
 
 
 class RenderServer(object):
-    def render(self, path, props=None, to_static_markup=False, request_headers=None):
+    def render(
+        self, path, props=None, to_static_markup=False, request_headers=None,
+        timeout=None
+    ):
         url = conf.settings.RENDER_URL
 
         if props is not None:
@@ -45,12 +48,17 @@ class RenderServer(object):
         if request_headers is not None:
             all_request_headers.update(request_headers)
 
+        # Add a send/receive timeout with the request if not specified
+        if not isinstance(timeout, (tuple, int, float)):
+            timeout = (5, 5)
+
         try:
             res = requests.post(
                 url,
                 data=serialized_options,
                 headers=all_request_headers,
-                params={'hash': options_hash}
+                params={'hash': options_hash},
+                timeout=timeout
             )
         except requests.ConnectionError:
             raise RenderServerError('Could not connect to render server at {}'.format(url))
