@@ -227,7 +227,7 @@ you can consistently define the `renderer` argument to `render_component`. For e
 from react.render import render_component
 
 class MyRenderer(object):
-    def render(self, path, props=None, to_static_markup=False):
+    def render(self, path, props=None, to_static_markup=False, request_headers=None, timeout=None):
         # ...
 
 def my_render_function(*args, **kwargs):
