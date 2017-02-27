@@ -296,12 +296,23 @@ Frequently Asked Questions
 
 ### Can python-react integrate with Django?
 
-python-react can integrate with Django's settings and the renderer integration can resolve relative paths to components via django's static file finders.
+python-react can integrate with Django's settings and the renderer integration can 
+resolve relative paths to components via django's static file finders.
+
+### How do I handle Django's translation and gettext with React components?
+
+[@sillygod](https://github.com/sillygod) sparked a discussion of this at issue 
+[#69](https://github.com/markfinger/python-react/issues/69).
 
 ### Can python-react integrate with Web2Py?
 
 [@Anima-t3d](https://github.com/Anima-t3d) has a write-up of their experience
 in [#70](https://github.com/markfinger/python-react/issues/70#issuecomment-254396083).
+
+### How do I pass child components to the root component?
+
+[@Anima-t3d](https://github.com/Anima-t3d) sparked a discussion of this at issue 
+[#70](https://github.com/markfinger/python-react/issues/71).
 
 
 Running the tests
