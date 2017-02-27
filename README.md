@@ -312,7 +312,7 @@ in [#70](https://github.com/markfinger/python-react/issues/70#issuecomment-25439
 ### How do I pass child components to the root component?
 
 [Anima-t3d](https://github.com/Anima-t3d) sparked a discussion of this at issue 
-[#70](https://github.com/markfinger/python-react/issues/71).
+[#71](https://github.com/markfinger/python-react/issues/71).
 
 
 Running the tests
