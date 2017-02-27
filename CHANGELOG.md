@@ -1,6 +1,22 @@
 Changelog
 =========
 
+### 4.0.0 (28/2/2017)
+
+- **Possibly breaking change** `RenderServer.render` now accepts a `timeout` keyword argument. There are some
+  edge-cases where this may break down-stream code.
+  ([Corey Burmeister](https://github.com/cburmeister))
+  https://github.com/markfinger/python-react/pull/73
+- Documentation updates regarding production environments. The key takeaway is to ensure that you are using
+  the `NODE_ENV=production` environment variable so that React runs without debugging helpers which slow down
+  rendering.
+- Documentation updates regarding `RenderServer` API.
+
+### 3.0.1 (6/4/2016)
+
+- Documentation updates.
+
+
 ### 3.0.0 (6/4/2016)
 
 - **Possibly breaking change** render_component now accepts a `request_headers` keyword argument.
