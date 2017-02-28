@@ -20,10 +20,7 @@ class RenderedComponent(object):
 
 
 class RenderServer(object):
-    def render(
-        self, path, props=None, to_static_markup=False, request_headers=None,
-        timeout=None
-    ):
+    def render(self, path, props=None, to_static_markup=False, request_headers=None, timeout=None):
         url = conf.settings.RENDER_URL
 
         if props is not None:
