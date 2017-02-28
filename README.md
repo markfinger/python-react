@@ -153,6 +153,12 @@ render_component(
     request_headers={
         'Accept-Language': 'da, en-gb;q=0.8, en;q=0.7'
     },
+
+    # An optional timeout that is used when handling communications with the render server.
+    # Can be an integer, a float, or a tuple containing two numeric values (the two values
+    # represent the individual timeouts on the send & receive phases of the request).
+    # Note that if not defined, this value will default to (5, 5)
+    timeout=None
 )
 ```
 
