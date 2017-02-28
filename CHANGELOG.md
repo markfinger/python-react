@@ -1,6 +1,13 @@
 Changelog
 =========
 
+### 4.1.0 (1/3/2017)
+
+- `render_component` now accepts a `timeout` keyword argument which is passed to `RenderServer.render`.
+  ([Corey Burmeister](https://github.com/cburmeister))
+  https://github.com/markfinger/python-react/pull/74
+
+
 ### 4.0.0 (28/2/2017)
 
 - **Possibly breaking change** `RenderServer.render` now accepts a `timeout` keyword argument. There are some
