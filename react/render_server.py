@@ -47,7 +47,7 @@ class RenderServer(object):
 
         # Add a send/receive timeout with the request if not specified
         if not isinstance(timeout, (tuple, int, float)):
-            timeout = (5, 5)
+            timeout = 5.0
 
         try:
             res = requests.post(
