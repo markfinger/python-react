@@ -1,6 +1,14 @@
 Changelog
 =========
 
+### 4.1.1 (9/8/2017)
+
+- Update timeout in render_server.py.
+  ([Mike Plis](https://github.com/mplis))
+  https://github.com/markfinger/python-react/pull/81
+
+
+
 ### 4.1.0 (1/3/2017)
 
 - `render_component` now accepts a `timeout` keyword argument which is passed to `RenderServer.render`.
