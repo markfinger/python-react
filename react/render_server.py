@@ -8,9 +8,10 @@ from .exceptions import RenderServerError
 
 
 class RenderedComponent(object):
-    def __init__(self, markup, props):
+    def __init__(self, markup, props, css=None):
         self.markup = markup
         self.props = props
+        self.css = css
 
     def __str__(self):
         return self.markup
@@ -37,7 +38,8 @@ class RenderServer(object):
             'toStaticMarkup': to_static_markup
         }
         serialized_options = json.dumps(options)
-        options_hash = hashlib.sha1(serialized_options.encode('utf-8')).hexdigest()
+        options_hash = hashlib.sha1(
+            serialized_options.encode('utf-8')).hexdigest()
 
         all_request_headers = {'content-type': 'application/json'}
 
@@ -58,29 +60,34 @@ class RenderServer(object):
                 timeout=timeout
             )
         except requests.ConnectionError:
-            raise RenderServerError('Could not connect to render server at {}'.format(url))
+            raise RenderServerError(
+                'Could not connect to render server at {}'.format(url))
 
         if res.status_code != 200:
             raise RenderServerError(
-                'Unexpected response from render server at {} - {}: {}'.format(url, res.status_code, res.text)
+                'Unexpected response from render server at {} - {}: {}'.format(
+                    url, res.status_code, res.text)
             )
 
         obj = res.json()
 
         markup = obj.get('markup', None)
         err = obj.get('error', None)
+        css = obj.get('css', None)
 
         if err:
             if 'message' in err and 'stack' in err:
                 raise ReactRenderingError(
-                    'Message: {}\n\nStack trace: {}'.format(err['message'], err['stack'])
+                    'Message: {}\n\nStack trace: {}'.format(
+                        err['message'], err['stack'])
                 )
             raise ReactRenderingError(err)
 
         if markup is None:
-            raise ReactRenderingError('Render server failed to return markup. Returned: {}'.format(obj))
+            raise ReactRenderingError(
+                'Render server failed to return markup. Returned: {}'.format(obj))
 
-        return RenderedComponent(markup, serialized_props)
+        return RenderedComponent(markup, serialized_props, css)
 
 
 render_server = RenderServer()
