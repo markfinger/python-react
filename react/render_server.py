@@ -21,7 +21,7 @@ class RenderedComponent(object):
 
 
 class RenderServer(object):
-    def render(self, path, props=None, to_static_markup=False, request_headers=None, timeout=None):
+    def render(self, path: str, props: dict=None, to_static_markup: bool=False, request_headers=None, timeout=None, path_to_react_loadable: str=None):
         url = conf.settings.RENDER_URL
 
         if props is not None:
@@ -35,7 +35,8 @@ class RenderServer(object):
         options = {
             'path': path,
             'serializedProps': serialized_props,
-            'toStaticMarkup': to_static_markup
+            'toStaticMarkup': to_static_markup,
+            'pathToReactLoadable': path_to_react_loadable
         }
         serialized_options = json.dumps(options)
         options_hash = hashlib.sha1(
