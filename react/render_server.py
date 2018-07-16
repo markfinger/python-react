@@ -8,9 +8,10 @@ from .exceptions import RenderServerError
 
 
 class RenderedComponent(object):
-    def __init__(self, markup, props):
+    def __init__(self, markup, props, extra):
         self.markup = markup
         self.props = props
+        self.extra = extra
 
     def __str__(self):
         return self.markup
@@ -67,8 +68,9 @@ class RenderServer(object):
 
         obj = res.json()
 
-        markup = obj.get('markup', None)
-        err = obj.get('error', None)
+        markup = obj.pop('markup', None)
+        err = obj.pop('error', None)
+        extra = obj
 
         if err:
             if 'message' in err and 'stack' in err:
@@ -80,7 +82,7 @@ class RenderServer(object):
         if markup is None:
             raise ReactRenderingError('Render server failed to return markup. Returned: {}'.format(obj))
 
-        return RenderedComponent(markup, serialized_props)
+        return RenderedComponent(markup, serialized_props, extra)
 
 
 render_server = RenderServer()
