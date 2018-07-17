@@ -69,7 +69,7 @@ The object returned has two properties:
 
  - `markup` - the rendered markup
  - `props` - the JSON-serialized props
- - `data` - extra data returned by the render server
+ - `data` - the data returned by the render server
 
 If the object is coerced to a string, it will emit the value of the `markup` attribute.
 
@@ -83,8 +83,6 @@ for a simple server that will cover most cases. The key files for the render ser
  - [render_server.js](examples/basic_rendering/render_server.js) - the server's source code
  - [package.json](examples/basic_rendering/package.json) - the server's dependencies, installable with
    [npm](http://npmjs.com)
-   
-You can also return extra data from your render server and these data will be stored in `data` attribute of the response object.
 
 
 Using React on the front-end
@@ -258,7 +256,7 @@ from react.conf import settings
 DEBUG = True
 
 settings.configure(
-	RENDER=not DEBUG,
+    RENDER=not DEBUG,
     RENDER_URL='http://127.0.0.1:9009/render',
 )
 ```
@@ -273,7 +271,7 @@ INSTALLED_APPS = (
 )
 
 REACT = {
-	'RENDER': not DEBUG,
+    'RENDER': not DEBUG,
     'RENDER_URL': 'http://127.0.0.1:8001/render',
 }
 ```
@@ -302,6 +300,22 @@ Default: `'http://127.0.0.1:9009/render'`
 
 Frequently Asked Questions
 --------------------------
+
+### How do I return extra data from the render server?
+
+You can edit the render server's code and annotate the returned payload with whatever data 
+that you like. The payload provided by the render server is available under the `data` attribute 
+of the response object.
+
+For example:
+
+```python
+from react.render import render_component
+
+rendered = render_component('path/to/component.js')
+
+print(rendered.data)
+```
 
 ### Can python-react integrate with Django?
 
