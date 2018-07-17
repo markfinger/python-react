@@ -30,7 +30,7 @@ class RenderServer(object):
             serialized_props = None
 
         if not conf.settings.RENDER:
-            return RenderedComponent('', serialized_props)
+            return RenderedComponent('', serialized_props, {})
 
         options = {
             'path': path,
