@@ -69,6 +69,7 @@ The object returned has two properties:
 
  - `markup` - the rendered markup
  - `props` - the JSON-serialized props
+ - `data` - extra data returned by the render server
 
 If the object is coerced to a string, it will emit the value of the `markup` attribute.
 
@@ -82,6 +83,8 @@ for a simple server that will cover most cases. The key files for the render ser
  - [render_server.js](examples/basic_rendering/render_server.js) - the server's source code
  - [package.json](examples/basic_rendering/package.json) - the server's dependencies, installable with
    [npm](http://npmjs.com)
+   
+You can also return extra data from your render server and these data will be stored in `data` attribute of the response object.
 
 
 Using React on the front-end
