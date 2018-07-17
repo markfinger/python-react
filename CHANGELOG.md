@@ -1,6 +1,13 @@
 Changelog
 =========
 
+### 4.2.0 (17/6/2018)
+
+- API for returning extra items returned by render server.
+  ([Sassan Haradji](https://github.com/sassanh))
+  https://github.com/markfinger/python-react/pull/87
+
+
 ### 4.1.1 (9/8/2017)
 
 - Update timeout in render_server.py.
