@@ -1,6 +1,12 @@
 Changelog
 =========
 
+### 4.2.1 (17/6/2018)
+
+- Fix for a missing argument bug that could occur with rendering deactivated.
+
+
+
 ### 4.2.0 (17/6/2018)
 
 - API for returning extra items returned by render server.
