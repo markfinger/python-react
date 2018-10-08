@@ -1,10 +1,17 @@
 Changelog
 =========
 
+
+### 4.3.0 (8/10/2018)
+
+- Add option to pass a URL explicitly instead of reading from settings.
+  ([jchen-eb](https://github.com/jchen-eb))
+  https://github.com/markfinger/python-react/pull/88
+
+
 ### 4.2.1 (17/6/2018)
 
 - Fix for a missing argument bug that could occur with rendering deactivated.
-
 
 
 ### 4.2.0 (17/6/2018)
@@ -19,7 +26,6 @@ Changelog
 - Update timeout in render_server.py.
   ([Mike Plis](https://github.com/mplis))
   https://github.com/markfinger/python-react/pull/81
-
 
 
 ### 4.1.0 (1/3/2017)
@@ -39,6 +45,7 @@ Changelog
   the `NODE_ENV=production` environment variable so that React runs without debugging helpers which slow down
   rendering.
 - Documentation updates regarding `RenderServer` API.
+
 
 ### 3.0.1 (6/4/2016)
 
@@ -65,6 +72,7 @@ Changelog
   ([Pringels](https://github.com/Pringels))
   https://github.com/markfinger/python-react/pull/55
 
+
 ### 2.0.0 (22/9/2015)
 
 - **Breaking change** The base renderer's __init__  no longer accepts the RENDER_URL setting as an argument.
@@ -89,6 +97,7 @@ Changelog
 - Fixed a potential path issue in config files
 - Replaced the webpack-service dependency with webpack-wrapper.
 
+
 ### 0.8.0 (26/1/2015)
 
 - Boosting render performance by using a dedicated render server.
@@ -96,6 +105,7 @@ Changelog
  callable object which returns a on object with a `render` method. By default it points to the new
  render server, 'django_react.render_server.ReactRenderServer'. The legacy renderer is useable by
  setting DJANGO_REACT['RENDERER'] = 'django_react.renderer.ReactRenderer'.
+
 
 ### 0.7.0 (2/1/2015)
 
@@ -107,9 +117,11 @@ Changelog
 - The Python<->JS bridge used to render components now relies on a `--serialized-props-file` argument, formerly it was `--serialized-props`.
 - Switched the JSX loader to a fork which improves the debug information provided during error handling
 
+
 ### 0.6.0 (24/12/2014)
 
 - The NODE_ENV environment setting is now controlled by the `DJANGO_REACT['DEBUG']` setting. Activating it will provides some improvements to the rendering performance.
+
 
 ### 0.5.0 (14/12/2014)
 
@@ -132,6 +144,7 @@ Changelog
 - Added a test suite and harness.
 - Added basic documentation.
 
+
 ### 0.4.0 (11/12/2014)
 
 - Fixed a bug where errors caused during a component's prop serialization could silently fail.
@@ -144,6 +157,7 @@ Changelog
 - `ReactComponent.get_component_variable` is now `ReactComponent.get_library`.
 - Moved the Webpack configuration into the ReactComponent class.
 
+
 ### 0.3.0 (3/12/2014)
 
 - `django_react.exceptions.ReactComponentSourceFileNotFound` is now `django_react.exceptions.SourceFileNotFound`
@@ -154,9 +168,11 @@ Changelog
 - `django_react.utils.render` no longer accepts a `ReactComponent` as an argument, it now takes `path_to_source`, `serialised_props`, and `to_static_markup`.
 - `django_react/render.js` no longer accepts the `--path-to-component` argument, instead it takes `--path-to-source`.
 
+
 ### 0.2.0 (3/12/2014)
 
 - Replaced the post-install step in setup.py with django-node's dependency and package resolver.
+
 
 ### 0.1.0 (2/12/2014)
 
