@@ -21,8 +21,9 @@ class RenderedComponent(object):
 
 
 class RenderServer(object):
-    def render(self, path, props=None, to_static_markup=False, request_headers=None, timeout=None):
-        url = conf.settings.RENDER_URL
+    def render(self, path, props=None, to_static_markup=False, request_headers=None, timeout=None, url=None):
+        if not url:
+            url = conf.settings.RENDER_URL
 
         if props is not None:
             serialized_props = json.dumps(props, cls=JSONEncoder)
