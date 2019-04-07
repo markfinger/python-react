@@ -60,12 +60,18 @@ class RenderServer(object):
                 timeout=timeout
             )
         except requests.ConnectionError:
-            raise RenderServerError('Could not connect to render server at {}'.format(url))
+            if conf.settings.NO_THROW:
+                return RenderedComponent('', serialized_props, {})
+            else:
+                raise RenderServerError('Could not connect to render server at {}'.format(url))
 
         if res.status_code != 200:
-            raise RenderServerError(
-                'Unexpected response from render server at {} - {}: {}'.format(url, res.status_code, res.text)
-            )
+            if conf.settings.NO_THROW:
+                return RenderedComponent('', serialized_props, {})
+            else:
+                raise RenderServerError(
+                    'Unexpected response from render server at {} - {}: {}'.format(url, res.status_code, res.text)
+                )
 
         obj = res.json()
 
@@ -73,16 +79,20 @@ class RenderServer(object):
         err = obj.pop('error', None)
         data = obj
 
-        if err:
+        if markup is None:
+            if conf.settings.NO_THROW:
+                return RenderedComponent('', serialized_props, {})
+            else: 
+                raise ReactRenderingError('Render server failed to return markup. Returned: {}'.format(obj))
+
+        if err and not conf.settings.NO_THROW:
             if 'message' in err and 'stack' in err:
                 raise ReactRenderingError(
                     'Message: {}\n\nStack trace: {}'.format(err['message'], err['stack'])
                 )
             raise ReactRenderingError(err)
 
-        if markup is None:
-            raise ReactRenderingError('Render server failed to return markup. Returned: {}'.format(obj))
-
+                
         return RenderedComponent(markup, serialized_props, data)
 
 

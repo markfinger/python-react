@@ -257,6 +257,7 @@ DEBUG = True
 
 settings.configure(
     RENDER=not DEBUG,
+    NO_THROW=not DEBUG,
     RENDER_URL='http://127.0.0.1:9009/render',
 )
 ```

@@ -107,6 +107,30 @@ class TestRendering(unittest.TestCase):
             self.assertEqual(rendered.props, '{"name": "world!"}')
 
     @mock.patch('requests.post')
+    def test_no_throw_setting_is_respected(self, requests_post_mock):
+        mock_settings = Conf()
+        mock_settings.configure(NO_THROW=True)
+        mock_json = {
+            'markup': '',
+            'error': {
+                'type': 'Error',
+                'message': 'Error message',
+            },
+        }
+        response_mock = mock.Mock()
+        response_mock.status_code = 500
+        response_mock.text = json.dumps(mock_json)
+        response_mock.json = mock.Mock(return_value=mock_json)
+        requests_post_mock.return_value = response_mock
+        with mock.patch('react.conf.settings', mock_settings):
+            rendered = render_component(
+                Components.HELLO_WORLD_JSX,
+                {'name': 'world!'},
+                to_static_markup=True,
+            )
+            self.assertEqual(rendered.markup, '')
+
+    @mock.patch('requests.post')
     def test_can_pass_additional_request_headers(self, requests_post_mock):
         mock_json = {
             'markup': '<div>Hello</div>',
