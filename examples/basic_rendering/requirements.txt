@@ -1,4 +1,4 @@
-flask==0.10.1
+flask==1.0
 optional-django==0.3.0
 requests==2.7.0
 react
