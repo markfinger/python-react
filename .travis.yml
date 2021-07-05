@@ -2,6 +2,8 @@ language: python
 
 python:
   - "2.7"
+  - "3.5"
+  - "3.7"
   - "3.8"
 
 env:
@@ -9,6 +11,7 @@ env:
   - DJANGO_VERSION=1.8.1
   - DJANGO_VERSION=2.2.16
   - DJANGO_VERSION=3.1.1
+  - DJANGO_VERSION=1.8.19
 
 install:
   # Install node 6 (current LTS as of January 2017)
