@@ -65,7 +65,7 @@ rendered = render_component('path/to/component.jsx', {'foo': 'bar'})
 print(rendered)
 ```
 
-The object returned has two properties:
+The object returned has three properties:
 
  - `markup` - the rendered markup
  - `props` - the JSON-serialized props
